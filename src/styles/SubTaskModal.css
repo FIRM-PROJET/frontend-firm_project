@@ -1,0 +1,413 @@
+/* SubTaskModal.css */
+
+.subtask-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 16px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.subtask-modal-container {
+  background: #181835;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  width: 100%;
+  max-width: 520px;
+  height: 85vh;
+  max-height: 85vh;
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: slideUp 0.3s ease-out;
+  position: relative;
+}
+
+.subtask-form {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+/* Header */
+.subtask-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e5e7eb;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  flex-shrink: 0;
+}
+
+.subtask-modal-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.subtask-modal-title i {
+  font-size: 20px;
+  opacity: 0.9;
+}
+
+.subtask-modal-title h2 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.subtask-modal-close-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.subtask-modal-close-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
+}
+
+.subtask-modal-close-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Body avec scroll optimisé */
+.subtask-modal-body {
+  flex: 1 1 0;
+  overflow-y: scroll !important;
+  overflow-x: hidden;
+  padding: 24px;
+  min-height: 0;
+  /* Personnalisation de la scrollbar */
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+/* Styles pour webkit (Chrome, Safari, Edge) */
+.subtask-modal-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.subtask-modal-body::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 3px;
+}
+
+.subtask-modal-body::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 3px;
+  transition: background-color 0.2s ease;
+}
+
+.subtask-modal-body::-webkit-scrollbar-thumb:hover {
+  background-color: #181835;
+}
+
+/* Scroll smooth pour une meilleure UX */
+.subtask-modal-body {
+  scroll-behavior: smooth;
+}
+
+/* Informations tâche parent */
+.parent-task-info {
+  background: #181835;
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin-bottom: 20px;
+  border-left: 4px solid #667eea;
+}
+
+.parent-task-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.parent-task-name {
+  font-weight: 600;
+  color: #374151;
+  font-size: 14px;
+}
+
+/* Champs du formulaire */
+.subtask-form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  /* Padding bottom pour éviter que le contenu soit collé au bas lors du scroll */
+  padding-bottom: 8px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group-row {
+  display: flex;
+  gap: 14px;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.form-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  font-size: 13px;
+  color: #374151;
+}
+
+.form-label.required::after {
+  content: '*';
+  color: #ef4444;
+  margin-left: 2px;
+}
+
+.form-label i {
+  font-size: 14px;
+  color: #667eea;
+  opacity: 0.8;
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+  padding: 10px 14px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  background-color: white;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-input.error,
+.form-select.error,
+.form-textarea.error {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.form-input:disabled,
+.form-select:disabled,
+.form-textarea:disabled {
+  background-color: #f9fafb;
+  color: #6b7280;
+  cursor: not-allowed;
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 80px;
+  font-family: inherit;
+}
+
+.form-select {
+  cursor: pointer;
+}
+
+.form-error {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #ef4444;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.form-error i {
+  font-size: 13px;
+}
+
+/* Footer */
+.subtask-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 18px 24px;
+  border-top: none;
+  background: #181835;
+}
+
+.btn-cancel,
+.btn-create {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.btn-cancel {
+  background: #ffffff;
+  color: #6b7280;
+  border: 2px solid #e5e7eb;
+}
+
+.btn-cancel:hover:not(:disabled) {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+  color: #374151;
+}
+
+.btn-create {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  min-width: 140px;
+  justify-content: center;
+}
+
+.btn-create:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.btn-cancel:disabled,
+.btn-create:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .subtask-modal-overlay {
+    padding: 12px;
+  }
+  
+  .subtask-modal-container {
+    max-height: 90vh;
+    max-width: 480px;
+  }
+
+  .subtask-modal-header {
+    padding: 18px 20px;
+  }
+
+  .subtask-modal-title h2 {
+    font-size: 16px;
+  }
+
+  .subtask-modal-body {
+    padding: 20px;
+  }
+  
+  .form-group-row {
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .subtask-modal-footer {
+    padding: 16px 20px;
+    flex-direction: column-reverse;
+    gap: 10px;
+  }
+  
+  .btn-cancel,
+  .btn-create {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .subtask-modal-overlay {
+    padding: 8px;
+  }
+
+  .subtask-modal-container {
+    border-radius: 12px;
+    max-height: 92vh;
+  }
+
+  .subtask-modal-header {
+    padding: 16px 18px;
+  }
+
+  .subtask-modal-body {
+    padding: 18px;
+  }
+
+  .subtask-modal-footer {
+    padding: 14px 18px;
+  }
+}

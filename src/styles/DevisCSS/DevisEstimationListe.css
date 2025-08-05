@@ -1,0 +1,458 @@
+.similarity-toggle-button {
+  padding: 10px 15px;
+  background: #514f84;
+  color: white;
+  box-shadow: var(--shadow-md);
+}
+
+.reset-similarity-button {
+  background: linear-gradient(135deg, var(--error-color), #e53e3e);
+  color: white;
+  box-shadow: var(--shadow-md);
+}
+
+.reset-similarity-button:hover {
+  background: linear-gradient(135deg, #e53e3e, #c53030);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-xl);
+}
+
+.similarity-search-container {
+  background: #282850;
+  border-radius: 5px;
+  padding: 10px 15px;
+  margin: 20px 0;
+  position: relative;
+  overflow: hidden;
+  animation: slideInDown 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.similarity-search-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  color: #ccc;
+  height: 3px;
+  background: #514f84;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.similarity-form h3 {
+  margin: 0 0 16px 0;
+  color: #ccc;
+  font-size: 18px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.loading-options {
+  background: #ccc;
+  color: var(--primary-color);
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  text-align: center;
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 16px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.criteria-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.criteria-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.criteria-field label {
+  font-weight: 500;
+  color: #e9e7e7e9;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.criteria-field label svg {
+  color: #e9e7e7e9;
+  font-size: 14px;
+}
+
+.criteria-field input {
+  padding: 10px 12px;
+  border: 1px solid var(--primary-color);
+  border-radius: 3px;
+  font-size: 14px;
+  font-weight: 500;
+  background: transparent;
+  color: #b5b4b4;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.criteria-field input:focus {
+  outline: none;
+  transform: translateY(-1px);
+  background-color: #282850;
+  border: none;
+}
+
+.criteria-field input:disabled {
+  background-color: #2a2a2a;
+  color: var(--text-muted);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.criteria-field input::placeholder {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.similarity-form-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  padding-top: 16px;
+}
+
+.apply-similarity-button {
+  background: #514f84;
+  color: white;
+  box-shadow: var(--shadow-md);
+}
+
+.apply-similarity-button:hover:not(:disabled) {
+  background: #514f84;
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-xl);
+}
+
+.apply-similarity-button:disabled {
+  background: #282850;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: var(--shadow-sm);
+}
+
+.cancel-button {
+  background: linear-gradient(135deg, #666, #555);
+  color: white;
+  box-shadow: var(--shadow-md);
+}
+
+.cancel-button:hover {
+  background: linear-gradient(135deg, #555, #282850);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-xl);
+}
+
+.projects-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.project-card {
+  background: #282850;
+  padding: 15px 15px;
+  border-radius: 7px;
+  box-shadow: var(--shadow-md);
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.project-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-xl);
+  border-color: var(--primary-light);
+}
+
+.project-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3px;
+  height: 100%;
+  background: linear-gradient(
+    180deg,
+    var(--primary-color),
+    var(--accent-color)
+  );
+  transform: scaleY(0);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.project-card:hover::before {
+  transform: scaleY(1);
+}
+
+.project-checkbox {
+  padding-top: 6px;
+}
+
+.project-checkbox input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--primary-color);
+  border-radius: 5px;
+  cursor: pointer;
+  position: relative;
+  appearance: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.project-checkbox input[type="checkbox"]:checked {
+  background: #514f84;
+  border-color: var(--primary-color);
+  transform: scale(1.1);
+}
+
+.project-checkbox input[type="checkbox"]:checked::after {
+  content: "✓";
+  position: absolute;
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.project-checkbox input[type="checkbox"]:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 0 4px rgba(110, 86, 170, 0.2);
+}
+
+.project-content {
+  flex: 1;
+}
+
+.project-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.project-icon {
+  font-size: 24px;
+  color: #ccc;
+}
+
+.project-title {
+  flex: 1;
+  min-width: 200px;
+  margin: 0;
+  color: #ccc;
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.devis-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.devis-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #ccc;
+  margin: 0;
+}
+
+.add-devis-button {
+  background: #514f84;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.add-devis-button:hover {
+  background: #5a4a8a;
+  transform: translateY(-2px);
+}
+
+.devis-group {
+  margin-bottom: 20px;
+}
+
+.devis-group-header {
+  background: #282850;
+  padding: 10px;
+  border-radius: 7px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.devis-group-header:hover {
+  background: #454560;
+}
+
+.devis-group-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.devis-group-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #ccc;
+}
+
+.version-count {
+  background: #514f84;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.devis-versions {
+  margin-top: 10px;
+  padding-left: 20px;
+}
+
+.devis-item {
+  background: #353547;
+  padding: 9px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.devis-item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.devis-item-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: #ccc;
+}
+
+.devis-item-details {
+  display: flex;
+  gap: 20px;
+  font-size: 14px;
+  color: #999;
+}
+
+.devis-item-detail {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.devis-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.action-button1 {
+  background: #555;
+  color: white;
+  border: none;
+  padding: 8px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+
+.action-button1.view {
+  background: #4a9eff;
+}
+.action-button1.edit {
+  background: #514f84;
+}
+.action-button1.delete {
+  background: #ff4757;
+}
+
+.version-badge {
+  background: #514f84;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-left: 8px;
+}
+
+.latest-badge {
+  background: #51a878ff;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-left: 8px;
+}
+
+:root {
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  --primary-color: #514f84;
+  --accent-color: #8b5cf6;
+  --error-color: #ef4444;
+  --text-muted: #6b7280;
+}

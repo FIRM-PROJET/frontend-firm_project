@@ -1,0 +1,386 @@
+@import url("https://fonts.googleapis.com/css2?family=Bw Modelica:wght@400;500;600;700&display=swap");
+
+* {
+  font-family: "Bw Modelica", sans-serif;
+  box-sizing: border-box;
+}
+
+.travaux-container {
+  padding: 10px;
+  max-width: 1250px;
+  margin: auto;
+  background-color: #181835;
+  border-radius: 3px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.03);
+}
+
+/* En-tête plus aéré */
+.travaux-container .title1 {
+  font-size: 25px;
+  font-weight: 700;
+  color: #ccc;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+/* Informations projet mieux structurées */
+.project-info {
+  background-color: #282850;
+  padding: 5px;
+  border-radius: 3px;
+  margin: auto;
+  border-left: 4px solid #514f84;
+}
+
+.project-info h3 {
+  color: #ccc;
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.project-info p {
+  color: #a599c3;
+  font-weight: 500;
+  font-size: 14px;
+  margin: 0;
+}
+
+/* Boutons de sélection rapide réorganisés */
+.select-all-container {
+  display: flex;
+  justify-content: center;
+  padding: 5px;
+  background-color: transparent;
+  border-radius: 3px;
+  flex-wrap: wrap;
+}
+
+.select-all-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  color: #a599c3;
+  cursor: pointer;
+  border: none;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 10px 15px;
+  border-radius: 3px;
+  transition: all 0.3s;
+  min-width: 160px;
+  justify-content: center;
+}
+
+.select-all-button:hover {
+  background-color: rgba(110, 86, 170, 0.15);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(110, 86, 170, 0.2);
+}
+
+.select-all-icon {
+  font-size: 18px;
+}
+
+/* Section travaux standard avec titre */
+.travaux-section {
+  margin-bottom: 40px;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #ccc;
+  margin-bottom: 15px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #514f84;
+  display: inline-block;
+}
+
+/* Grille des travaux optimisée */
+.travaux-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+  margin-bottom: 15px;
+}
+
+.travaux-item {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  color: #ccc;
+  background-color: #282850;
+  border-radius: 3px;
+  transition: all 0.3s;
+  border: 1px solid transparent;
+}
+
+.travaux-item:hover {
+  background-color: #282850;
+  border-color: #514f84;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.travaux-item input[type="checkbox"] {
+  margin-right: 12px;
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.travaux-item label {
+  cursor: pointer;
+  font-size: 14px;
+  color: #ccc;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  line-height: 1.2;
+  flex: 1;
+}
+
+.travaux-number {
+  color: #8571b8;
+  font-weight: 600;
+  min-width: 24px;
+  font-size: 13px;
+}
+
+/* Séparateur amélioré */
+.section-divider {
+  position: relative;
+  text-align: center;
+  margin: 40px 0 25px;
+}
+
+.section-divider::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, #514f84, transparent);
+}
+
+.section-divider span {
+  position: relative;
+  padding: 0 15px;
+  color: #8571b8;
+  font-weight: 600;
+  font-size: 16px;
+  background-color: #181835;
+  z-index: 2;
+}
+
+/* Section autres travaux simplifiée */
+.autres-travaux-list {
+  margin-bottom: 25px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.autres-travaux-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 15px;
+  background-color: #282850;
+  border-radius: 3px;
+  margin-bottom: 8px;
+  border: 1px solid transparent;
+  transition: all 0.3s;
+}
+
+.autres-travaux-item:hover {
+  border-color: #514f84;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.autres-travaux-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.travaux-name {
+  font-weight: 500;
+  color: #ccc;
+  font-size: 15px;
+  line-height: 1.3;
+}
+
+.travaux-montant {
+  font-size: 13px;
+  color: #8571b8;
+  font-weight: 600;
+}
+
+.delete-button {
+  background: none;
+  color: #dc3545;
+  border: none;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: all 0.3s;
+}
+
+.delete-button:hover {
+  background-color: rgba(220, 53, 69, 0.15);
+  transform: scale(1.1);
+}
+
+/* Bouton d'ajout centré et mis en avant */
+.add-travaux-button-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 40px;
+}
+
+.open-modal-button {
+  background: #514f84;
+  color: white;
+  border: none;
+  padding: 15px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 4px 12px rgba(110, 86, 170, 0.3);
+}
+
+.open-modal-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(110, 86, 170, 0.4);
+}
+
+.add-icon {
+  font-size: 16px;
+}
+
+/* Bouton de validation mis en avant */
+.validate-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+  padding-top: 30px;
+  border-top: 1px solid #4f4f55;
+}
+
+.validate-button {
+  background: #237653;
+  color: white;
+  border: none;
+  padding: 15px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 4px 12px rgba(35, 118, 83, 0.3);
+}
+
+.validate-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(35, 118, 83, 0.4);
+}
+
+.validate-icon {
+  font-size: 16px;
+}
+
+/* Checkboxes personnalisées améliorées */
+input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #514f84;
+  border-radius:5px;
+  outline: none;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s;
+}
+
+input[type="checkbox"]:checked {
+  background-color: #514f84;
+  border-color: #514f84;
+}
+
+input[type="checkbox"]:checked::after {
+  content: "✓";
+  position: absolute;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+input[type="checkbox"]:hover {
+  border-color: #8571b8;
+  box-shadow: 0 0 0 2px rgba(110, 86, 170, 0.2);
+}
+
+/* Bouton retour repositionné */
+.back-button3 {
+  background: transparent;
+  color: #a599c3;
+  border: 1px solid #514f84;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.back-button3:hover {
+  transform: translateX(-2px);
+}
+
+/* Responsive amélioré */
+@media (max-width: 768px) {
+  .travaux-container {
+    padding: 20px;
+  }
+  
+  .select-all-container {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .select-all-button {
+    min-width: 200px;
+  }
+  
+  .travaux-list {
+    grid-template-columns: 1fr;
+  }
+  
+  .autres-travaux-list {
+    max-width: 100%;
+  }
+}

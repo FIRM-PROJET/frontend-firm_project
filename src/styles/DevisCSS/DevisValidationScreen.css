@@ -1,0 +1,498 @@
+.validation-container {
+  padding: 15px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 14px;
+  background: #181835;
+  color: #ccc;
+  min-height: 100vh;
+  border-radius: 5px;
+  margin: 5px;
+}
+
+/* En-tête avec logo */
+.header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 15px;
+  background: #282850;
+  border-radius: 5px;
+}
+
+.logo-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  border-radius: 5px;
+}
+
+.company-name {
+  font-family: 'Times New Roman', serif;
+  font-size: 20px;
+  font-weight: bold;
+  color: #ccc;
+}
+
+.page-title {
+  font-size: 30px;
+  font-weight: 700;
+  color: #ccc;
+  margin: 0;
+}
+
+/* Boutons de contrôle */
+.control-buttons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+
+.btn-export,
+.btn-reset,
+.btn-excel {
+  padding: 4px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.3s ease;
+}
+
+.title-validation{
+  margin: auto;
+  text-align: center;
+  font-size: 30px;
+  margin-bottom: 10px;
+}
+.btn-export {
+  background: #514f84;
+  color: #aaa9a9;
+}
+
+.btn-export:hover {
+  background: #282850;
+}
+
+.btn-excel {
+  background: #514f84;
+  color: #ccc;
+}
+
+.btn-excel:hover {
+  background: #282850;
+}
+
+.btn-reset {
+  background: #282850;
+  color: #ccc;
+}
+
+/* Table de validation */
+.validation-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  font-size: 14px;
+  background: #282850;
+  color: #ccc;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.validation-table th,
+.validation-table td {
+  padding: 10px;
+  border: 1.2px solid #181835;
+  text-align: left;
+}
+
+.validation-table th {
+   border: 1.2px solid #282850;
+  background: #202031;
+  color: #ccc;
+  font-weight: 700;
+}
+
+.tr-spec th {
+  background: #202031;
+  color: #ccc;
+  font-weight: 700;
+}
+.validation-table input[type="text"],
+.validation-table input[type="number"] {
+  padding: 8px;
+  width: 95%;
+  border: none;
+  background: #282850;
+  color: #ccc;
+  border-radius: 5px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.validation-table input:focus {
+  outline: none;
+  background: #282850;
+}
+
+.validation-table ::placeholder {
+  color: #ccc;
+  opacity: 0.6;
+}
+
+/* Sections des travaux */
+.section-header {
+  display: flex;
+  align-items: center;
+  margin: 20px 0 15px 0;
+  padding: 10px;
+  background: #514f84;
+  border-radius: 5px;
+}
+
+.section-header h3 {
+  margin: 0;
+  color: #ccc;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.section-header i {
+  margin-right: 8px;
+  font-size: 20px;
+  color: #ccc;
+}
+
+/* Table des résultats */
+.result-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  font-size: 14px;
+  color: #ccc;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.result-table th,
+.result-table td {
+  border: 1.2px solid #282850;
+  padding: 10px;
+  text-align: center;
+}
+
+.result-table th {
+  background: #514f84;
+  color: #ccc;
+  font-weight: 700;
+}
+
+.result-table td:first-child {
+  text-align: left;
+  font-weight: 600;
+  color: #ccc;
+}
+
+.result-table input[type="text"] {
+  width: 100px;
+  padding: 6px;
+  color: #ccc;
+  background: #181835;
+  font-size: 14px;
+  border: none;
+  font-weight: 600;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.result-table input[type="text"]:focus {
+  outline: none;
+  background: #282850;
+}
+
+.result-table tfoot tr {
+  background: #202031;
+  font-weight: 700;
+  font-size: 15px;
+  color: #ccc;
+}
+
+
+/* Cellule de pourcentage avec graphique */
+.percentage-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: transparent;
+  padding: 6px;
+}
+
+.percentage-text {
+  font-weight: 700;
+  font-size: 14px;
+  color: #ccc;
+  min-width: 50px;
+}
+
+.mini-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 25px;
+  min-width: 40px;
+  padding: 6px;
+  background: transparent;
+  border-radius: 3px;
+}
+
+.chart-bar {
+  width: 6px;
+  min-height: 3px;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.chart-bar-initial {
+  background: #ccc;
+  opacity: 0.7;
+}
+
+.chart-bar-actual {
+  background: #514f84;
+}
+
+.chart-bar:hover {
+  opacity: 1;
+}
+
+/* Bouton afficher plus */
+.show-more-container {
+  text-align: center;
+  margin: 15px 0;
+}
+
+.btn-show-more {
+  background: #514f84;
+  color: #ccc;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-show-more:hover {
+  background: #282850;
+}
+
+/* Section total global */
+.total-global-container {
+  margin-top: 30px;
+  padding: 20px;
+  background: transparent;
+  border-radius: 5px;
+  border: 1px solid #514f84;
+}
+
+.total-global-container .totale {
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  color: #ccc;
+  font-size: 20px;
+}
+.total-global-container .totale-d{
+  padding: 9px 10px;
+  text-align: left;
+  font-weight: 700;
+}
+
+.icon-calculator {
+  margin-right: 10px;
+  font-size: 20px;
+  color: #514f84;
+}
+
+.total-global-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #514f84;
+  font-size: 15px;
+  color: #ccc;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.total-global-table th,
+.total-global-table td {
+  padding: 9px 10px;
+  text-align: left;
+}
+
+.total-global-table tfoot tr:not(.total-general-row) {
+  font-weight: 400;
+  font-size: 15px;
+  background-color: #181835;
+    border-top: 2px solid #282850 !important;
+
+}
+
+.total-general-row {
+  color: #ccc !important;
+  background: #202031 !important;
+  font-weight: 600 !important;
+  font-size: 20px !important;
+  border-top: 2px solid #282850 !important;
+}
+/* Formatage des nombres */
+.number-formatted {
+  font-family: 'Courier New', monospace;
+  font-weight: 700;
+  color: #ccc;
+}
+
+/* Indicateurs visuels */
+.status-indicator {
+  padding: 3px 6px;
+  border-radius: 5px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status-good {
+  background: #202031;
+  color: #ccc;
+  border: 1px solid #514f84;
+}
+
+.status-warning {
+  background: #282850;
+  color: #ccc;
+  border: 1px solid #282850;
+}
+
+.status-error {
+  background: #181835;
+  color: #ccc;
+  border: 1px solid #181835;
+}
+
+/* Animations */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+
+.pulse-animation {
+  animation: pulse 2s infinite;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .validation-container {
+    padding: 10px;
+    margin: 3px;
+  }
+  
+}
+@media (max-width: 768px) {
+  .control-buttons {
+    flex-direction: column;
+  }
+
+  .btn-export,
+  .btn-reset,
+  .btn-excel {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .percentage-cell {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .mini-chart {
+    align-self: center;
+  }
+  
+  .validation-table,
+  .result-table,
+  .total-global-table {
+    font-size: 12px;
+  }
+  
+  .validation-table th,
+  .validation-table td,
+  .result-table th,
+  .result-table td,
+  .total-global-table th,
+  .total-global-table td {
+    padding: 6px;
+  }
+  
+  .result-table input[type="number"] {
+    width: 60px;
+  }
+}
+
+@media (max-width: 480px) {
+  .validation-container {
+    padding: 8px;
+    margin: 0;
+  }
+  
+  .header-section {
+    padding: 10px;
+  }
+  
+  .logo {
+    width: 30px;
+    height: 30px;
+  }
+  
+  .total-general-row {
+    font-size: 16px !important;
+  }
+}
+.btn-export {
+  background-color: #514f84;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  margin: 5px;
+  border-radius: 5px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.btn-export:hover {
+  background-color: #846dbd;
+}

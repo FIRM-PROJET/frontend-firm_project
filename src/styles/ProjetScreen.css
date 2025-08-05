@@ -1,0 +1,465 @@
+/* ProjetDashboard.css */
+.container {
+  background-color: #181835;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+/* LOADING & ERROR */
+.loading {
+  background-color: #181835;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #ccc;
+  font-size: 16px;
+}
+
+.error {
+  background-color: #181835;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.error > div {
+  background-color: #282850;
+  border-radius: 3px;
+  padding: 16px;
+  text-align: center;
+  color: #ff6b6b;
+  font-size: 14px;
+}
+
+/* HEADER */
+.header {
+  margin-bottom: 24px;
+}
+
+.module-title {
+  color: #ccc;
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0 0 6px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.title-icon {
+  color: #514f84;
+  font-size: 24px;
+}
+
+.module-subtitle {
+  color: #cccccc;
+  font-size: 14px;
+  margin: 0 0 20px 0;
+  font-weight: normal;
+}
+
+/* NEW PROJECT CARD */
+.new-project-card {
+  background-color: #282850;
+  border-radius: 3px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.new-project-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.new-project-content:hover {
+  transform: translateX(6px);
+}
+
+.new-project-icon {
+  background-color: #514f84;
+  border-radius: 3px;
+  padding: 10px;
+  color: #ccc;
+  font-size: 20px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.new-project-title {
+  color: #ccc;
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0 0 3px 0;
+}
+
+.new-project-description {
+  color: #cccccc;
+  font-size: 12px;
+  margin: 0;
+}
+
+/* STATS GRID HORIZONTAL */
+.stats-grid-horizontal {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.stat-card {
+  background-color: #282850;
+  border-radius: 3px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.2s ease;
+  flex: 1;
+  min-width: 200px;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(110, 86, 170, 0.2);
+}
+
+.stat-icon {
+  background-color: #514f84;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 16px;
+}
+
+.stat-content {
+  flex: 1;
+}
+
+.stat-number {
+  color: #ccc;
+  font-size: 22px;
+  font-weight: bold;
+  margin: 0 0 2px 0;
+  line-height: 1;
+}
+
+.stat-label {
+  color: #cccccc;
+  font-size: 12px;
+  margin: 0;
+}
+
+/* SECTIONS */
+.section {
+  margin-bottom: 24px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.section-title {
+  color: #ccc;
+  font-size: 18px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.view-all-button {
+  background-color: transparent;
+  color: #514f84;
+  border: 1px solid #514f84;
+  border-radius: 3px;
+  padding: 6px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.view-all-button:hover {
+  background-color: #514f84;
+  color: #ccc;
+}
+
+/* TABLEAU DES PHASES */
+.phases-table-container {
+  background-color: #282850;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.phases-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.phases-table th {
+  background-color: #181835;
+  color: #ccc;
+  padding: 12px;
+  text-align: left;
+  font-weight: bold;
+  font-size: 12px;
+  border-bottom: 2px solid #514f84;
+}
+
+.phases-table td {
+  padding: 12px;
+  border-bottom: 1px solid #181835;
+  color: #cccccc;
+  font-size: 12px;
+}
+
+.phases-table tbody tr {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.phases-table tbody tr:hover {
+  background-color: rgba(110, 86, 170, 0.1);
+}
+
+.projet-cell {
+  min-width: 200px;
+}
+
+.projet-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.projet-ref {
+  color: #514f84;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.projet-nom {
+  color: #ccc;
+  font-size: 12px;
+}
+
+.phase-cell {
+  text-align: center;
+  width: 80px;
+}
+
+.phase-status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  font-size: 12px;
+}
+
+.phase-status-badge.active {
+  background-color: rgba(40, 167, 69, 0.2);
+  color: #28a745;
+}
+
+.phase-status-badge.inactive {
+  background-color: rgba(108, 117, 125, 0.2);
+  color: #6c757d;
+}
+
+/* CALENDRIER */
+.calendar-container {
+  background-color: #282850;
+  border-radius: 3px;
+  padding: 16px;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.calendar-item {
+  background-color: #181835;
+  border-radius: 3px;
+  padding: 12px;
+  border-left: 3px solid #514f84;
+}
+
+.calendar-project-info {
+  margin-bottom: 8px;
+}
+
+.calendar-ref {
+  color: #514f84;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.calendar-nom {
+  color: #ccc;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.calendar-dates {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.date-item {
+  display: flex;
+  justify-content: space-between;
+}
+
+.date-label {
+  color: #cccccc;
+  font-size: 11px;
+}
+
+.date-value {
+  color: #ccc;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.calendar-duration {
+  color: #514f84;
+  font-size: 11px;
+  font-style: italic;
+}
+
+/* AVANCEMENT */
+.avancement-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 12px;
+}
+
+.avancement-card {
+  background-color: #282850;
+  border-radius: 3px;
+  padding: 16px;
+  transition: all 0.2s ease;
+}
+
+.avancement-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(110, 86, 170, 0.2);
+}
+
+.avancement-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.avancement-ref {
+  color: #514f84;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.avancement-percentage {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.avancement-nom {
+  color: #ccc;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+.avancement-bar {
+  background-color: #181835;
+  border-radius: 10px;
+  height: 8px;
+  overflow: hidden;
+}
+
+.avancement-progress {
+  height: 100%;
+  transition: width 0.3s ease;
+  border-radius: 10px;
+}
+
+/* NO DATA */
+.no-data {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: #cccccc;
+  font-size: 14px;
+  padding: 32px;
+  background-color: #282850;
+  border-radius: 3px;
+}
+
+/* RESPONSIVE DESIGN */
+@media (max-width: 1200px) {
+  .stats-grid-horizontal {
+    flex-wrap: wrap;
+  }
+  
+  .stat-card {
+    min-width: 180px;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 16px;
+  }
+  
+  .stats-grid-horizontal {
+    flex-direction: column;
+  }
+  
+  .stat-card {
+    min-width: auto;
+  }
+  
+  .section-header {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  
+  .phases-table-container {
+    overflow-x: auto;
+  }
+  
+  .phases-table {
+    min-width: 600px;
+  }
+  
+  .calendar-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .avancement-grid {
+    grid-template-columns: 1fr;
+  }
+}

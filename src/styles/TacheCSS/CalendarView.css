@@ -1,0 +1,703 @@
+/* CalendarView.css - Version Gantt avec vues multiples */
+
+.calendar-view-container {
+  background-color: #282850;
+  color: #ccc;
+  padding: 20px;
+  border-radius: 8px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  min-height: 500px;
+}
+
+/* Navbar pour changer de vue */
+.view-navbar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 15px;
+  padding: 4px;
+  background-color: #181835;
+  border-radius: 8px;
+  justify-content: center;
+}
+
+.view-button {
+  background-color: transparent;
+  color: #ccc;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  justify-content: center;
+}
+
+.view-button:hover {
+  background-color: #181835;
+  color: #fff;
+}
+
+.view-button.active {
+  background-color: #514f84;
+  color: #fff;
+  border: none;
+  box-shadow: 0 2px 4px rgba(99, 102, 241, 0.3);
+}
+
+.view-button i {
+  font-size: 14px;
+}
+
+
+
+/* Header avec navigation */
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 0 5px;
+}
+
+.time-view-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.time-view-select {
+  background-color: #514f84;
+  color: #ccc;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease;
+  min-width: 100px;
+}
+
+.time-view-select:hover {
+  background-color: #5d5a8a;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.time-view-select:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+}
+
+.time-view-select option {
+  background-color: #514f84;
+  color: #ccc;
+  padding: 8px;
+}
+
+.nav-button1 {
+  background-color: #514f84;
+  color: #ccc;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+  min-width: 100px;
+  justify-content: center;
+}
+
+.nav-button1:hover {
+  background-color: #514f84;
+}
+
+.calendar-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #fff;
+  text-align: center;
+}
+
+/* Container Gantt */
+.gantt-container {
+  background-color: #181835;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+/* En-tête du Gantt avec les jours/périodes */
+.gantt-header {
+  display: grid;
+  background: linear-gradient(135deg, #282850, #514f84);
+}
+
+.gantt-header-week {
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.gantt-header-month {
+  grid-template-columns: repeat(auto-fit, minmax(30px, 1fr));
+}
+
+.gantt-header-semester {
+  grid-template-columns: repeat(6, 1fr);
+}
+
+.gantt-header-year {
+  grid-template-columns: repeat(12, 1fr);
+}
+
+.gantt-day-header, .gantt-period-header {
+  padding: 15px 8px;
+  text-align: center;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.gantt-day-header:last-child, 
+.gantt-period-header:last-child {
+  border-right: none;
+}
+
+.gantt-day-header .day-name {
+  font-weight: 600;
+  font-size: 14px;
+  color: #fff;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.gantt-day-header .day-date {
+  font-size: 12px;
+  color: #ddd;
+  opacity: 0.9;
+}
+
+.gantt-period-header .period-label {
+  font-weight: 600;
+  font-size: 13px;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* Zone des tâches Gantt selon la vue */
+.gantt-tasks-container {
+  position: relative;
+  min-height: 300px;
+  padding: 10px 0;
+}
+
+.gantt-tasks-week {
+  background: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent calc(100% / 7 - 1px),
+    #3a3a3a calc(100% / 7 - 1px),
+    #3a3a3a calc(100% / 7)
+  );
+}
+
+.gantt-tasks-month {
+  background: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent calc(100% / 31 - 1px),
+    #3a3a3a calc(100% / 31 - 1px),
+    #3a3a3a calc(100% / 31)
+  );
+}
+
+.gantt-tasks-semester {
+  background: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent calc(100% / 6 - 1px),
+    #3a3a3a calc(100% / 6 - 1px),
+    #3a3a3a calc(100% / 6)
+  );
+}
+
+.gantt-tasks-year {
+  background: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent calc(100% / 12 - 1px),
+    #3a3a3a calc(100% / 12 - 1px),
+    #3a3a3a calc(100% / 12)
+  );
+}
+
+/* Barres de tâches style Gantt */
+.gantt-task-bar {
+  position: absolute;
+  height: 40px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  min-width: 80px;
+}
+
+.gantt-task-bar:hover {
+  transform: translateY(-2px);
+    background: rgba(52, 5, 161, 0.2);
+  box-shadow: 0 4px 12px rgba(47, 3, 104, 0.3);
+  z-index: 10;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.task-bar-content {
+  position: relative;
+}
+
+.custom-tooltip {
+  width: 250px; 
+  display: none;
+  position: absolute;
+  top: -60px;
+  left: 0;
+  background-color: #181835;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 6px;
+  white-space: pre-line;
+  z-index: 20;
+  font-size: 13px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.gantt-task-bar:hover .custom-tooltip {
+  display: block;
+}
+
+.task-bar-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 2px;
+}
+
+.task-bar-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.8);
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.task-status {
+  background: rgba(52, 5, 161, 0.2);
+  padding: 1px 6px;
+  border-radius: 10px;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.task-assignee {
+  opacity: 0.8;
+  font-style: italic;
+}
+
+/* Message si pas de tâches */
+.no-tasks-gantt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  color: #666;
+  font-size: 14px;
+  gap: 8px;
+}
+
+.no-tasks-gantt i {
+  font-size: 24px;
+  opacity: 0.6;
+}
+
+/* Légende */
+.calendar-legend {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap;
+  padding: 15px;
+  background-color: #181835;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.legend-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.legend-section h4 {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.legend-items {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legend-color {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.legend-item span {
+  font-size: 11px;
+  color: #ccc;
+  white-space: nowrap;
+}
+
+/* Informations sur la vue */
+.view-info {
+  text-align: center;
+  padding: 8px 12px;
+  background-color: rgba(99, 102, 241, 0.1);
+  border-radius: 6px;
+  margin-top: 10px;
+}
+
+.view-info small {
+  color: #ccc;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.view-info .separator {
+  opacity: 0.5;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .gantt-header-week {
+    grid-template-columns: repeat(5, 1fr);
+  }
+  
+  .gantt-tasks-week {
+    background: repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent calc(100% / 5 - 1px),
+      #3a3a3a calc(100% / 5 - 1px),
+      #3a3a3a calc(100% / 5)
+    );
+  }
+
+  .gantt-header-month {
+    grid-template-columns: repeat(auto-fit, minmax(25px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .calendar-view-container {
+    padding: 15px;
+  }
+  
+  .view-navbar1 {
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  
+  .view-button1 {
+    min-width: 200px;
+  }
+  
+  .calendar-header {
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+
+  .time-view-controls {
+    order: -1;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .time-view-select {
+    min-width: 120px;
+  }
+  
+  .nav-button1 {
+    min-width: 120px;
+    padding: 8px 12px;
+  }
+  
+  .calendar-title {
+    font-size: 18px;
+  }
+  
+  .gantt-header-week {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .gantt-header-month {
+    grid-template-columns: repeat(auto-fit, minmax(20px, 1fr));
+  }
+
+  .gantt-header-semester {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .gantt-header-year {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  
+  .gantt-day-header, .gantt-period-header {
+    padding: 12px 6px;
+  }
+  
+  .gantt-day-header .day-name {
+    font-size: 12px;
+  }
+  
+  .gantt-day-header .day-date {
+    font-size: 10px;
+  }
+
+  .gantt-period-header .period-label {
+    font-size: 11px;
+  }
+  
+  .gantt-tasks-week {
+    background: repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent calc(100% / 3 - 1px),
+      #3a3a3a calc(100% / 3 - 1px),
+      #3a3a3a calc(100% / 3)
+    );
+  }
+
+  .gantt-tasks-semester {
+    background: repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent calc(100% / 3 - 1px),
+      #3a3a3a calc(100% / 3 - 1px),
+      #3a3a3a calc(100% / 3)
+    );
+  }
+
+  .gantt-tasks-year {
+    background: repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent calc(100% / 4 - 1px),
+      #3a3a3a calc(100% / 4 - 1px),
+      #3a3a3a calc(100% / 4)
+    );
+  }
+  
+  .gantt-task-bar {
+    height: 35px;
+    padding: 0 8px;
+  }
+  
+  .task-bar-title {
+    font-size: 11px;
+  }
+  
+  .task-bar-info {
+    font-size: 9px;
+  }
+  
+  .task-assignee {
+    display: none;
+  }
+
+  .view-info small {
+    font-size: 10px;
+    gap: 6px;
+  }
+}
+
+@media (max-width: 480px) {
+  .time-view-controls {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .time-view-select {
+    width: 100%;
+    padding: 10px;
+    font-size: 12px;
+  }
+
+  .gantt-header-week,
+  .gantt-header-month,
+  .gantt-header-semester,
+  .gantt-header-year {
+    grid-template-columns: 1fr;
+  }
+  
+  .gantt-tasks-container {
+    background: none;
+  }
+  
+  .gantt-task-bar {
+    position: static;
+    margin-bottom: 8px;
+    width: 100% !important;
+    left: 0 !important;
+  }
+  
+  .task-bar-title {
+    font-size: 10px;
+  }
+  
+  .task-status {
+    font-size: 8px;
+  }
+
+  .view-info small {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .view-info .separator {
+    display: none;
+  }
+}
+
+/* Adaptations spécifiques pour les vues longues */
+@media (max-width: 768px) {
+  .gantt-header-month {
+    font-size: 10px;
+  }
+
+  .gantt-tasks-month {
+    background: repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent calc(100% / 15 - 1px),
+      #3a3a3a calc(100% / 15 - 1px),
+      #3a3a3a calc(100% / 15)
+    );
+  }
+}
+
+/* États de focus pour l'accessibilité */
+.nav-button1:focus,
+.view-button1:focus,
+.time-view-select:focus,
+.gantt-task-bar:focus {
+  outline: 2px solid #6366f1;
+  outline-offset: 2px;
+}
+
+/* Animation pour les barres de tâches */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.gantt-task-bar {
+  animation: slideIn 0.3s ease-out;
+}
+
+/* Animations pour les changements de vue */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.gantt-container {
+  animation: fadeInUp 0.3s ease-out;
+}
+
+/* Amélioration du select */
+.time-view-select:active {
+  transform: scale(0.98);
+}
+
+/* Styles pour les tooltips améliorés */
+.gantt-task-bar[title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 11px;
+  white-space: pre-line;
+  z-index: 1000;
+  pointer-events: none;
+  margin-bottom: 5px;
+  max-width: 200px;
+  text-align: center;
+}
+
+.gantt-task-bar[title]:hover::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: rgba(0, 0, 0, 0.9);
+  z-index: 1000;
+  pointer-events: none;
+}

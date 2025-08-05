@@ -1,0 +1,210 @@
+/* Global dark background */
+.user-list-container {
+  padding: 20px;
+  background-color: #181835;
+  color: #e0e0e0;
+  font-family: 'Segoe UI', sans-serif;
+  min-height: 100vh;
+}
+
+/* Title */
+.user-title {
+  color: #efeafa;
+  font-size: 25px;
+  font-weight: 700;
+  font-family: 'Bw Modelica', sans-serif;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+/* Back button using Bootstrap icons */
+.back-button2 {
+  display: flex;
+  gap: 8px;
+  background: none;
+  border: none;
+  color: #C0A7FA;
+  font-size: 0.9rem;
+  font-weight: 200;
+  cursor: pointer;
+  padding: 6px 0;
+  font-family: 'Bw Modelica', sans-serif;
+}
+
+/* Table styling */
+.user-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #181835;
+  border-radius: 6px;
+  overflow: hidden;
+  font-size: 0.875rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.user-table th {
+  background-color: #282850;
+  color: #c0a7fa;
+  padding: 0.75rem;
+  text-transform: uppercase;
+  font-weight: 600;
+  text-align: left;
+}
+
+.user-table td {
+  padding: 0.65rem;
+  border-bottom: 1px solid #282850;
+  color: #dcdcdc;
+}
+
+.user-table tbody tr:hover {
+  background-color: #282850;
+}
+
+/* Action buttons */
+.btn-edit {
+  background: #514f84;
+  color: #fff;
+  border: none;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.8rem;
+  border-radius: 4px;
+  margin-right: 0.5rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-delete {
+  background: linear-gradient(135deg, var(--error-color), #e53e3e);
+  color: #fff;
+  border: none;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.8rem;
+  border-radius: 4px;
+  margin-right: 0.5rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-edit:hover {
+  background-color: #8d6cf2;
+}
+
+/* Error message */
+.error-message {
+  background-color: #842029;
+  color: white;
+  padding: 0.75rem 1rem;
+  margin: 0.5rem auto 1.5rem;
+  border-radius: 4px;
+  text-align: center;
+  font-size: 0.85rem;
+}
+
+/* Modal overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(15, 15, 15, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+/* Modal content dark mode */
+.modal-content1 {
+  background-color: #2c2c2f;
+  padding: 1.5rem;
+  border-radius: 8px;
+  max-width: 480px;
+  width: 90%;
+  color: #e0e0e0;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+.modal-content1 h3 {
+  text-align: center;
+  margin-bottom: 1rem;
+  color: #c0a7fa;
+  font-size: 1.25rem;
+}
+
+.modal-content1 p {
+  margin-bottom: 1rem;
+  color: #dcdcdc;
+}
+
+/* Input styling dark mode */
+.modal-content1 input {
+  width: 100%;
+  padding: 0.65rem;
+  background-color: #282850;
+  margin-bottom: 1rem;
+  color: #e0e0e0;
+  border: 1px solid #555;
+  border-radius: 4px;
+  font-size: 0.85rem;
+}
+
+.modal-content1 input:focus {
+  border-color: #7153b9;
+  outline: none;
+}
+
+/* Modal buttons */
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.btn-cancel, .btn-save {
+  flex: 1;
+  padding: 0.6rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-cancel {
+  background-color: #444;
+  color: #fff;
+}
+
+.btn-cancel:hover {
+  background-color: #555;
+}
+
+.btn-save {
+  background-color: #7153b9;
+  color: white;
+}
+
+.btn-save:hover {
+  background-color: #8d6cf2;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .modal-content {
+    padding: 1rem;
+  }
+
+  .btn-edit {
+    font-size: 0.75rem;
+    padding: 0.3rem 0.6rem;
+  }
+
+  .user-table th, .user-table td {
+    padding: 0.5rem;
+  }
+
+  .btn-cancel,
+  .btn-save {
+    font-size: 0.8rem;
+  }
+}

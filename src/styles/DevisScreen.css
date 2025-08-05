@@ -1,0 +1,338 @@
+.container {
+  max-width: 1200px;
+  font-family: 'Bw Modelica';
+  background-color: #181835;
+  color: #ccc;
+  padding: 20px;
+  min-height: 100vh;
+}
+
+/* Titre principal du module */
+.module-title1 {
+  margin-top: 5px;
+  font-size: 30px;
+  font-weight:800;
+  color: #ccc;
+  text-align: center;
+}
+
+.module-subtitle {
+  font-size: 15px;
+  font-weight: 300;
+  color: #ccc;
+  margin-bottom: 5px;
+  text-align: center;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  background-color: transparent;
+  align-items: center;
+  margin-bottom: 20px;
+  color: white;
+}
+
+.new-devis-card {
+  display: flex;
+  gap: 15px;
+  padding: 0;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  background-color: transparent;
+}
+
+.new-devis-content {
+  display: flex;
+  background: linear-gradient(135deg, #514f84 20%, #7153b9 100%);
+  align-items: center;
+  gap: 12px;
+  border-radius: 5px;
+  padding: 15px;
+  flex: 1;
+  color: #ededf9;
+  transition: background-color 0.2s ease;
+}
+
+.new-devis-content:hover {
+  background: linear-gradient(135deg, #514f84 20%, #7153b9 100%);
+}
+
+.new-devis-icon {
+  font-size: 16px;
+}
+
+.new-devis-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.new-devis-description {
+  margin: 5px 0 0;
+  opacity: 0.9;
+  font-size: 12px;
+}
+
+.stats-grid1 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.stat-card1 {
+  background-color: #181835;
+  padding: 15px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  border: 1px solid #43435b;
+}
+
+.stat-icon1 {
+  font-size: 16px;
+  margin-right: 12px;
+  color: #8B7AB8;
+}
+
+.stat-title {
+  margin: 0;
+  font-size: 12px;
+  color: #B0B0B0;
+}
+
+.stat-value {
+  margin: 5px 0 0;
+  font-size: 20px;
+  font-weight: bold;
+  color: #ccc;
+}
+
+.projects-list1 {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.project-card1 {
+  margin-top: 20px;
+  background-color: #282850;
+  padding: 20px;
+  border-radius: 5px;
+  transition: border-color 0.2s ease;
+}
+
+.project-card1:hover {
+  border: 1px solid #514f84;
+}
+
+.project-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+  gap: 10px;
+}
+
+.project-icon1 {
+  font-size: 20px;
+  color: #8B7AB8;
+}
+
+.project-title1 {
+  margin: 0;
+  color: #ccc;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.project-details1 {
+  display: grid;
+  background-color: transparent;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.project-info1 {
+  display: flex;
+  align-items: center;
+  color: #B0B0B0;
+  font-size: 12px;
+}
+
+.info-icon1 {
+  margin-right: 6px;
+  color: #aa9dcd;
+  font-size: 12px;
+}
+
+.error {
+  text-align: center;
+  padding: 15px;
+  color: #ff6b6b;
+  background-color: #4a2c2c;
+  border-radius: 5px;
+  font-size: 12px;
+  border: 1px solid #6b3d3d;
+}
+
+.performance-card {
+  background-color: #181835;
+  padding: 15px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  border: 1px solid #4a4a66;
+  margin-bottom: 20px;
+}
+
+.performance-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #ccc;
+  margin-bottom: 10px;
+}
+
+.performance-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 15px;
+}
+
+.performance-item {
+  text-align: center;
+}
+
+.performance-value {
+  font-size: 20px;
+  font-weight: bold;
+  color: #8B7AB8;
+  display: block;
+}
+
+.performance-label {
+  font-size: 12px;
+  color: #B0B0B0;
+  margin-top: 5px;
+}
+
+.filter-section {
+  background-color: #181835;
+  padding: 15px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  border: 1px solid #4a4a66;
+  margin-bottom: 20px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.filter-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #ccc;
+  margin: 0;
+}
+
+.view-all-button {
+  display: flex;
+  align-items: center;
+  padding: 8px 15px;
+  background-color: #514f84;
+  color: #ccc;
+  border: none;
+  border-radius: 5px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-family: 'Bw Modelica', sans-serif;
+}
+
+.view-all-button:hover {
+  background-color: #7153b9;
+}
+
+/* Styles pour les estimations */
+.estimations-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.estimation-card {
+  margin-top: 20px;
+  background-color: #282850;
+  padding: 20px;
+  border-radius: 5px;
+  transition: border-color 0.2s ease;
+}
+
+.estimation-card:hover {
+  border: 1px solid #514f84;
+}
+
+.estimation-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+  gap: 10px;
+}
+
+.estimation-icon {
+  font-size: 20px;
+  color: #8B7AB8;
+}
+
+.estimation-title {
+  margin: 0;
+  color: #ccc;
+  font-size: 15px;
+  font-weight: 600;
+  flex: 1;
+}
+
+.estimation-version {
+  background-color: #514f84;
+  color: #ccc;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+.estimation-details {
+  display: grid;
+  background-color: transparent;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.estimation-info {
+  display: flex;
+  align-items: center;
+  color: #B0B0B0;
+  font-size: 12px;
+}
+
+.no-data {
+  text-align: center;
+  padding: 20px;
+  color: #B0B0B0;
+  font-size: 14px;
+  font-style: italic;
+}
+
+.loading {
+  text-align: center;
+  padding: 20px;
+  color: #B0B0B0;
+  font-size: 14px;
+}

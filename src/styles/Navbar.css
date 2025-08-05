@@ -1,0 +1,224 @@
+@import url('https://fonts.googleapis.com/css2?family=Bw Modelica:wght@300;400;500;600;700&display=swap');
+
+/* NAVBAR CONTAINER */
+.navbar {
+  background: #181835;
+  padding: 0.75rem 0.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #E9DFFF;
+  border-right: 1px solid #3F3F42;
+  font-family: 'Bw Modelica';
+  min-height: 100vh;
+  width: 200px;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 100;
+}
+
+/* LOGO SECTION */
+.navbar-logo {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  margin-bottom: 3rem;
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.logo-img {
+  height: 50px;
+  width: auto;
+  transition: transform 0.3s ease;
+}
+
+.logo-img:hover {
+  transform: scale(1.05);
+}
+
+/* MODULES SECTION */
+.navbar-modules {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.2rem;
+  flex: 1;
+  width: 100%;
+}
+
+.navbar-item {
+  position: relative;
+  cursor: pointer;
+  padding: 0.75rem 3.3rem; /* Padding plus équilibré */
+  border-radius: 5px;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  font-family: 'Bw Modelica';
+  overflow: hidden;
+  border: 1px solid transparent;
+  margin-bottom: 0.1rem;
+  min-height: 44px; /* Hauteur minimale pour un meilleur alignement */
+}
+
+.navbar-item-content {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  height: 100%;
+}
+
+.navbar-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 4px;
+  height: 100%;
+  transform: scaleY(0);
+  transition: transform 0.3s ease;
+  border-radius: 0 1px 1px 0;
+}
+
+.navbar-item i {
+  font-size: 1rem;
+  color: #E9DFFF;
+  transition: color 0.3s ease;
+  flex-shrink: 0;
+  width: 16px; /* Largeur fixe pour un alignement cohérent */
+  height: 16px; /* Hauteur fixe */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1; /* Supprime l'espacement de ligne par défaut */
+}
+
+.navbar-text {
+  font-family: 'Bw Modelica';
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #E9DFFF;
+  transition: color 0.3s ease;
+  line-height: 1.2; /* Ligne de hauteur optimisée */
+  white-space: nowrap;
+  display: flex;
+  align-items: center; /* Alignement vertical du texte */
+  height: 100%;
+}
+
+/* HOVER EFFECTS */
+.navbar-item:hover {
+  background: transparent;
+  border-color: rgba(105, 100, 167, 0.3);
+  box-shadow: 0 4px 20px rgba(105, 100, 167, 0.3);
+  transform: translateX(5px);
+}
+
+.navbar-item:hover::before {
+  transform: scaleY(1);
+  background: #514f84;
+}
+
+.navbar-item:hover i {
+  color: #8682c0;
+}
+
+.navbar-item:hover .navbar-text {
+  color: #8682c0;
+}
+
+/* ACTIVE STATE */
+.navbar-item:active {
+  transform: translateX(0);
+  box-shadow: 0 2px 10px rgba(105, 100, 167, 0.3);
+}
+
+/* LOADING & ERROR STATES */
+.navbar-loading,
+.navbar-error {
+  font-family: 'Bw Modelica', sans-serif;
+  color: #E9DFFF;
+  font-size: 0.9rem;
+  padding: 1rem;
+  text-align: center;
+  flex: 1;
+}
+
+.navbar-error {
+  color: #ff6b6b;
+}
+
+/* RESPONSIVE DESIGN */
+@media (max-width: 1024px) {
+  .navbar {
+    width: 220px;
+    padding: 1.5rem 0.75rem;
+  }
+  
+  .navbar-item {
+    padding: 0.75rem 1rem;
+    min-height: 48px;
+  }
+  
+  .navbar-text {
+    font-size: 0.8rem;
+  }
+  
+  .navbar-item i {
+    width: 18px;
+    height: 18px;
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    width: 80px;
+    padding: 1rem 0.5rem;
+  }
+  
+  .navbar-logo {
+    margin-bottom: 2rem;
+  }
+  
+  .navbar-item {
+    padding: 0.75rem;
+    justify-content: center;
+    min-height: 48px;
+  }
+  
+  .navbar-text {
+    display: none;
+  }
+  
+  .navbar-item i {
+    font-size: 1.1rem;
+    width: 20px;
+    height: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar {
+    width: 70px;
+    padding: 0.75rem 0.25rem;
+  }
+  
+  .navbar-item {
+    padding: 0.5rem;
+    min-height: 44px;
+  }
+  
+  .navbar-item i {
+    font-size: 1rem;
+    width: 18px;
+    height: 18px;
+  }
+}
