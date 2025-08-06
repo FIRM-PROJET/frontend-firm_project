@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import ModalUpdatePassword from "../modals/ModalUpdatePassword";
 import "../styles/Header.css";
+import AlertScreen from "../screen/AlertScreen";
+import { DevisService } from "../services/DevisService";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -10,6 +12,9 @@ const Header = () => {
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [userInfo, setUserInfo] = useState(null);
   const dropdownRef = useRef(null);
+
+  const [showAlerts, setShowAlerts] = useState(false);
+  const [alertsCount, setAlertsCount] = useState(0);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -26,6 +31,59 @@ const Header = () => {
         console.error("Erreur de décodage du token :", err);
       }
     }
+  }, []);
+
+  const checkAlerts = async () => {
+    try {
+      // Correction principale: ajout des parenthèses pour appeler la fonction
+      const phases = await DevisService.getAllProjetsPhase();
+
+      if (!phases || !Array.isArray(phases)) {
+        console.error("Les données reçues ne sont pas un tableau:", phases);
+        setAlertsCount(0);
+        return;
+      }
+
+      const today = new Date();
+      today.setHours(23, 59, 59, 999); // Fin de la journée actuelle
+
+      const alertsCount = phases.filter((phase) => {
+        // Vérification de la validité de l'objet phase
+        if (!phase || typeof phase !== 'object') {
+          return false;
+        }
+
+        // Si la phase n'est pas terminée (date_fin_reelle === null)
+        if (phase.date_fin_reelle === null || phase.date_fin_reelle === undefined) {
+          if (phase.date_fin) {
+            const dateFin = new Date(phase.date_fin);
+            
+            // Vérification que la date est valide
+            if (isNaN(dateFin.getTime())) {
+              console.warn("Date invalide pour la phase:", phase);
+              return false;
+            }
+            
+            dateFin.setHours(23, 59, 59, 999); // Fin de la journée de deadline
+            return dateFin < today; // Strictement inférieur pour compter les jours de retard
+          }
+        }
+        return false;
+      }).length;
+
+      console.log(`Nombre d'alertes trouvées: ${alertsCount}`);
+      setAlertsCount(alertsCount);
+    } catch (error) {
+      console.error("Erreur lors de la récupération des alertes:", error);
+      setAlertsCount(0); // Réinitialiser en cas d'erreur
+    }
+  };
+
+  useEffect(() => {
+    checkAlerts();
+    // Optionnel: actualiser toutes les 5 minutes
+    const interval = setInterval(checkAlerts, 5 * 60 * 1000);
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
@@ -74,6 +132,19 @@ const Header = () => {
     <>
       <header className="container-header">
         <div className="navbar-header">
+          <div
+            className="navbar-item1 notification-icon alert-container"
+            onClick={() => setShowAlerts(true)}
+            style={{ cursor: 'pointer' }}
+          >
+            <i className="bi bi-exclamation-diamond-fill header-alert-icon"></i>
+            {alertsCount > 0 && (
+              <span className="alert-badge">
+                {alertsCount > 99 ? "99+" : alertsCount}
+              </span>
+            )}
+          </div>
+
           {/* Div regroupant les icônes */}
           <div className="navbar-item1 notification-icon">
             <i className="bi bi-bell-fill header-bell-icon"></i>
@@ -83,6 +154,7 @@ const Header = () => {
             className="navbar-item1 header-profile-container"
             onClick={toggleProfileMenu}
             ref={dropdownRef}
+            style={{ cursor: 'pointer' }}
           >
             <span className="header-profile-icon">
               <i className="bi bi-person-fill"></i>
@@ -93,7 +165,11 @@ const Header = () => {
                 <div className="header-profile-info">
                   <div className="header-profile-avatar">
                     {userInfo.avatar ? (
-                      <img src={userInfo.avatar} alt="Avatar" className="header-avatar-image" />
+                      <img
+                        src={userInfo.avatar}
+                        alt="Avatar"
+                        className="header-avatar-image"
+                      />
                     ) : (
                       <i className="bi bi-person-circle header-default-avatar"></i>
                     )}
@@ -134,7 +210,11 @@ const Header = () => {
           </div>
         </div>
       </header>
-
+      <AlertScreen
+        visible={showAlerts}
+        onClose={() => setShowAlerts(false)}
+        onRefresh={checkAlerts}
+      />
       <ModalUpdatePassword
         visible={showPasswordModal}
         onClose={closePasswordModal}

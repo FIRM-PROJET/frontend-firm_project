@@ -16,6 +16,10 @@ export const DevisService = {
       throw error;
     }
   },
+  getAllProjetsPhase: async () => {
+    const response = await fetch(`${API_URL}/projets/all_projet_phases`);
+    return await response.json();
+  },
   getTypesSurfaces: async () => {
     try {
       const response = await fetch(`${API_URL}/projets/types_surfaces`, {

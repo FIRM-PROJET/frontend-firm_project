@@ -1,3 +1,43 @@
+/* Styles pour l'icône d'alerte dans le header */
+.header-alert-icon {
+  color: #E9DFFF;
+  font-size: 1.2rem;
+  transition: color 0.2s ease;
+}
+
+.notification-icon:hover .header-alert-icon {
+  color: #E9DFFF;
+}
+
+.alert-badge {
+  position: absolute;
+  top: 0px;
+  right: -5px;
+  background: #dc3545;
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  border: none;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
 /* HEADER & NAVBAR */
 .container-header {
   background: #181835;
