@@ -8,13 +8,13 @@ import SubTaskDetailsModal from "./SubTaskDetailsModal";
 import CommentsModal from "./CommentsModal";
 
 // TipTap imports
-import { useEditor, EditorContent } from '@tiptap/react'
-import StarterKit from '@tiptap/starter-kit'
-import Underline from '@tiptap/extension-underline'
-import Link from '@tiptap/extension-link'
-import {TextStyle} from '@tiptap/extension-text-style'
-import Color from '@tiptap/extension-color'
-import Highlight from '@tiptap/extension-highlight'
+import { useEditor, EditorContent } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import Underline from "@tiptap/extension-underline";
+import Link from "@tiptap/extension-link";
+import { TextStyle } from "@tiptap/extension-text-style";
+import Color from "@tiptap/extension-color";
+import Highlight from "@tiptap/extension-highlight";
 
 const TacheModal = ({ tache, isOpen, onClose, onStatusUpdate }) => {
   const [activeCommentTab, setActiveCommentTab] = useState("comments");
@@ -26,6 +26,13 @@ const TacheModal = ({ tache, isOpen, onClose, onStatusUpdate }) => {
   const [isAssigning, setIsAssigning] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
+
+  const [realAttachments, setRealAttachments] = useState([]);
+  const [isLoadingAttachments, setIsLoadingAttachments] = useState(false);
+  const [isUploadingFile, setIsUploadingFile] = useState(false);
+  const [showLinkModal, setShowLinkModal] = useState(false);
+  const [linkUrl, setLinkUrl] = useState("");
+  const [linkText, setLinkText] = useState("");
 
   // États pour la création de sous-tâches
   const [showSubTaskModal, setShowSubTaskModal] = useState(false);
@@ -57,7 +64,7 @@ const TacheModal = ({ tache, isOpen, onClose, onStatusUpdate }) => {
       Link.configure({
         openOnClick: false,
         HTMLAttributes: {
-          class: 'tiptap-link',
+          class: "tiptap-link",
         },
       }),
       TextStyle,
@@ -66,16 +73,200 @@ const TacheModal = ({ tache, isOpen, onClose, onStatusUpdate }) => {
         multicolor: true,
       }),
     ],
-    content: '',
+    content: "",
     editorProps: {
       attributes: {
-        class: 'tiptap-editor-content',
+        class: "tiptap-editor-content",
       },
     },
     onUpdate: ({ editor }) => {
       // Optionnel : vous pouvez suivre les changements ici
     },
-  })
+  });
+
+  const loadTaskFiles = async () => {
+    if (!tache) return;
+
+    setIsLoadingAttachments(true);
+    try {
+      const filesData = await TacheService.getTacheFiles(tache.ref_tache);
+      setRealAttachments(filesData || []);
+    } catch (error) {
+      console.error("Erreur lors du chargement des fichiers:", error);
+      setModalMessage("Erreur lors du chargement des fichiers");
+      setModalType("error");
+      setIsModalOpen(true);
+    } finally {
+      setIsLoadingAttachments(false);
+    }
+  };
+
+  const handleRealFileUpload = async (event) => {
+    const files = Array.from(event.target.files);
+    if (files.length === 0) return;
+
+    setIsUploadingFile(true);
+    try {
+      for (const file of files) {
+        await TacheService.uploadTacheFile(tache.ref_tache, file);
+      }
+
+      setModalMessage("Fichier(s) uploadé(s) avec succès !");
+      setModalType("success");
+      setIsModalOpen(true);
+
+      // Recharger les fichiers
+      await loadTaskFiles();
+    } catch (error) {
+      console.error("Erreur lors de l'upload:", error);
+      setModalMessage("Erreur lors de l'upload du fichier");
+      setModalType("error");
+      setIsModalOpen(true);
+    } finally {
+      setIsUploadingFile(false);
+      // Réinitialiser l'input file
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
+  };
+
+  // Fonction pour télécharger un fichier
+  const handleDownloadFile = async (filename) => {
+    try {
+      await TacheService.downloadTacheFile(filename);
+    } catch (error) {
+      console.error("Erreur lors du téléchargement:", error);
+      setModalMessage("Erreur lors du téléchargement du fichier");
+      setModalType("error");
+      setIsModalOpen(true);
+    }
+  };
+
+  // Fonction pour ajouter un lien
+  const handleAddLink = () => {
+    if (!linkUrl.trim()) return;
+
+    const linkHtml = linkText.trim()
+      ? `<a href="${linkUrl}" target="_blank">${linkText}</a>`
+      : `<a href="${linkUrl}" target="_blank">${linkUrl}</a>`;
+
+    if (editor) {
+      editor
+        .chain()
+        .focus()
+        .insertContent(linkHtml + " ")
+        .run();
+    }
+
+    setLinkUrl("");
+    setLinkText("");
+    setShowLinkModal(false);
+  };
+
+  // Fonction pour ouvrir le modal de lien
+  const handleOpenLinkModal = () => {
+    setShowLinkModal(true);
+  };
+
+  // Fonction pour upload de fichier via l'éditeur
+  const handleEditorFileUpload = async (event) => {
+    const files = Array.from(event.target.files);
+    if (files.length === 0) return;
+
+    try {
+      for (const file of files) {
+        await TacheService.uploadTacheFile(tache.ref_tache, file);
+        // Ajouter le lien du fichier dans l'éditeur
+        const fileLink = `<a href="#" onclick="handleDownloadFile('${file.chemin_fichier}')" class="file-link">${file.name}</a>`;
+        if (editor) {
+          editor
+            .chain()
+            .focus()
+            .insertContent(fileLink + " ")
+            .run();
+        }
+      }
+
+      await loadTaskFiles();
+    } catch (error) {
+      console.error("Erreur lors de l'upload:", error);
+    }
+  };
+
+  // Fonction pour grouper les fichiers par type
+  const groupFilesByType = (files) => {
+    const groups = {
+      pdf: [],
+      image: [],
+      excel: [],
+      word: [],
+      other: [],
+    };
+
+    files.forEach((file) => {
+      const extension = file.nom_fichier.split(".").pop().toLowerCase();
+
+      if (extension === "pdf") {
+        groups.pdf.push(file);
+      } else if (
+        ["jpg", "jpeg", "png", "gif", "bmp", "svg"].includes(extension)
+      ) {
+        groups.image.push(file);
+      } else if (["xls", "xlsx", "csv"].includes(extension)) {
+        groups.excel.push(file);
+      } else if (["doc", "docx"].includes(extension)) {
+        groups.word.push(file);
+      } else {
+        groups.other.push(file);
+      }
+    });
+
+    return groups;
+  };
+
+  // Fonction pour obtenir l'icône selon l'extension
+  const getFileIconByExtension = (filename) => {
+    const extension = filename.split(".").pop().toLowerCase();
+
+    switch (extension) {
+      case "pdf":
+        return "bi-file-earmark-pdf-fill";
+      case "jpg":
+      case "jpeg":
+      case "png":
+      case "gif":
+      case "bmp":
+      case "svg":
+        return "bi-file-earmark-image-fill";
+      case "xls":
+      case "xlsx":
+      case "csv":
+        return "bi-file-earmark-excel-fill";
+      case "doc":
+      case "docx":
+        return "bi-file-earmark-word-fill";
+      case "zip":
+      case "rar":
+      case "7z":
+        return "bi-file-earmark-zip-fill";
+      case "txt":
+        return "bi-file-earmark-text-fill";
+      default:
+        return "bi-file-earmark-fill";
+    }
+  };
+
+  // Ajouter dans useEffect pour charger les fichiers
+  useEffect(() => {
+  if (isOpen && tache) {
+    loadSubTasks();
+    loadComments(); // Toujours charger les commentaires
+    loadTaskFiles(); // Toujours charger les fichiers pour avoir le count
+  }
+}, [isOpen, tache]);
+
+  // Modification de la toolbar pour le bouton lien
 
   const getUserInitials = (nom, prenom) => {
     const firstInitial = nom ? nom.charAt(0).toUpperCase() : "";
@@ -107,56 +298,50 @@ const TacheModal = ({ tache, isOpen, onClose, onStatusUpdate }) => {
   ]);
 
   const fileInputRef = useRef(null);
-
-  // Fonctions pour la toolbar TipTap
   const handleToolbarAction = (action) => {
     if (!editor) return;
 
     switch (action) {
-      case 'bold':
+      case "bold":
         editor.chain().focus().toggleBold().run();
         break;
-      case 'italic':
+      case "italic":
         editor.chain().focus().toggleItalic().run();
         break;
-      case 'underline':
+      case "underline":
         editor.chain().focus().toggleUnderline().run();
         break;
-      case 'strike':
+      case "strike":
         editor.chain().focus().toggleStrike().run();
         break;
-      case 'bullet':
+      case "bullet":
         editor.chain().focus().toggleBulletList().run();
         break;
-      case 'numbered':
+      case "numbered":
         editor.chain().focus().toggleOrderedList().run();
         break;
-      case 'blockquote':
+      case "blockquote":
         editor.chain().focus().toggleBlockquote().run();
         break;
-      case 'code':
-        editor.chain().focus().toggleCode().run();
+      case "link":
+        handleOpenLinkModal(); // Utiliser le modal au lieu du prompt
         break;
-      case 'codeblock':
-        editor.chain().focus().toggleCodeBlock().run();
-        break;
-      case 'link':
-        const url = window.prompt('URL du lien:');
-        if (url) {
-          editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
-        }
-        break;
-      case 'highlight':
+      case "highlight":
         editor.chain().focus().toggleHighlight().run();
         break;
-      case 'undo':
+      case "undo":
         editor.chain().focus().undo().run();
         break;
-      case 'redo':
+      case "redo":
         editor.chain().focus().redo().run();
         break;
-      case 'clear':
-        editor.chain().focus().clearNodes().unsetAllMarks().run();
+      case "file":
+        // Créer un input file temporaire pour l'éditeur
+        const fileInput = document.createElement("input");
+        fileInput.type = "file";
+        fileInput.multiple = true;
+        fileInput.onchange = handleEditorFileUpload;
+        fileInput.click();
         break;
       default:
         break;
@@ -238,7 +423,7 @@ const TacheModal = ({ tache, isOpen, onClose, onStatusUpdate }) => {
     setIsSubmittingComment(true);
     try {
       const commentContent = editor.getHTML(); // Récupère le contenu HTML de l'éditeur
-      
+
       const commentData = {
         commentaire: commentContent,
         matricule: localStorage.getItem("matricule"),
@@ -818,7 +1003,7 @@ const TacheModal = ({ tache, isOpen, onClose, onStatusUpdate }) => {
                 onClick={() => setActiveCommentTab("files")}
               >
                 <i className="bi bi-paperclip"></i>
-                Fichiers ({attachments.length})
+                Fichiers ({realAttachments.length})
               </button>
             </div>
 
@@ -844,36 +1029,44 @@ const TacheModal = ({ tache, isOpen, onClose, onStatusUpdate }) => {
                       <div className="toolbar-group">
                         <button
                           type="button"
-                          className={`toolbar-btn ${editor?.isActive('bold') ? 'active' : ''}`}
+                          className={`toolbar-btn ${
+                            editor?.isActive("bold") ? "active" : ""
+                          }`}
                           title="Gras (Ctrl+B)"
-                          onClick={() => handleToolbarAction('bold')}
+                          onClick={() => handleToolbarAction("bold")}
                           disabled={!editor}
                         >
                           <i className="bi bi-type-bold"></i>
                         </button>
                         <button
                           type="button"
-                          className={`toolbar-btn ${editor?.isActive('italic') ? 'active' : ''}`}
+                          className={`toolbar-btn ${
+                            editor?.isActive("italic") ? "active" : ""
+                          }`}
                           title="Italique (Ctrl+I)"
-                          onClick={() => handleToolbarAction('italic')}
+                          onClick={() => handleToolbarAction("italic")}
                           disabled={!editor}
                         >
                           <i className="bi bi-type-italic"></i>
                         </button>
                         <button
                           type="button"
-                          className={`toolbar-btn ${editor?.isActive('underline') ? 'active' : ''}`}
+                          className={`toolbar-btn ${
+                            editor?.isActive("underline") ? "active" : ""
+                          }`}
                           title="Souligné (Ctrl+U)"
-                          onClick={() => handleToolbarAction('underline')}
+                          onClick={() => handleToolbarAction("underline")}
                           disabled={!editor}
                         >
                           <i className="bi bi-type-underline"></i>
                         </button>
                         <button
                           type="button"
-                          className={`toolbar-btn ${editor?.isActive('strike') ? 'active' : ''}`}
+                          className={`toolbar-btn ${
+                            editor?.isActive("strike") ? "active" : ""
+                          }`}
                           title="Barré"
-                          onClick={() => handleToolbarAction('strike')}
+                          onClick={() => handleToolbarAction("strike")}
                           disabled={!editor}
                         >
                           <i className="bi bi-type-strikethrough"></i>
@@ -886,27 +1079,33 @@ const TacheModal = ({ tache, isOpen, onClose, onStatusUpdate }) => {
                       <div className="toolbar-group">
                         <button
                           type="button"
-                          className={`toolbar-btn ${editor?.isActive('bulletList') ? 'active' : ''}`}
+                          className={`toolbar-btn ${
+                            editor?.isActive("bulletList") ? "active" : ""
+                          }`}
                           title="Liste à puces"
-                          onClick={() => handleToolbarAction('bullet')}
+                          onClick={() => handleToolbarAction("bullet")}
                           disabled={!editor}
                         >
                           <i className="bi bi-list-ul"></i>
                         </button>
                         <button
                           type="button"
-                          className={`toolbar-btn ${editor?.isActive('orderedList') ? 'active' : ''}`}
+                          className={`toolbar-btn ${
+                            editor?.isActive("orderedList") ? "active" : ""
+                          }`}
                           title="Liste numérotée"
-                          onClick={() => handleToolbarAction('numbered')}
+                          onClick={() => handleToolbarAction("numbered")}
                           disabled={!editor}
                         >
                           <i className="bi bi-list-ol"></i>
                         </button>
                         <button
                           type="button"
-                          className={`toolbar-btn ${editor?.isActive('blockquote') ? 'active' : ''}`}
+                          className={`toolbar-btn ${
+                            editor?.isActive("blockquote") ? "active" : ""
+                          }`}
                           title="Citation"
-                          onClick={() => handleToolbarAction('blockquote')}
+                          onClick={() => handleToolbarAction("blockquote")}
                           disabled={!editor}
                         >
                           <i className="bi bi-quote"></i>
@@ -919,36 +1118,22 @@ const TacheModal = ({ tache, isOpen, onClose, onStatusUpdate }) => {
                       <div className="toolbar-group">
                         <button
                           type="button"
-                          className={`toolbar-btn ${editor?.isActive('code') ? 'active' : ''}`}
-                          title="Code inline"
-                          onClick={() => handleToolbarAction('code')}
-                          disabled={!editor}
-                        >
-                          <i className="bi bi-code"></i>
-                        </button>
-                        <button
-                          type="button"
-                          className={`toolbar-btn ${editor?.isActive('codeBlock') ? 'active' : ''}`}
-                          title="Bloc de code"
-                          onClick={() => handleToolbarAction('codeblock')}
-                          disabled={!editor}
-                        >
-                          <i className="bi bi-code-square"></i>
-                        </button>
-                        <button
-                          type="button"
-                          className={`toolbar-btn ${editor?.isActive('link') ? 'active' : ''}`}
+                          className={`toolbar-btn ${
+                            editor?.isActive("link") ? "active" : ""
+                          }`}
                           title="Lien"
-                          onClick={() => handleToolbarAction('link')}
+                          onClick={() => handleToolbarAction("link")}
                           disabled={!editor}
                         >
                           <i className="bi bi-link-45deg"></i>
                         </button>
                         <button
                           type="button"
-                          className={`toolbar-btn ${editor?.isActive('highlight') ? 'active' : ''}`}
+                          className={`toolbar-btn ${
+                            editor?.isActive("highlight") ? "active" : ""
+                          }`}
                           title="Surligneur"
-                          onClick={() => handleToolbarAction('highlight')}
+                          onClick={() => handleToolbarAction("highlight")}
                           disabled={!editor}
                         >
                           <i className="bi bi-highlighter"></i>
@@ -963,7 +1148,7 @@ const TacheModal = ({ tache, isOpen, onClose, onStatusUpdate }) => {
                           type="button"
                           className="toolbar-btn"
                           title="Joindre un fichier"
-                          onClick={() => fileInputRef.current?.click()}
+                          onClick={() => handleToolbarAction("file")}
                         >
                           <i className="bi bi-paperclip"></i>
                         </button>
@@ -977,7 +1162,7 @@ const TacheModal = ({ tache, isOpen, onClose, onStatusUpdate }) => {
                           type="button"
                           className="toolbar-btn"
                           title="Annuler (Ctrl+Z)"
-                          onClick={() => handleToolbarAction('undo')}
+                          onClick={() => handleToolbarAction("undo")}
                           disabled={!editor || !editor.can().undo()}
                         >
                           <i className="bi bi-arrow-counterclockwise"></i>
@@ -986,27 +1171,18 @@ const TacheModal = ({ tache, isOpen, onClose, onStatusUpdate }) => {
                           type="button"
                           className="toolbar-btn"
                           title="Refaire (Ctrl+Y)"
-                          onClick={() => handleToolbarAction('redo')}
+                          onClick={() => handleToolbarAction("redo")}
                           disabled={!editor || !editor.can().redo()}
                         >
                           <i className="bi bi-arrow-clockwise"></i>
-                        </button>
-                        <button
-                          type="button"
-                          className="toolbar-btn"
-                          title="Effacer le formatage"
-                          onClick={() => handleToolbarAction('clear')}
-                          disabled={!editor}
-                        >
-                          <i className="bi bi-eraser"></i>
                         </button>
                       </div>
                     </div>
 
                     {/* Éditeur TipTap */}
                     <div className="tiptap-editor-container">
-                      <EditorContent 
-                        editor={editor} 
+                      <EditorContent
+                        editor={editor}
                         className="tiptap-editor"
                       />
                     </div>
@@ -1014,7 +1190,7 @@ const TacheModal = ({ tache, isOpen, onClose, onStatusUpdate }) => {
                     <div className="quick-comment-actions">
                       <div className="comment-meta-info">
                         <span className="editor-info">
-                          <i className="bi bi-info-circle"></i> 
+                          <i className="bi bi-info-circle"></i>
                           Utilisez la toolbar pour formater votre texte
                         </span>
                       </div>
@@ -1047,55 +1223,364 @@ const TacheModal = ({ tache, isOpen, onClose, onStatusUpdate }) => {
                       type="file"
                       multiple
                       style={{ display: "none" }}
-                      onChange={handleFileUpload}
+                      onChange={handleRealFileUpload}
                     />
                     <div
-                      className="task-upload-area"
-                      onClick={() => fileInputRef.current?.click()}
+                      className={`task-upload-area ${
+                        isUploadingFile ? "uploading" : ""
+                      }`}
+                      onClick={() =>
+                        !isUploadingFile && fileInputRef.current?.click()
+                      }
                     >
-                      <i className="bi bi-cloud-upload-fill"></i>
-                      <span>Cliquez pour ajouter des fichiers</span>
+                      {isUploadingFile ? (
+                        <>
+                          <i className="bi bi-arrow-clockwise spin"></i>
+                          <span>Upload en cours...</span>
+                        </>
+                      ) : (
+                        <>
+                          <i className="bi bi-cloud-upload-fill"></i>
+                          <span>Cliquez pour ajouter des fichiers</span>
+                        </>
+                      )}
                     </div>
                   </div>
-                  <div className="task-attachments-list">
-                    {attachments.map((file) => (
-                      <div key={file.id} className="task-attachment-item">
-                        <div className="task-attachment-icon">
-                          <i className={`bi ${getFileIcon(file.type)}`}></i>
-                        </div>
-                        <div className="task-attachment-info">
-                          <div className="task-attachment-name">
-                            {file.name}
-                          </div>
-                          <div className="task-attachment-meta">
-                            {file.size} • {file.uploadedBy} •{" "}
-                            {formatDateTime(file.uploadedAt)}
-                          </div>
-                        </div>
-                        <div className="task-attachment-actions">
-                          <button
-                            className="task-attachment-action-btn"
-                            title="Télécharger"
-                          >
-                            <i className="bi bi-download"></i>
-                          </button>
-                          <button
-                            className="task-attachment-action-btn delete"
-                            onClick={() => handleDeleteAttachment(file.id)}
-                            title="Supprimer"
-                          >
-                            <i className="bi bi-trash-fill"></i>
-                          </button>
-                        </div>
+
+                  <div className="task-attachments-container">
+                    {isLoadingAttachments ? (
+                      <div className="files-loading">
+                        <i className="bi bi-arrow-clockwise spin"></i>
+                        Chargement des fichiers...
                       </div>
-                    ))}
+                    ) : (
+                      (() => {
+                        const groupedFiles = groupFilesByType(realAttachments);
+                        const hasFiles = Object.values(groupedFiles).some(
+                          (group) => group.length > 0
+                        );
+
+                        if (!hasFiles) {
+                          return (
+                            <div className="no-files">
+                              <i className="bi bi-file-earmark"></i>
+                              <span>Aucun fichier attaché</span>
+                            </div>
+                          );
+                        }
+
+                        return (
+                          <div className="files-by-type">
+                            {/* Fichiers PDF */}
+                            {groupedFiles.pdf.length > 0 && (
+                              <div className="file-type-group">
+                                <h4 className="file-type-title">
+                                  <i className="bi bi-file-earmark-pdf-fill"></i>
+                                  PDF ({groupedFiles.pdf.length})
+                                </h4>
+                                <div className="file-type-list">
+                                  {groupedFiles.pdf.map((file) => (
+                                    <div
+                                      key={file.id_fichier_tache}
+                                      className="task-attachment-item"
+                                    >
+                                      <div className="task-attachment-icon">
+                                        <i className="bi bi-file-earmark-pdf-fill text-red"></i>
+                                      </div>
+                                      <div className="task-attachment-info">
+                                        <div className="task-attachment-name">
+                                          {file.nom_fichier}
+                                        </div>
+                                        <div className="task-attachment-meta">
+                                          {file.taille_fichier &&
+                                            `${(
+                                              file.taille_fichier /
+                                              1024 /
+                                              1024
+                                            ).toFixed(2)} MB`}{" "}
+                                          •{formatDateTime(file.date_upload)}
+                                        </div>
+                                      </div>
+                                      <div className="task-attachment-actions">
+                                        <button
+                                          className="task-attachment-action-btn"
+                                          title="Télécharger"
+                                          onClick={() =>
+                                            handleDownloadFile(file.chemin_fichier)
+                                          }
+                                        >
+                                          <i className="bi bi-download"></i>
+                                        </button>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Images */}
+                            {groupedFiles.image.length > 0 && (
+                              <div className="file-type-group">
+                                <h4 className="file-type-title">
+                                  <i className="bi bi-file-earmark-image-fill"></i>
+                                  Images ({groupedFiles.image.length})
+                                </h4>
+                                <div className="file-type-list">
+                                  {groupedFiles.image.map((file) => (
+                                    <div
+                                      key={file.id_fichier_tache}
+                                      className="task-attachment-item"
+                                    >
+                                      <div className="task-attachment-icon">
+                                        <i className="bi bi-file-earmark-image-fill text-blue"></i>
+                                      </div>
+                                      <div className="task-attachment-info">
+                                        <div className="task-attachment-name">
+                                          {file.nom_fichier}
+                                        </div>
+                                        <div className="task-attachment-meta">
+                                          {file.taille_fichier &&
+                                            `${(
+                                              file.taille_fichier /
+                                              1024 /
+                                              1024
+                                            ).toFixed(2)} MB`}{" "}
+                                          •{formatDateTime(file.date_upload)}
+                                        </div>
+                                      </div>
+                                      <div className="task-attachment-actions">
+                                        <button
+                                          className="task-attachment-action-btn"
+                                          title="Télécharger"
+                                          onClick={() =>
+                                            handleDownloadFile(file.chemin_fichier)
+                                          }
+                                        >
+                                          <i className="bi bi-download"></i>
+                                        </button>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Excel */}
+                            {groupedFiles.excel.length > 0 && (
+                              <div className="file-type-group">
+                                <h4 className="file-type-title">
+                                  <i className="bi bi-file-earmark-excel-fill"></i>
+                                  Excel ({groupedFiles.excel.length})
+                                </h4>
+                                <div className="file-type-list">
+                                  {groupedFiles.excel.map((file) => (
+                                    <div
+                                      key={file.id_fichier_tache}
+                                      className="task-attachment-item"
+                                    >
+                                      <div className="task-attachment-icon">
+                                        <i className="bi bi-file-earmark-excel-fill text-green"></i>
+                                      </div>
+                                      <div className="task-attachment-info">
+                                        <div className="task-attachment-name">
+                                          {file.nom_fichier}
+                                        </div>
+                                        <div className="task-attachment-meta">
+                                          {file.taille_fichier &&
+                                            `${(
+                                              file.taille_fichier /
+                                              1024 /
+                                              1024
+                                            ).toFixed(2)} MB`}{" "}
+                                          •{formatDateTime(file.date_upload)}
+                                        </div>
+                                      </div>
+                                      <div className="task-attachment-actions">
+                                        <button
+                                          className="task-attachment-action-btn"
+                                          title="Télécharger"
+                                          onClick={() =>
+                                            handleDownloadFile(file.chemin_fichier)
+                                          }
+                                        >
+                                          <i className="bi bi-download"></i>
+                                        </button>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Word */}
+                            {groupedFiles.word.length > 0 && (
+                              <div className="file-type-group">
+                                <h4 className="file-type-title">
+                                  <i className="bi bi-file-earmark-word-fill"></i>
+                                  Word ({groupedFiles.word.length})
+                                </h4>
+                                <div className="file-type-list">
+                                  {groupedFiles.word.map((file) => (
+                                    <div
+                                      key={file.id_fichier_tache}
+                                      className="task-attachment-item"
+                                    >
+                                      <div className="task-attachment-icon">
+                                        <i className="bi bi-file-earmark-word-fill text-blue-dark"></i>
+                                      </div>
+                                      <div className="task-attachment-info">
+                                        <div className="task-attachment-name">
+                                          {file.nom_fichier}
+                                        </div>
+                                        <div className="task-attachment-meta">
+                                          {file.taille_fichier &&
+                                            `${(
+                                              file.taille_fichier /
+                                              1024 /
+                                              1024
+                                            ).toFixed(2)} MB`}{" "}
+                                          •{formatDateTime(file.date_upload)}
+                                        </div>
+                                      </div>
+                                      <div className="task-attachment-actions">
+                                        <button
+                                          className="task-attachment-action-btn"
+                                          title="Télécharger"
+                                          onClick={() =>
+                                            handleDownloadFile(file.chemin_fichier)
+                                          }
+                                        >
+                                          <i className="bi bi-download"></i>
+                                        </button>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Autres fichiers */}
+                            {groupedFiles.other.length > 0 && (
+                              <div className="file-type-group">
+                                <h4 className="file-type-title">
+                                  <i className="bi bi-file-earmark-fill"></i>
+                                  Autres ({groupedFiles.other.length})
+                                </h4>
+                                <div className="file-type-list">
+                                  {groupedFiles.other.map((file) => (
+                                    <div
+                                      key={file.id_fichier_tache}
+                                      className="task-attachment-item"
+                                    >
+                                      <div className="task-attachment-icon">
+                                        <i
+                                          className={`bi ${getFileIconByExtension(
+                                            file.nom_fichier
+                                          )}`}
+                                        ></i>
+                                      </div>
+                                      <div className="task-attachment-info">
+                                        <div className="task-attachment-name">
+                                          {file.nom_fichier}
+                                        </div>
+                                        <div className="task-attachment-meta">
+                                          {file.taille_fichier &&
+                                            `${(
+                                              file.taille_fichier /
+                                              1024 /
+                                              1024
+                                            ).toFixed(2)} MB`}{" "}
+                                          •{formatDateTime(file.date_upload)}
+                                        </div>
+                                      </div>
+                                      <div className="task-attachment-actions">
+                                        <button
+                                          className="task-attachment-action-btn"
+                                          title="Télécharger"
+                                          onClick={() =>
+                                            handleDownloadFile(file.chemin_fichier)
+                                          }
+                                        >
+                                          <i className="bi bi-download"></i>
+                                        </button>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })()
+                    )}
                   </div>
                 </div>
               )}
             </div>
           </div>
         </div>
-
+        {/* Modal pour ajouter un lien */}
+        {showLinkModal && (
+          <div
+            className="link-modal-overlay"
+            onClick={() => setShowLinkModal(false)}
+          >
+            <div className="link-modal" onClick={(e) => e.stopPropagation()}>
+              <div className="link-modal-header">
+                <h3>
+                  <i className="bi bi-link-45deg"></i> Ajouter un lien
+                </h3>
+                <button
+                  className="link-modal-close"
+                  onClick={() => setShowLinkModal(false)}
+                >
+                  <i className="bi bi-x-lg"></i>
+                </button>
+              </div>
+              <div className="link-modal-body">
+                <div className="link-input-group">
+                  <label htmlFor="link-url">URL du lien *</label>
+                  <input
+                    id="link-url"
+                    type="url"
+                    value={linkUrl}
+                    onChange={(e) => setLinkUrl(e.target.value)}
+                    placeholder="https://exemple.com"
+                    className="link-input"
+                  />
+                </div>
+                <div className="link-input-group">
+                  <label htmlFor="link-text">
+                    Texte à afficher (optionnel)
+                  </label>
+                  <input
+                    id="link-text"
+                    type="text"
+                    value={linkText}
+                    onChange={(e) => setLinkText(e.target.value)}
+                    placeholder="Texte du lien"
+                    className="link-input"
+                  />
+                </div>
+              </div>
+              <div className="link-modal-actions">
+                <button
+                  className="btn-cancel-link"
+                  onClick={() => setShowLinkModal(false)}
+                >
+                  <i className="bi bi-x-lg"></i> Annuler
+                </button>
+                <button
+                  className="btn-add-link"
+                  onClick={handleAddLink}
+                  disabled={!linkUrl.trim()}
+                >
+                  <i className="bi bi-check-lg"></i> Ajouter
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
         {/* Modal de confirmation d'assignation */}
         {showConfirmation && selectedUser && (
           <div

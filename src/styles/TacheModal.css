@@ -7,31 +7,31 @@
   --bg-secondary: #232345;
   --bg-tertiary: #282850;
   --bg-quaternary: #514f84;
-  
+
   /* Couleurs de texte */
   --text-primary: #ffffff;
   --text-secondary: #e2e8f0;
   --text-muted: #514f84;
-  
+
   /* Couleurs d'état */
   --success-color: #10b981;
   --warning-color: #f59e0b;
   --danger-color: #dc2626;
-  
+
   /* Couleurs d'interface */
   --border-color: #514f84;
   --border-radius: 6px;
-  
+
   /* Typographie */
   --font-size: 12px;
-  
+
   /* Espacement */
   --spacing-xs: 2px;
   --spacing-sm: 4px;
   --spacing-md: 8px;
   --spacing-lg: 12px;
   --spacing-xl: 16px;
-  
+
   /* Effets */
   --transition: all 0.2s ease;
   --shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -39,6 +39,196 @@
   --shadow-glow: 0 4px 12px rgba(99, 102, 241, 0.3);
 }
 
+.file-link{
+  color: #ccc;
+}
+.tiptap-link{
+  color: #ccc;
+}
+/* Styles pour le modal d'ajout de lien */
+.link-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000; /* Z-index très élevé pour être au-dessus de tout */
+  backdrop-filter: blur(2px);
+}
+
+.link-modal {
+  background: #181835;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  min-width: 400px;
+  max-width: 500px;
+  width: 90%;
+  color: #ccc;
+  max-height: 90vh;
+  overflow: hidden;
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.link-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  background-color: #282850;
+  border-bottom: 1px solid #514f84;
+}
+
+.link-modal-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #ccc;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.link-modal-header h3 i {
+  color: #ccc;
+}
+
+.link-modal-close {
+  background: none;
+  border: none;
+  padding: 0.5rem;
+  cursor: pointer;
+  color: #6b7280;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.link-modal-close:hover {
+  background-color: #514f84;
+  color: #ccc;
+}
+
+.link-modal-body {
+  padding: 1.5rem;
+}
+
+.link-input-group {
+  margin-bottom: 1rem;
+}
+
+.link-input-group:last-child {
+  margin-bottom: 0;
+}
+
+.link-input-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #ccc;
+  font-size: 0.875rem;
+}
+
+.link-input {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #282850;
+  border: none;
+  color: #ccc;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.link-input:focus {
+  outline: none;
+  border-color: #4299e1;
+  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+}
+
+.link-input::placeholder {
+  color: #9ca3af;
+}
+
+.link-modal-actions {
+  display: flex;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  background-color: #282850;
+  justify-content: flex-end;
+}
+
+.btn-cancel-link,
+.btn-add-link {
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  border: none;
+}
+
+.btn-cancel-link {
+  background: linear-gradient(135deg, #514f84, #686ae1);
+  color: #f7f7f7;
+}
+
+.btn-add-link {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+}
+
+.btn-add-link:disabled {
+  color: #a0aec0;
+  cursor: not-allowed;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .link-modal {
+    min-width: unset;
+    width: 95%;
+    margin: 1rem;
+  }
+
+  .link-modal-header,
+  .link-modal-body,
+  .link-modal-actions {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .link-modal-actions {
+    flex-direction: column;
+  }
+
+  .btn-cancel-link,
+  .btn-add-link {
+    width: 100%;
+    justify-content: center;
+  }
+}
 /* ===============================================
    RESET ET BASE
    =============================================== */
@@ -80,12 +270,14 @@
   transition: var(--transition);
 }
 .confirmation-body {
-  padding: var(--spacing-lg);}
-  .confirmation-body p {
+  padding: var(--spacing-lg);
+}
+.confirmation-body p {
   margin: 0 0 16px 0;
   color: var(--text-secondary);
-  font-size: 14px;}
-  .confirmation-actions {
+  font-size: 14px;
+}
+.confirmation-actions {
   display: flex;
   gap: var(--spacing-md);
   padding: var(--spacing-lg);
@@ -98,14 +290,16 @@
   flex: 1;
   background: var(--bg-tertiary);
   color: var(--text-secondary);
-  padding: 12px 16px;}
-  .btn-confirm-assignment {
+  padding: 12px 16px;
+}
+.btn-confirm-assignment {
   flex: 1;
   background: linear-gradient(135deg, var(--success-color), #059669);
   color: white;
   padding: 12px 16px;
   border: none;
-  border-radius: var(--border-radius);}
+  border-radius: var(--border-radius);
+}
 /* ===============================================
    STRUCTURE PRINCIPALE DE LA MODAL
    =============================================== */
@@ -489,7 +683,6 @@
   border: 1px solid var(--bg-primary); /* plus fin */
 }
 
-
 .assigned-user-avatar:hover {
   transform: scale(1.1);
   box-shadow: var(--shadow-glow);
@@ -801,8 +994,7 @@
    =============================================== */
 .task-description-section {
   margin-top: 24px;
-    margin-bottom: 20px;
-
+  margin-bottom: 20px;
 }
 
 .task-description-title {
@@ -1105,7 +1297,7 @@
 .quick-comment-input {
   width: 100%;
   background: var(--bg-primary);
-  border:none;
+  border: none;
   border-radius: var(--border-radius);
   padding: 12px;
   color: var(--text-primary);
@@ -1335,7 +1527,7 @@
 
 .task-attachment-action-btn.delete:hover {
   background: #dc2626;
-}/* Conteneur principal */
+} /* Conteneur principal */
 .tiptap-editor {
   background: var(--bg-secondary);
   color: var(--text-primary);
@@ -1397,9 +1589,15 @@
   font-weight: bold;
 }
 
-.tiptap-editor h1 { font-size: 1.5rem; }
-.tiptap-editor h2 { font-size: 1.3rem; }
-.tiptap-editor h3 { font-size: 1.1rem; }
+.tiptap-editor h1 {
+  font-size: 1.5rem;
+}
+.tiptap-editor h2 {
+  font-size: 1.3rem;
+}
+.tiptap-editor h3 {
+  font-size: 1.1rem;
+}
 
 /* Blocs de citation */
 .tiptap-editor blockquote {

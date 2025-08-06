@@ -38,8 +38,8 @@ const NewProjectScreen = () => {
 
   const [devisFile, setDevisFile] = useState(null);
   const [imageFiles, setImageFiles] = useState([]);
-  const [setUploadedDevis] = useState(null);
-  const [setUploadedImages] = useState([]);
+  const [uploadedDevis, setUploadedDevis] = useState(null);
+  const [uploadImages,setUploadedImages] = useState([]);
   const [createdProjectId, setCreatedProjectId] = useState(null);
 
   const [showClientModal, setShowClientModal] = useState(false);
