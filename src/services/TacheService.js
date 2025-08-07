@@ -16,6 +16,14 @@ export const TacheService = {
       throw error;
     }
   },
+  AvancementParPhases: async () => {
+    const response = await fetch(`${API_URL}/tache/avancementParPhase`);
+    return await response.json();
+  },
+  AvancementParProjet: async () => {
+    const response = await fetch(`${API_URL}/tache/avancementParProjet`);
+    return await response.json();
+  },
 
   // Récupère les détails d'une sous-tâche par sa référence
   getSousTacheDetails: async (ref_sous_taches) => {

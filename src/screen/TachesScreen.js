@@ -6,7 +6,6 @@ import { useNavigate } from "react-router-dom";
 import ListeTache from "./TacheScreen/ListeTache";
 import CalendarView from "./TacheScreen/CalendarView";
 
-
 // Fonction pour décoder le JWT (version simplifiée)
 const jwtDecode = (token) => {
   try {
@@ -41,7 +40,9 @@ const TacheScreen = () => {
     avatar: null,
     matricule: "",
   });
-
+  const [allFiles, setAllFiles] = useState([]);
+  const [filesLoading, setFilesLoading] = useState(false);
+  const [filesError, setFilesError] = useState(null);
   const navigate = useNavigate();
 
   const handleAjouterTache = () => {
@@ -65,6 +66,7 @@ const TacheScreen = () => {
         if (userInfoData.matricule) {
           loadUserTaches(userInfoData.matricule);
           loadAllTaches();
+          loadAllFiles();
         }
       } catch (err) {
         console.error("Erreur de décodage du token :", err);
@@ -83,6 +85,107 @@ const TacheScreen = () => {
       setAllTaches(allTachesData);
     } catch (error) {
       console.error("Erreur lors du chargement de toutes les tâches:", error);
+    }
+  };
+
+  const handleDownloadFile = async (filename) => {
+    try {
+      await TacheService.downloadTacheFile(filename);
+    } catch (error) {
+      console.error("Erreur lors du téléchargement:", error);
+    }
+  };
+
+  const loadAllFiles = async () => {
+    try {
+      setFilesLoading(true);
+      setFilesError(null);
+      const filesData = await TacheService.getAllTacheFiles();
+      setAllFiles(filesData);
+    } catch (error) {
+      console.error("Erreur lors du chargement des fichiers:", error);
+      setFilesError(error.message);
+    } finally {
+      setFilesLoading(false);
+    }
+  };
+
+  const groupFilesByType = (files) => {
+    const grouped = {};
+
+    files.forEach((file) => {
+      const extension =
+        file.nom_fichier.split(".").pop()?.toLowerCase() || "sans-extension";
+      let type = "Autres";
+
+      // Classification par type
+      if (["pdf"].includes(extension)) {
+        type = "PDF";
+      } else if (["doc", "docx"].includes(extension)) {
+        type = "Documents Word";
+      } else if (["xls", "xlsx"].includes(extension)) {
+        type = "Feuilles Excel";
+      } else if (["ppt", "pptx"].includes(extension)) {
+        type = "Présentations";
+      } else if (["jpg", "jpeg", "png", "gif", "bmp"].includes(extension)) {
+        type = "Images";
+      } else if (["mp4", "avi", "mov", "wmv"].includes(extension)) {
+        type = "Vidéos";
+      } else if (["mp3", "wav", "ogg"].includes(extension)) {
+        type = "Audio";
+      } else if (["txt", "rtf"].includes(extension)) {
+        type = "Fichiers texte";
+      } else if (["zip", "rar", "7z"].includes(extension)) {
+        type = "Archives";
+      }
+
+      if (!grouped[type]) {
+        grouped[type] = [];
+      }
+      grouped[type].push(file);
+    });
+
+    return grouped;
+  };
+  const getFileIcon = (fileName) => {
+    const extension = fileName.split(".").pop()?.toLowerCase();
+
+    switch (extension) {
+      case "pdf":
+        return "bi-file-earmark-pdf";
+      case "doc":
+      case "docx":
+        return "bi-file-earmark-word";
+      case "xls":
+      case "xlsx":
+        return "bi-file-earmark-excel";
+      case "ppt":
+      case "pptx":
+        return "bi-file-earmark-ppt";
+      case "jpg":
+      case "jpeg":
+      case "png":
+      case "gif":
+      case "bmp":
+        return "bi-file-earmark-image";
+      case "mp4":
+      case "avi":
+      case "mov":
+      case "wmv":
+        return "bi-file-earmark-play";
+      case "mp3":
+      case "wav":
+      case "ogg":
+        return "bi-file-earmark-music";
+      case "txt":
+      case "rtf":
+        return "bi-file-earmark-text";
+      case "zip":
+      case "rar":
+      case "7z":
+        return "bi-file-earmark-zip";
+      default:
+        return "bi-file-earmark";
     }
   };
 
@@ -441,14 +544,102 @@ const TacheScreen = () => {
       case "Fichiers":
         return (
           <div className="files-view">
-            <div className="section-header">
+            <div className="files-header">
               <h2>
-                <i className="bi bi-files"></i> Fichiers
+                <i className="bi bi-files"></i> Tous les fichiers
               </h2>
+              <button
+                className="refresh-files-btn"
+                onClick={loadAllFiles}
+                disabled={filesLoading}
+              >
+                <i
+                  className={`bi ${
+                    filesLoading
+                      ? "bi-arrow-repeat rotating"
+                      : "bi-arrow-clockwise"
+                  }`}
+                ></i>
+                Actualiser
+              </button>
             </div>
-            <div className="files-content">
-              <p>Gestion des fichiers</p>
-            </div>
+
+            {filesLoading && (
+              <div className="files-loading">
+                <i className="bi bi-hourglass-split loading-spinner"></i>
+                <span>Chargement des fichiers...</span>
+              </div>
+            )}
+
+            {filesError && (
+              <div className="files-error">
+                <i className="bi bi-exclamation-circle-fill error-icon"></i>
+                <span>Erreur: {filesError}</span>
+              </div>
+            )}
+
+            {!filesLoading && !filesError && (
+              <div className="files-content">
+                {allFiles.length > 0 ? (
+                  (() => {
+                    const groupedFiles = groupFilesByType(allFiles);
+                    return Object.keys(groupedFiles).map((type) => (
+                      <div key={type} className="file-type-section">
+                        <div className="file-type-header">
+                          <h3>
+                            {type} ({groupedFiles[type].length})
+                          </h3>
+                        </div>
+                        <div className="files-grid">
+                          {groupedFiles[type].map((file, index) => (
+                            <div key={file.id || index} className="file-item">
+                              <div className="file-icon">
+                                <i
+                                  className={`bi ${getFileIcon(
+                                    file.nom_fichier
+                                  )}`}
+                                ></i>
+                              </div>
+                              <div className="file-info">
+                                <div
+                                  className="file-name"
+                                  title={file.nom_fichier}
+                                >
+                                  {file.nom_fichier}
+                                </div>
+                                {file.date_upload && (
+                                  <div className="file-date">
+                                    {new Date(
+                                      file.date_upload
+                                    ).toLocaleDateString("fr-FR")}
+                                  </div>
+                                )}
+                              </div>
+                              <div className="file-actions">
+                                <button
+                                  className="file-action-btn download"
+                                  title="Télécharger"
+                                  onClick={() =>
+                                    handleDownloadFile(file.chemin_fichier)
+                                  }
+                                >
+                                  <i className="bi bi-download"></i>
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ));
+                  })()
+                ) : (
+                  <div className="no-files">
+                    <i className="bi bi-folder-x"></i>
+                    <p>Aucun fichier trouvé</p>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         );
       default:
@@ -500,7 +691,12 @@ const TacheScreen = () => {
         </button>
         <button
           className={`nav-item ${activeTab === "Fichiers" ? "active" : ""}`}
-          onClick={() => setActiveTab("Fichiers")}
+          onClick={() => {
+            setActiveTab("Fichiers");
+            if (allFiles.length === 0) {
+              loadAllFiles();
+            }
+          }}
         >
           <i className="bi bi-files"></i>
           <span>Fichiers</span>
@@ -516,7 +712,7 @@ const TacheScreen = () => {
         isOpen={isModalOpen}
         onClose={closeModal}
         onStatusChange={() => loadUserTaches(userInfo.matricule)}
-        onStatusUpdate={loadAllTaches} 
+        onStatusUpdate={loadAllTaches}
       />
     </div>
   );
