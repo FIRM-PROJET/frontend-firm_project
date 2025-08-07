@@ -25,6 +25,7 @@ import DevisEstimationListe from "./screen/DevisScreen/DevisEstimationListe";
 import ListeProjets from "./screen/DevisScreen/ListeProjets";
 import LoadingScreen from "./screen/LoadingScreen";
 import CreateTache from "./screen/TacheScreen/CreateTache";
+import PhasesScreen from "./screen/PhasesScreen";
 
 function App() {
   return (
@@ -43,6 +44,7 @@ function App() {
           <Route path="/mod0003" element={<ProjetsScreen />} />
           <Route path="/mod0004" element={<DevisScreen />} />
           <Route path="/mod0005" element={<AdminScreen />} />
+          <Route path="/mod0006" element={<PhasesScreen />} />
 
           {/* Devis étapes */}
           <Route path="/devis/new" element={<NewDevisScreen />} />

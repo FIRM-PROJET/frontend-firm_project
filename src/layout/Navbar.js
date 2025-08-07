@@ -33,6 +33,7 @@ const Navbar = () => {
       'Accueil': 'bi-house-door-fill',
       'Devis': 'bi-file-earmark-bar-graph-fill',
       'Tâches': 'bi bi-ui-checks',
+      'Phases': 'bi bi-diagram-3-fill',
       'Projets': 'bi bi-folder-fill',
       'Statistiques': 'bi-bar-chart-fill',
       'Entreprises': 'bi-buildings-fill',
