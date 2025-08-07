@@ -1384,7 +1384,10 @@
   gap: var(--spacing-lg);
   flex: 1;
   min-height: 0;
+  max-height: 100%; /* ou une autre valeur comme 400px */
+  overflow-y: auto;  /* Ajoute cette ligne */
 }
+
 
 .task-file-upload-zone {
   flex-shrink: 0;
