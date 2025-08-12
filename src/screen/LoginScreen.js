@@ -93,7 +93,7 @@ const LoginScreen = () => {
 
         <div className="form-section">
           <div className="login-card">
-            <div className="card-header">
+            <div className="card-header1">
               <h2 className="welcome-title">Bienvenue</h2>
               <p className="welcome-subtitle">Pour commencer , veuillez vous connecter</p>
             </div>
