@@ -39,12 +39,18 @@ const AdminScreen = () => {
 
   return (
     <div className="admin-dashboard">
-      <div className="dashboard-header">
-        <h1>Panneau d'Administration</h1>
-        <p>Gestion des utilisateurs et de leurs droits d’accès aux modules</p>
+    <div className="module-header">
+        <div className="header-content">
+          <div className="text-content">
+            <h1 className="module-title">Panneau d'Administration</h1>
+            <h5 className="module-subtitle">
+             Gestion des utilisateurs et de leurs droits d’accès aux modules
+            </h5>
+          </div>
+        </div>
       </div>
 
-      <div className="stats-grid">
+      <div className="stats-grid2">
         <div className="stat-card">
           <div className="stat-icon">
             <i className="bi bi-people-fill" style={{ fontSize: "24px" }}></i>

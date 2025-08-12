@@ -153,32 +153,21 @@ const ProjetsScreen = () => {
   return (
     <div className="container">
       {/* Header */}
-      <div className="header">
-        <h1 className="module-title1">Module Projets</h1>
-        <h5 className="module-subtitle">
-          Gestion et suivi des projets architecturaux
-        </h5>
-
-        {/* Bouton de création */}
-        <div className="new-project-card">
-          <div className="new-project-content" onClick={handleNewProject}>
-            <FontAwesomeIcon icon={faPlusSquare} className="new-project-icon" />
-            <div>
-              <h3 className="new-project-title">Créer un nouveau projet</h3>
-              <p className="new-project-description">
-                Lancez un nouveau projet et configurez ses phases
-              </p>
-            </div>
+      <div className="module-header">
+        <div className="header-content">
+          <div className="text-content">
+            <h1 className="module-title">Projets</h1>
+            <h5 className="module-subtitle">
+              Lancez un nouveau projet et configurez ses phases
+            </h5>
           </div>
-          <CreateProjectModal
-            isOpen={showCreateModal}
-            onClose={() => setShowCreateModal(false)}
-            onProjectCreated={() => {
-              setShowCreateModal(false);
-              fetchAllProjets();
-            }}
-          />
+          <button className="btn-ajouter-tache" onClick={handleNewProject}>
+            <i className="bi bi-plus-circle-fill"></i>
+            Créer un nouveau projet
+          </button>
         </div>
+      </div>
+      <div className="header">
 
         {/* Statistiques alignées horizontalement */}
         <div className="stats-grid-horizontal">

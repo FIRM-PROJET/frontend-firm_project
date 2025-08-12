@@ -222,7 +222,7 @@ const CalendarView = ({ taches, allTaches, onTacheClick, userInfo }) => {
       case "Non démarré":
         return "#6366f1";
       case "En cours":
-        return "#f59e0b";
+        return "#f7e395";
       case "Terminé":
         return "#10b981";
       default:
@@ -457,7 +457,7 @@ const CalendarView = ({ taches, allTaches, onTacheClick, userInfo }) => {
             <div className="legend-item">
               <div
                 className="legend-color"
-                style={{ backgroundColor: "#f59e0b" }}
+                style={{ backgroundColor: "#f7e395" }}
               ></div>
               <span>En cours</span>
             </div>

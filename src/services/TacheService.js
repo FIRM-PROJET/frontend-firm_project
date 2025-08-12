@@ -228,6 +228,7 @@ export const TacheService = {
     return await response.json();
   },
 
+  
   UpdateSousTacheTermine: async (tacheData) => {
     const response = await fetch(`${API_URL}/tache/statut_termine`, {
       method: "POST",
@@ -273,6 +274,20 @@ export const TacheService = {
       );
       if (!response.ok) {
         throw new Error("Failed to fetch all comments tasks");
+      }
+      return await response.json();
+    } catch (error) {
+      console.error("Error fetching all taches:", error);
+      throw error;
+    }
+  },
+  get_task_finished_by_user: async (matricule) => {
+    try {
+      const response = await fetch(
+        `${API_URL}/accomplies/${matricule}`
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch all completed tasks by user");
       }
       return await response.json();
     } catch (error) {

@@ -90,7 +90,7 @@ const PhasesScreen = () => {
     const getProgressColor = (percent) => {
       if (percent === 0) return "#6b7280";
       if (percent < 25) return "#ef4444";
-      if (percent < 50) return "#f59e0b";
+      if (percent < 50) return "#f7e395";
       if (percent < 75) return "#3b82f6";
       return "#10b981";
     };
