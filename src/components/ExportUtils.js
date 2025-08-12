@@ -86,7 +86,11 @@ export const exportToExcel = async (
   worksheet.mergeCells("B3:E3");
   const cellTitle = worksheet.getCell("B3");
   cellTitle.value = "FIRM & ARCHITECTURE";
-  cellTitle.font = { bold: true, size: 18, name: "Times New Roman', Times, serif" };
+  cellTitle.font = {
+    bold: true,
+    size: 18,
+    name: "Times New Roman', Times, serif",
+  };
   cellTitle.alignment = { horizontal: "center", vertical: "middle" };
 
   worksheet.mergeCells("B5:E5");
@@ -119,7 +123,12 @@ export const exportToExcel = async (
   // --- 5. Informations surface simplifiée ---
   worksheet.addRow([]);
   const surfaceValue = parseFloat(surfaceTotale) || 0;
-  const surfaceText = `Type de surface: ${typeSurface || "N/A"}    |    Surface totale: ${surfaceValue.toLocaleString('fr-FR', {minimumFractionDigits: 2, maximumFractionDigits: 2})} m²`;
+  const surfaceText = `Type de surface: ${
+    typeSurface || "N/A"
+  }    |    Surface totale: ${surfaceValue.toLocaleString("fr-FR", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })} m²`;
 
   let row = worksheet.addRow([surfaceText, "", "", "", "", ""]);
   row.height = 30;
@@ -286,8 +295,7 @@ export const exportToExcel = async (
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
-};
-export const exportToPDF = ({
+};export const exportToPDF = ({
   nomDevis,
   maitreOuvrage,
   total,
@@ -309,39 +317,45 @@ export const exportToPDF = ({
   container.style.lineHeight = "1.4";
   container.style.color = "#333";
 
-  // En-tête avec tableau restructuré
+  // En-tête
   const headerTable = document.createElement("table");
   headerTable.style.width = "100%";
   headerTable.style.borderCollapse = "collapse";
   headerTable.style.marginBottom = "20px";
-  headerTable.style.border = "2px solid #000000ff";
+  headerTable.style.border = "2px solid #000";
 
   headerTable.innerHTML = `
-    <tr style="background-color: #ffffffff; color: #514f84;">
-      <td style="padding: 15px; width: 15%; text-align: center; vertical-align: middle; border-right: 1px solid #000000ff;">
-        <img src="${logo}" style="width: 60px; height: auto; display: block; margin: 0 auto;" alt="Logo" />
-      </td>
-      <td style="padding: 15px; width: 85%; vertical-align: top; text-align: center;">
-        <h1 style="margin: 0 0 15px 0; font-size: 18px; font-weight: bold; font-family: 'Times New Roman', Times, serif; color: #000000ff;">
-          FIRM & ARCHITECTURE
-        </h1>
-        <div style="font-size: 14px; font-weight: bold; color: #000000ff; margin-bottom: 8px;">
-          ${nomDevis || "N/A"}
-        </div>
-        <div style="font-size: 12px; color: #000000ff; margin-bottom: 15px;">
-          Maître d'ouvrage : ${maitreOuvrage || "N/A"}
-        </div>
-        <div style="font-size: 10px; color: #000000ff; text-align: center;">
-          <span style="margin-right: 20px;"><strong>Cours Ariary:</strong> ${coursAriary || "N/A"} Ar</span>
-          <span style="margin-right: 20px;"><strong>Code fiche:</strong> ${codeFiche || "N/A"}</span>
-          <span style="margin-right: 20px;"><strong>Version:</strong> ${version || "1.0"}</span>
-          <span><strong>Date:</strong> ${dateStr}</span>
-        </div>
-      </td>
-    </tr>
-  `;
+  <tr style="background-color: #fff; color: #514f84;">
+    <td style="padding: 15px; width: 15%; text-align: center; vertical-align: middle; border-right: 1px solid #000;">
+      <img src="${logo}" style="width: 60px; height: auto; display: block; margin: 0 auto;" alt="Logo" />
+    </td>
+    <td style="padding: 15px; width: 85%; vertical-align: top; text-align: center; white-space: nowrap;">
+      <h1 style="margin: 0 0 15px 0; font-size: 18px; font-weight: bold; color: #000; white-space: nowrap;">
+        FIRM & ARCHITECTURE
+      </h1>
+      <div style="font-size: 14px; font-weight: bold; color: #000; margin-bottom: 8px; white-space: nowrap;">
+        ${nomDevis || "N/A"}
+      </div>
+      <div style="font-size: 12px; color: #000; margin-bottom: 15px; white-space: nowrap;">
+        Maître d'ouvrage : ${maitreOuvrage || "N/A"}
+      </div>
+      <div style="font-size: 10px; color: #000; text-align: center; white-space: nowrap;">
+        <span style="margin-right: 20px;"><strong>Cours Ariary:</strong> ${
+          coursAriary || "N/A"
+        } Ar</span>
+        <span style="margin-right: 20px;"><strong>Code fiche:</strong> ${
+          codeFiche || "N/A"
+        }</span>
+        <span style="margin-right: 20px;"><strong>Version:</strong> ${
+          version || "1.0"
+        }</span>
+        <span><strong>Date:</strong> ${dateStr}</span>
+      </div>
+    </td>
+  </tr>
+`;
 
-  // Section informations surface simplifiée (sans tableau)
+  // Surface
   const surfaceDiv = document.createElement("div");
   surfaceDiv.style.width = "100%";
   surfaceDiv.style.backgroundColor = "#514f84";
@@ -354,9 +368,14 @@ export const exportToPDF = ({
   surfaceDiv.style.border = "2px solid #514f84";
 
   const surfaceValuePDF = parseFloat(surfaceTotale) || 0;
-  surfaceDiv.innerHTML = `Type de surface: ${typeSurface || "N/A"} &nbsp;&nbsp;|&nbsp;&nbsp; Surface totale: ${surfaceValuePDF.toLocaleString('fr-FR', {minimumFractionDigits: 2, maximumFractionDigits: 2})} m²`;
+  surfaceDiv.innerHTML = `Type de surface: ${
+    typeSurface || "N/A"
+  } &nbsp;&nbsp;|&nbsp;&nbsp; Surface totale: ${surfaceValuePDF.toLocaleString(
+    "fr-FR",
+    { minimumFractionDigits: 2, maximumFractionDigits: 2 }
+  )} m²`;
 
-  // Fonction pour créer un tableau de travaux avec le nouveau design incluant l'Ariary
+  // Table travaux
   const createTravauxTable = (travauxList, title) => {
     if (travauxList.length === 0) return null;
 
@@ -365,18 +384,19 @@ export const exportToPDF = ({
     table.style.borderCollapse = "collapse";
     table.style.marginBottom = "20px";
     table.style.border = "1px solid #514f84";
+    table.style.tableLayout = "fixed"; // Fixe la largeur colonnes
 
     const thead = document.createElement("thead");
     thead.innerHTML = `
       <tr style="background-color: #514f84; color: white;">
-        <td colspan="3" style="padding: 10px; text-align: center; font-weight: bold; font-size: 14px;">
+        <td colspan="3" style="padding: 10px; text-align: center; font-weight: bold; font-size: 14px; white-space: nowrap;">
           ${title}
         </td>
       </tr>
       <tr style="background-color: white; border-bottom: 1px solid #514f84;">
-        <th style="padding: 10px; text-align: left; font-weight: bold; color: #514f84; border-right: 1px solid #514f84;">Désignation</th>
-        <th style="padding: 10px; text-align: right; font-weight: bold; color: #514f84; width: 120px; border-right: 1px solid #514f84;">Montant (€)</th>
-        <th style="padding: 10px; text-align: right; font-weight: bold; color: #514f84; width: 150px;">Montant (Ar)</th>
+        <th style="padding: 10px; text-align: left; font-weight: bold; color: #514f84; border-right: 1px solid #514f84; white-space: nowrap;">Désignation</th>
+        <th style="padding: 10px; text-align: right; font-weight: bold; color: #514f84; width: 120px; border-right: 1px solid #514f84; white-space: nowrap;">Montant (€)</th>
+        <th style="padding: 10px; text-align: right; font-weight: bold; color: #514f84; width: 150px; white-space: nowrap;">Montant (Ar)</th>
       </tr>
     `;
 
@@ -388,14 +408,14 @@ export const exportToPDF = ({
       const row = document.createElement("tr");
       row.style.backgroundColor = index % 2 === 0 ? "#ffffff" : "#f8f9fa";
       row.innerHTML = `
-        <td style="border-right: 1px solid #514f84; border-bottom: 1px solid #ddd; padding: 8px;">${
+        <td style="border-right: 1px solid #514f84; border-bottom: 1px solid #ddd; padding: 8px; white-space: nowrap;">${
           travail.name
         }</td>
-        <td style="border-right: 1px solid #514f84; border-bottom: 1px solid #ddd; padding: 8px; text-align: right;">${montantEur.toLocaleString(
+        <td style="border-right: 1px solid #514f84; border-bottom: 1px solid #ddd; padding: 8px; text-align: right; white-space: nowrap;">${montantEur.toLocaleString(
           "fr-FR",
           { minimumFractionDigits: 2, maximumFractionDigits: 2 }
         )} €</td>
-        <td style="border-bottom: 1px solid #ddd; padding: 8px; text-align: right;">${montantAriary.toLocaleString(
+        <td style="border-bottom: 1px solid #ddd; padding: 8px; text-align: right; white-space: nowrap;">${montantAriary.toLocaleString(
           "fr-FR",
           { minimumFractionDigits: 0, maximumFractionDigits: 0 }
         )} Ar</td>
@@ -413,16 +433,17 @@ export const exportToPDF = ({
     sousToolRow.style.backgroundColor = "#514f84";
     sousToolRow.style.color = "white";
     sousToolRow.style.fontWeight = "bold";
+    sousToolRow.style.pageBreakInside = "avoid"; // Empêche la coupure page
     sousToolRow.innerHTML = `
-      <td style="border-right: 1px solid white; padding: 10px; text-align: right;">Sous-total ${title}:</td>
-      <td style="border-right: 1px solid white; padding: 10px; text-align: right;">${sousTotal.toLocaleString(
-        "fr-FR",
-        { minimumFractionDigits: 2, maximumFractionDigits: 2 }
-      )} €</td>
-      <td style="padding: 10px; text-align: right;">${sousTotalAriary.toLocaleString(
-        "fr-FR",
-        { minimumFractionDigits: 0, maximumFractionDigits: 0 }
-      )} Ar</td>
+      <td style="border-right: 1px solid white; padding: 10px; text-align: right; white-space: nowrap;">
+        Sous-total ${title}:
+      </td>
+      <td style="border-right: 1px solid white; padding: 10px; text-align: right; white-space: nowrap;">
+        ${sousTotal.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €
+      </td>
+      <td style="padding: 10px; text-align: right; white-space: nowrap;">
+        ${sousTotalAriary.toLocaleString("fr-FR", { minimumFractionDigits: 0, maximumFractionDigits: 0 })} Ar
+      </td>
     `;
     tbody.appendChild(sousToolRow);
 
@@ -432,13 +453,13 @@ export const exportToPDF = ({
     return table;
   };
 
-  // Séparer les travaux standards et personnalisés
+  // Séparer travaux
   const travauxStandards = travaux.filter(
     (t) => t.type === "standard" || !t.type
   );
   const travauxPersonnalises = travaux.filter((t) => t.type === "custom");
 
-  // Table finale avec total
+  // Total
   const totalEur = parseFloat(total) || 0;
   const totalAriary = totalEur * tauxAriary;
 
@@ -447,22 +468,31 @@ export const exportToPDF = ({
   totalTable.style.borderCollapse = "collapse";
   totalTable.style.marginTop = "20px";
   totalTable.style.border = "2px solid #514f84";
+  totalTable.style.tableLayout = "fixed";
 
   totalTable.innerHTML = `
-    <tr style="background-color: #514f84; color: white;">
-      <td style="padding: 15px; text-align: right; font-weight: bold; font-size: 16px; border-right: 1px solid white;">TOTAL ESTIMATION:</td>
-      <td style="padding: 15px; text-align: right; font-weight: bold; font-size: 16px; width: 150px; border-right: 1px solid white;">${totalEur.toLocaleString(
-        "fr-FR",
-        { minimumFractionDigits: 2, maximumFractionDigits: 2 }
-      )} €</td>
-      <td style="padding: 15px; text-align: right; font-weight: bold; font-size: 16px; width: 200px;">${totalAriary.toLocaleString(
-        "fr-FR",
-        { minimumFractionDigits: 0, maximumFractionDigits: 0 }
-      )} Ar</td>
+    <tr 
+      style="
+        background-color: #514f84; 
+        color: white; 
+        page-break-inside: avoid;
+        font-size: 13px;
+        font-weight: bold;
+      "
+    >
+      <td style="padding: 8px; text-align: right; border-right: 1px solid white; white-space: nowrap; width: 60%;">
+        TOTAL\u00A0ESTIMATION:
+      </td>
+      <td style="padding: 8px; text-align: right; border-right: 1px solid white; white-space: nowrap; width: 20%;">
+        ${totalEur.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €
+      </td>
+      <td style="padding: 8px; text-align: right; white-space: nowrap; width: 20%;">
+        ${totalAriary.toLocaleString("fr-FR", { minimumFractionDigits: 0, maximumFractionDigits: 0 })} Ar
+      </td>
     </tr>
   `;
 
-  // Assemblage du document
+  // Assemblage
   container.appendChild(headerTable);
   container.appendChild(surfaceDiv);
 
@@ -480,16 +510,12 @@ export const exportToPDF = ({
 
   container.appendChild(totalTable);
 
-  // Configuration PDF
+  // PDF
   const opt = {
     margin: 0.5,
     filename: `${nomDevis || "devis"}_${dateStr.replace(/\//g, "-")}.pdf`,
     image: { type: "jpeg", quality: 0.98 },
-    html2canvas: {
-      scale: 2,
-      useCORS: true,
-      allowTaint: true,
-    },
+    html2canvas: { scale: 2, useCORS: true, allowTaint: true },
     jsPDF: {
       unit: "in",
       format: "a4",
@@ -499,6 +525,6 @@ export const exportToPDF = ({
     },
   };
 
-  // Export PDF
   html2pdf().set(opt).from(container).save();
 };
+
