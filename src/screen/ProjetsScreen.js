@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { ProjetService } from "../services/ProjetService";
+import { TacheService } from "../services/TacheService"; // Assurez-vous d'importer TacheService
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import CreateProjectModal from "../modals/CreateProjectModal";
 import {
@@ -10,6 +11,9 @@ import {
   faPlayCircle,
   faCalendarAlt,
   faPercentage,
+  faExclamationTriangle,
+  faChartLine,
+  faClock,
 } from "@fortawesome/free-solid-svg-icons";
 import "../styles/ProjetScreen.css";
 import { useNavigate } from "react-router-dom";
@@ -24,14 +28,89 @@ const ProjetsScreen = () => {
   const [error, setError] = useState(null);
   const [selectedProject, setSelectedProject] = useState(null);
   const [showCalendar, setShowCalendar] = useState(false);
+  
+  // Nouveaux états pour le dashboard d'avancement
+  const [avancementData, setAvancementData] = useState([]);
+  const [dashboardStats, setDashboardStats] = useState({
+    projetsEnCours: 0,
+    projetsTermines: 0,
+    projetsEnRetard: 0,
+    avancementGlobal: 0
+  });
+  
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchAllProjets();
+    fetchAvancementData();
   }, []);
 
   const handleNewProject = () => {
     setShowCreateModal(true);
+  };
+
+  const fetchAvancementData = async () => {
+    try {
+      const [avancementParProjet, avancementParPhases] = await Promise.all([
+        TacheService.AvancementParProjet(),
+        TacheService.avancementParPhases()
+      ]);
+
+      if (avancementParProjet.success && avancementParProjet.data) {
+        // Grouper les données par projet
+        const projetAvancement = {};
+        
+        avancementParProjet.data.forEach(item => {
+          if (!projetAvancement[item.ref_projet]) {
+            projetAvancement[item.ref_projet] = {
+              ref_projet: item.ref_projet,
+              phases: [],
+              totalTaches: 0,
+              tachesTerminees: 0,
+              avancement: 0
+            };
+          }
+          
+          projetAvancement[item.ref_projet].phases.push({
+            id_phase: item.id_phase,
+            total_taches: parseInt(item.total_taches),
+            taches_terminees: parseInt(item.taches_terminees),
+            avancement: parseFloat(item.avancement_pourcent)
+          });
+          
+          projetAvancement[item.ref_projet].totalTaches += parseInt(item.total_taches);
+          projetAvancement[item.ref_projet].tachesTerminees += parseInt(item.taches_terminees);
+        });
+
+        // Calculer l'avancement global par projet
+        const avancementArray = Object.values(projetAvancement).map(projet => {
+          const avancement = projet.totalTaches > 0 
+            ? Math.round((projet.tachesTerminees / projet.totalTaches) * 100)
+            : 0;
+          
+          return {
+            ...projet,
+            avancement
+          };
+        });
+
+        setAvancementData(avancementArray);
+
+        // Calculer les statistiques du dashboard
+        const stats = {
+          projetsEnCours: avancementArray.filter(p => p.avancement > 0 && p.avancement < 100).length,
+          projetsTermines: avancementArray.filter(p => p.avancement === 100).length,
+          projetsEnRetard: avancementArray.filter(p => p.avancement < 30 && p.avancement > 0).length, // Considérer <30% comme en retard
+          avancementGlobal: avancementArray.length > 0 
+            ? Math.round(avancementArray.reduce((sum, p) => sum + p.avancement, 0) / avancementArray.length)
+            : 0
+        };
+
+        setDashboardStats(stats);
+      }
+    } catch (err) {
+      console.error("Erreur lors du chargement des données d'avancement:", err);
+    }
   };
 
   const fetchAllProjets = async () => {
@@ -74,7 +153,6 @@ const ProjetsScreen = () => {
                 Math.floor(Math.random() * 6) + 6,
                 Math.floor(Math.random() * 28) + 1
               ),
-              avancement: Math.floor(Math.random() * 100) + 1,
             });
           }
         } catch (err) {
@@ -102,41 +180,41 @@ const ProjetsScreen = () => {
     setShowCalendar(!showCalendar);
   };
 
-  // Calculer les statistiques
+  // Calculer les statistiques des phases
   const stats = {
     totalProjets: projets.length,
     totalPhases: phases.length,
-    projetsEnCours: projetPhases.filter((p) => p.avancement < 100).length,
-    projetsTermines: projetPhases.filter((p) => p.avancement === 100).length,
+    projetsEnCours: projetPhases.filter((p) => {
+      const avancement = avancementData.find(a => a.ref_projet === p.ref_projet);
+      return avancement && avancement.avancement > 0 && avancement.avancement < 100;
+    }).length,
+    projetsTermines: projetPhases.filter((p) => {
+      const avancement = avancementData.find(a => a.ref_projet === p.ref_projet);
+      return avancement && avancement.avancement === 100;
+    }).length,
   };
 
   // Obtenir la couleur selon l'avancement
   const getAvancementColor = (avancement) => {
     if (avancement >= 80) return "#28a745";
     if (avancement >= 50) return "#ffc107";
+    if (avancement >= 30) return "#fd7e14";
     return "#dc3545";
   };
 
-  // Données statiques pour les avancements
-  const avancementData = [
-    {
-      ref_projet: "P2024-001",
-      nom_projet: "Résidence Les Jardins",
-      avancement: 75,
-    },
-    {
-      ref_projet: "P2024-002",
-      nom_projet: "Centre Commercial Nord",
-      avancement: 45,
-    },
-    {
-      ref_projet: "P2024-003",
-      nom_projet: "Bureaux Tech Park",
-      avancement: 85,
-    },
-    { ref_projet: "P2024-004", nom_projet: "Villa Moderne", avancement: 30 },
-    { ref_projet: "P2024-005", nom_projet: "Hôtel Boutique", avancement: 90 },
-  ];
+  // Obtenir le statut du projet
+  const getProjetStatus = (avancement) => {
+    if (avancement === 100) return "Terminé";
+    if (avancement >= 30) return "En cours";
+    if (avancement > 0) return "En retard";
+    return "Non démarré";
+  };
+
+  // Trouver le nom du projet
+  const getProjetNom = (refProjet) => {
+    const projet = projetPhases.find(p => p.ref_projet === refProjet);
+    return projet ? projet.nom_projet : refProjet;
+  };
 
   if (selectedProject) {
     return (
@@ -167,8 +245,8 @@ const ProjetsScreen = () => {
           </button>
         </div>
       </div>
+      
       <div className="header">
-
         {/* Statistiques alignées horizontalement */}
         <div className="stats-grid-horizontal">
           <div className="stat-card">
@@ -196,7 +274,7 @@ const ProjetsScreen = () => {
               <FontAwesomeIcon icon={faPlayCircle} />
             </div>
             <div className="stat-content">
-              <h3 className="stat-number">{stats.projetsEnCours}</h3>
+              <h3 className="stat-number">{dashboardStats.projetsEnCours}</h3>
               <p className="stat-label">En Cours</p>
             </div>
           </div>
@@ -206,10 +284,119 @@ const ProjetsScreen = () => {
               <FontAwesomeIcon icon={faCheckCircle} />
             </div>
             <div className="stat-content">
-              <h3 className="stat-number">{stats.projetsTermines}</h3>
+              <h3 className="stat-number">{dashboardStats.projetsTermines}</h3>
               <p className="stat-label">Terminés</p>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Dashboard d'avancement */}
+      <div className="section">
+        <div className="section-header">
+          <h3 className="section-title">Dashboard d'Avancement</h3>
+        </div>
+
+        {/* Statistiques du dashboard */}
+        <div className="stats-grid-horizontal" style={{ marginBottom: '20px' }}>
+          <div className="stat-card">
+            <div className="stat-icon" style={{ color: '#ffc107' }}>
+              <FontAwesomeIcon icon={faClock} />
+            </div>
+            <div className="stat-content">
+              <h3 className="stat-number">{dashboardStats.projetsEnCours}</h3>
+              <p className="stat-label">Projets en Cours</p>
+            </div>
+          </div>
+
+          <div className="stat-card">
+            <div className="stat-icon" style={{ color: '#28a745' }}>
+              <FontAwesomeIcon icon={faCheckCircle} />
+            </div>
+            <div className="stat-content">
+              <h3 className="stat-number">{dashboardStats.projetsTermines}</h3>
+              <p className="stat-label">Projets Terminés</p>
+            </div>
+          </div>
+
+          <div className="stat-card">
+            <div className="stat-icon" style={{ color: '#dc3545' }}>
+              <FontAwesomeIcon icon={faExclamationTriangle} />
+            </div>
+            <div className="stat-content">
+              <h3 className="stat-number">{dashboardStats.projetsEnRetard}</h3>
+              <p className="stat-label">Projets en Retard</p>
+            </div>
+          </div>
+
+          <div className="stat-card">
+            <div className="stat-icon" style={{ color: '#17a2b8' }}>
+              <FontAwesomeIcon icon={faChartLine} />
+            </div>
+            <div className="stat-content">
+              <h3 className="stat-number">{dashboardStats.avancementGlobal}%</h3>
+              <p className="stat-label">Avancement Global</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Grille d'avancement des projets */}
+        <div className="avancement-grid">
+          {avancementData.map((item) => (
+            <div key={item.ref_projet} className="avancement-card">
+              <div className="avancement-header">
+                <div className="avancement-ref">{item.ref_projet}</div>
+                <div
+                  className="avancement-percentage"
+                  style={{ color: getAvancementColor(item.avancement) }}
+                >
+                  <FontAwesomeIcon icon={faPercentage} />
+                  {item.avancement}%
+                </div>
+              </div>
+              <div className="avancement-nom">{getProjetNom(item.ref_projet)}</div>
+              <div className="avancement-details">
+                <div className="avancement-tasks">
+                  {item.tachesTerminees}/{item.totalTaches} tâches terminées
+                </div>
+                <div 
+                  className="avancement-status"
+                  style={{ color: getAvancementColor(item.avancement) }}
+                >
+                  {getProjetStatus(item.avancement)}
+                </div>
+              </div>
+              <div className="avancement-bar">
+                <div
+                  className="avancement-progress"
+                  style={{
+                    width: `${item.avancement}%`,
+                    backgroundColor: getAvancementColor(item.avancement),
+                  }}
+                ></div>
+              </div>
+              {/* Détails des phases */}
+              <div className="phases-detail">
+                {item.phases.map((phase, index) => (
+                  <div key={phase.id_phase} className="phase-mini">
+                    <div className="phase-mini-info">
+                      <span>Phase {index + 1}</span>
+                      <span>{phase.avancement}%</span>
+                    </div>
+                    <div className="phase-mini-bar">
+                      <div
+                        className="phase-mini-progress"
+                        style={{
+                          width: `${phase.avancement}%`,
+                          backgroundColor: getAvancementColor(phase.avancement),
+                        }}
+                      ></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
@@ -316,39 +503,9 @@ const ProjetsScreen = () => {
         )}
       </div>
 
-      {/* Avancement des projets - Données statiques */}
-      <div className="section">
-        <div className="section-header">
-          <h3 className="section-title">Avancement des projets</h3>
-        </div>
-
-        <div className="avancement-grid">
-          {avancementData.map((item) => (
-            <div key={item.ref_projet} className="avancement-card">
-              <div className="avancement-header">
-                <div className="avancement-ref">{item.ref_projet}</div>
-                <div
-                  className="avancement-percentage"
-                  style={{ color: getAvancementColor(item.avancement) }}
-                >
-                  <FontAwesomeIcon icon={faPercentage} />
-                  {item.avancement}%
-                </div>
-              </div>
-              <div className="avancement-nom">{item.nom_projet}</div>
-              <div className="avancement-bar">
-                <div
-                  className="avancement-progress"
-                  style={{
-                    width: `${item.avancement}%`,
-                    backgroundColor: getAvancementColor(item.avancement),
-                  }}
-                ></div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+      {showCreateModal && (
+        <CreateProjectModal onClose={() => setShowCreateModal(false)} />
+      )}
     </div>
   );
 };
