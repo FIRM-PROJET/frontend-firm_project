@@ -462,4 +462,185 @@
   .avancement-grid {
     grid-template-columns: 1fr;
   }
+}/* Styles pour la liste d'avancement des projets */
+.avancement-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.avancement-list-item {
+  background-color: #282850;
+  border: 1px solid #514f84;
+  border-radius: 12px;
+  padding: 20px;
+  transition: all 0.3s ease;
+}
+
+.avancement-list-item:hover {
+  background-color: #514f84;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.avancement-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.avancement-item-info h4.avancement-item-ref {
+  color: #ccc;
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+}
+
+.avancement-item-info p.avancement-item-nom {
+  color: #ccc;
+  font-size: 14px;
+  margin: 0;
+  opacity: 0.8;
+}
+
+.avancement-item-percentage .percentage-text {
+  font-size: 24px;
+  font-weight: 700;
+  color: #f7e395;
+}
+
+.avancement-item-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.task-count {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #ccc;
+  font-size: 14px;
+}
+
+.task-completed {
+  font-weight: 600;
+  color: #28a745;
+}
+
+.task-separator {
+  opacity: 0.6;
+}
+
+.task-total {
+  font-weight: 600;
+}
+
+.task-label {
+  margin-left: 8px;
+  opacity: 0.8;
+}
+
+.status-badge {
+  padding: 4px 12px;
+  border: 1px solid;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background-color: transparent;
+}
+
+.avancement-item-progress {
+  margin-bottom: 16px;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background-color: #181835;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  transition: width 0.3s ease;
+  border-radius: 4px;
+}
+
+.avancement-item-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.voir-plus-btn {
+  background-color: #514f84;
+  color: #ccc;
+  border: 1px solid #514f84;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.voir-plus-btn:hover {
+  background-color: #ccc;
+  color: #282850;
+  border-color: #ccc;
+}
+
+.voir-plus-btn svg {
+  font-size: 12px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .avancement-item-header {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .avancement-item-details {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .status-badge {
+    align-self: flex-start;
+  }
+
+  .avancement-item-actions {
+    justify-content: center;
+  }
+
+  .voir-plus-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Animation pour la barre de progression */
+@keyframes fillProgress {
+  from {
+    width: 0%;
+  }
+  to {
+    width: var(--progress-width);
+  }
+}
+
+.progress-fill {
+  animation: fillProgress 1s ease-out;
 }
