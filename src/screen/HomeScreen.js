@@ -15,40 +15,20 @@ const HomeScreen = () => {
   });
 
   const [userTasks, setUserTasks] = useState([]);
-  const [allTasks, setAllTasks] = useState([]);
-  const [phases, setPhases] = useState([]);
-  const [projets, setProjets] = useState([]);
-  const [avancementPhases, setAvancementPhases] = useState([]);
+  const [completedTasks, setCompletedTasks] = useState([]);
+  const [todayTasks, setTodayTasks] = useState([]);
   const [avancementProjets, setAvancementProjets] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [todayTasks, setTodayTasks] = useState([]);
-  const [completedTodayTasks, setCompletedTodayTasks] = useState([]);
-  const [upcomingTasks, setUpcomingTasks] = useState([]);
-  const [overdueTasks, setOverdueTasks] = useState([]);
+  const [showAllProjects, setShowAllProjects] = useState(false);
+  const [hoveredTask, setHoveredTask] = useState(null);
   
   const [stats, setStats] = useState({
     tachesAccomplies: 0,
+    tachesNonDemarrees: 0,
     tachesEnCours: 0,
-    tachesTotales: 0,
-    projetsActifs: 0,
-    phasesEnCours: 0,
     tachesEnRetard: 0,
-    efficacite: 0,
-    tempsTotal: 0
+    tachesTotales: 0
   });
-
-  const quickActions = [
-    { label: "Nouvelle tâche", className: "primary", icon: "bi-plus-circle-fill", tooltip: "Nouvelle tâche" },
-    { label: "Nouveau projet", className: "secondary", icon: "bi-folder-fill", tooltip: "Nouveau projet" },
-    { label: "Planning", className: "tertiary", icon: "bi-calendar-fill", tooltip: "Planning" },
-    { label: "Paramètres", className: "quaternary", icon: "bi-gear-fill", tooltip: "Paramètres" },
-  ];
-
-  const getProgressLevel = (percentage) => {
-    if (percentage >= 70) return 'high';
-    if (percentage >= 40) return 'medium';
-    return 'low';
-  };
 
   useEffect(() => {
     const initializeDashboard = async () => {
@@ -76,124 +56,156 @@ const HomeScreen = () => {
 
   const loadDashboardData = async (matricule) => {
     try {
-      // Charger les tâches utilisateur
       if (matricule) {
+        // Charger les tâches utilisateur
         const tasks = await TacheService.get_user_task(matricule);
         setUserTasks(tasks);
         
-        // Analyse des tâches par date
+        // Charger les tâches terminées
+        const completed = await TacheService.get_task_finished_by_user(matricule);
+        setCompletedTasks(completed.taches || []);
+
+        // Tâches d'aujourd'hui
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         
-        const nextWeek = new Date(today);
-        nextWeek.setDate(nextWeek.getDate() + 7);
-
-        // Tâches d'aujourd'hui
         const tasksToday = tasks.filter(task => {
           const taskDate = new Date(task.date_debut);
           taskDate.setHours(0, 0, 0, 0);
           return taskDate.getTime() === today.getTime() && task.statut !== 'Terminé';
         });
-        setTodayTasks(tasksToday.map(task => ({ ...task, completed: false })));
+        setTodayTasks(tasksToday);
 
-        // Tâches terminées aujourd'hui
-        const completedToday = tasks.filter(task => {
-          const taskCompletedDate = task.date_fin_reelle ? new Date(task.date_fin_reelle) : null;
-          if (!taskCompletedDate) return false;
-          
-          const taskDate = new Date(taskCompletedDate);
-          taskDate.setHours(0, 0, 0, 0);
-          
-          return taskDate.getTime() === today.getTime() && task.statut === 'Terminé';
-        });
-        setCompletedTodayTasks(completedToday.map(task => ({ ...task, completed: true })));
-
-        // Tâches à venir
-        const upcomingTasksFiltered = tasks.filter(task => {
-          const taskDate = new Date(task.date_debut);
-          taskDate.setHours(0, 0, 0, 0);
-          return taskDate > today && taskDate <= nextWeek && task.statut !== 'Terminé';
-        });
-        setUpcomingTasks(upcomingTasksFiltered);
-
-        // Tâches en retard
-        const overdueTasksFiltered = tasks.filter(task => {
-          const taskEndDate = new Date(task.date_fin_prevu);
-          taskEndDate.setHours(0, 0, 0, 0);
-          return taskEndDate < today && task.statut !== 'Terminé';
-        });
-        setOverdueTasks(overdueTasksFiltered);
-
-        // Calculer les statistiques
+        // Calculer les statistiques améliorées
         const tachesAccomplies = tasks.filter(t => t.statut === 'Terminé').length;
+        const tachesNonDemarrees = tasks.filter(t => t.statut === 'Non démarré' || t.statut === 'En attente').length;
         const tachesEnCours = tasks.filter(t => t.statut === 'En cours').length;
-        const projetsActifs = [...new Set(tasks.map(t => t.ref_projet))].length;
-        const efficacite = tasks.length > 0 ? (tachesAccomplies / tasks.length) * 100 : 0;
         
-        setStats(prev => ({
-          ...prev,
+        // Calculer les tâches en retard
+        const currentDate = new Date();
+        const tachesEnRetard = tasks.filter(t => {
+          if (t.statut === 'Terminé') return false;
+          const dateFin = new Date(t.date_fin_prevue);
+          return dateFin < currentDate;
+        }).length;
+        
+        setStats({
           tachesAccomplies,
+          tachesNonDemarrees,
           tachesEnCours,
-          tachesTotales: tasks.length,
-          projetsActifs,
-          tachesEnRetard: overdueTasksFiltered.length,
-          efficacite
-        }));
+          tachesEnRetard,
+          tachesTotales: tasks.length
+        });
       }
 
-      // Charger toutes les tâches
-      const allTasksData = await TacheService.getAllTaches();
-      setAllTasks(allTasksData);
-
-      // Charger les phases
-      const phasesData = await DevisService.getAllProjetsPhase();
-      const phases = phasesData.data || phasesData || [];
-      setPhases(phases);
-
-      // Charger l'avancement par phases
-      const avancementPhasesData = await TacheService.AvancementParPhases();
-      const avancementArray = avancementPhasesData.data || avancementPhasesData || [];
-      setAvancementPhases(avancementArray);
-
       // Charger l'avancement par projets
-      // const avancementProjetsData = await TacheService.getAvancementParProjet();
-      // setAvancementProjets(avancementProjetsData);
+      const avancementPhasesData = await TacheService.AvancementParPhases();
+      const phases = await DevisService.getAllProjetsPhase();
+      const phasesArray = phases.data || phases || [];
+      const avancementArray = avancementPhasesData.data || avancementPhasesData || [];
+      
+      // Grouper par projets
+      const projetsMap = new Map();
+      avancementArray.forEach(phase => {
+        const phaseDetail = phasesArray.find(p => 
+          String(p.ref_projet).trim() === String(phase.ref_projet).trim()
+        );
+        
+        const projectName = phaseDetail?.nom_projet || phase.ref_projet;
+        
+        if (projetsMap.has(projectName)) {
+          const existing = projetsMap.get(projectName);
+          existing.totalTaches += parseInt(phase.total_taches);
+          existing.tachesTerminees += parseInt(phase.taches_terminees);
+        } else {
+          projetsMap.set(projectName, {
+            nom: projectName,
+            ref_projet: phase.ref_projet,
+            totalTaches: parseInt(phase.total_taches),
+            tachesTerminees: parseInt(phase.taches_terminees)
+          });
+        }
+      });
+
+      const projetsAvancement = Array.from(projetsMap.values()).map(project => ({
+        ...project,
+        avancement: project.totalTaches > 0 ? (project.tachesTerminees / project.totalTaches) * 100 : 0
+      }));
+      
+      setAvancementProjets(projetsAvancement);
 
     } catch (error) {
       console.error("Erreur lors du chargement des données:", error);
     }
   };
 
-  // Générer le calendrier de la semaine (7 jours)
-  const generateWeekCalendar = () => {
+  // Générer les données pour le graphique hebdomadaire
+  const generateWeeklyData = () => {
+    const days = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven'];
     const today = new Date();
-    const days = [];
     
     // Trouver le lundi de cette semaine
     const mondayOfWeek = new Date(today);
     const dayOfWeek = today.getDay();
-    const daysFromMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Dimanche = 6 jours depuis lundi
+    const daysFromMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
     mondayOfWeek.setDate(today.getDate() - daysFromMonday);
     
-    // Générer les 7 jours de la semaine
-    for (let i = 0; i < 7; i++) {
-      const currentDay = new Date(mondayOfWeek);
-      currentDay.setDate(mondayOfWeek.getDate() + i);
+    return days.map((day, index) => {
+      const targetDate = new Date(mondayOfWeek);
+      targetDate.setDate(mondayOfWeek.getDate() + index);
       
+      const tasksCompletedOnDay = completedTasks.filter(task => {
+        const taskCompletedDate = new Date(task.date_statut);
+        taskCompletedDate.setHours(0, 0, 0, 0);
+        targetDate.setHours(0, 0, 0, 0);
+        
+        return taskCompletedDate.getTime() === targetDate.getTime();
+      }).length;
+
+      return {
+        name: day,
+        taches: tasksCompletedOnDay
+      };
+    });
+  };
+
+  // Générer le calendrier du mois
+  const generateMonthlyCalendar = () => {
+    const today = new Date();
+    const currentMonth = today.getMonth();
+    const currentYear = today.getFullYear();
+    
+    const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
+    const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0);
+    const firstDisplayDay = new Date(firstDayOfMonth);
+    
+    // Ajuster au lundi de la première semaine
+    const dayOfWeek = firstDayOfMonth.getDay();
+    const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+    firstDisplayDay.setDate(firstDayOfMonth.getDate() - daysToSubtract);
+    
+    const days = [];
+    const currentDay = new Date(firstDisplayDay);
+    
+    // Générer 6 semaines (42 jours)
+    for (let i = 0; i < 42; i++) {
+      const dayTasks = getTasksForDate(currentDay);
       days.push({
-        date: currentDay,
+        date: new Date(currentDay),
         day: currentDay.getDate(),
         isToday: currentDay.toDateString() === today.toDateString(),
-        hasTask: hasTasksOnWeekDate(currentDay),
-        dayName: ['L', 'M', 'M', 'J', 'V', 'S', 'D'][i]
+        isCurrentMonth: currentDay.getMonth() === currentMonth,
+        tasks: dayTasks,
+        hasTask: dayTasks.length > 0
       });
+      currentDay.setDate(currentDay.getDate() + 1);
     }
     
     return days;
   };
 
-  const hasTasksOnWeekDate = (date) => {
-    return userTasks.some(task => {
+  const getTasksForDate = (date) => {
+    return userTasks.filter(task => {
       const taskDate = new Date(task.date_debut);
       return (
         taskDate.getDate() === date.getDate() &&
@@ -203,114 +215,6 @@ const HomeScreen = () => {
     });
   };
 
-  // Données pour l'activité de la semaine avec points connectés
-  const generateUserWeeklyData = () => {
-    const days = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
-    const today = new Date();
-    
-    return days.map((day, index) => {
-      const targetDate = new Date(today);
-      targetDate.setDate(today.getDate() - (6 - index));
-      
-      const completedTasks = userTasks.filter(task => {
-        const taskCompletedDate = task.date_fin_reelle ? new Date(task.date_fin_reelle) : null;
-        if (!taskCompletedDate) return false;
-        
-        const taskDate = new Date(taskCompletedDate);
-        taskDate.setHours(0, 0, 0, 0);
-        targetDate.setHours(0, 0, 0, 0);
-        
-        return taskDate.getTime() === targetDate.getTime() && task.statut === 'Terminé';
-      }).length;
-
-      return {
-        name: day,
-        taches: completedTasks
-      };
-    });
-  };
-
-  // Grouper les projets par nom de projet
-  const getProjectsProgress = () => {
-    const projectsMap = new Map();
-    
-    avancementPhases.forEach(phase => {
-      const phaseDetail = phases.find(p => 
-        String(p.ref_projet).trim() === String(phase.ref_projet).trim()
-      );
-      
-      const projectName = phaseDetail?.nom_projet || phase.ref_projet;
-      
-      if (projectsMap.has(projectName)) {
-        const existing = projectsMap.get(projectName);
-        existing.totalTaches += parseInt(phase.total_taches);
-        existing.tachesTerminees += parseInt(phase.taches_terminees);
-        existing.phases += 1;
-      } else {
-        projectsMap.set(projectName, {
-          nom: projectName,
-          ref_projet: phase.ref_projet,
-          totalTaches: parseInt(phase.total_taches),
-          tachesTerminees: parseInt(phase.taches_terminees),
-          phases: 1
-        });
-      }
-    });
-
-    return Array.from(projectsMap.values()).map(project => ({
-      ...project,
-      avancement: project.totalTaches > 0 ? (project.tachesTerminees / project.totalTaches) * 100 : 0
-    }));
-  };
-
-  // Calculer l'avancement global
-  const getGlobalProgress = () => {
-    if (!avancementPhases || avancementPhases.length === 0) return 0;
-    
-    const totalProgress = avancementPhases.reduce((sum, phase) => {
-      return sum + parseFloat(phase.avancement_pourcent);
-    }, 0);
-    
-    return avancementPhases.length > 0 ? totalProgress / avancementPhases.length : 0;
-  };
-
-  const toggleTaskCompletion = async (taskId) => {
-    try {
-      const task = todayTasks.find(t => t.id === taskId);
-      if (!task) return;
-
-      // Mettre à jour localement d'abord pour une meilleure UX
-      setTodayTasks(prev => 
-        prev.map(t => 
-          t.id === taskId ? { ...t, completed: !t.completed } : t
-        )
-      );
-
-      if (!task.completed) {
-        // Marquer comme terminée
-        const updateData = {
-          ref_tache: taskId,
-          ref_sous_tache: null,
-        };
-        await TacheService.UpdateTacheTermine(updateData);
-        await loadDashboardData(userInfo.matricule);
-      }
-    } catch (error) {
-      console.error("Erreur lors de la mise à jour de la tâche:", error);
-      // Remettre l'état précédent en cas d'erreur
-      setTodayTasks(prev => 
-        prev.map(t => 
-          t.id === taskId ? { ...t, completed: !t.completed } : t
-        )
-      );
-    }
-  };
-
-  const weekDays = generateWeekCalendar();
-  const weeklyData = generateUserWeeklyData();
-  const projectsProgress = getProjectsProgress();
-  const globalProgress = getGlobalProgress();
-  
   const formatTodayDate = () => {
     const date = new Date().toLocaleDateString('fr-FR', {
       weekday: 'long',
@@ -320,8 +224,39 @@ const HomeScreen = () => {
     return date.charAt(0).toUpperCase() + date.slice(1);
   };
 
-  const allTodayTasks = [...todayTasks, ...completedTodayTasks];
-  const completedTasksCount = allTodayTasks.filter(task => task.completed || task.statut === 'Terminé').length;
+  const toggleTaskCompletion = async (taskId) => {
+    try {
+      const updateData = {
+        ref_tache: taskId,
+        ref_sous_tache: null,
+      };
+      await TacheService.UpdateTacheTermine(updateData);
+      await loadDashboardData(userInfo.matricule);
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour de la tâche:", error);
+    }
+  };
+
+  // Données pour le graphique donut
+  const donutData = [
+    { name: 'Accomplies', value: stats.tachesAccomplies, color: '#27ae60' },
+    { name: 'En cours', value: stats.tachesEnCours, color: '#f39c12' },
+    { name: 'Non démarrées', value: stats.tachesNonDemarrees, color: '#95a5a6' },
+    { name: 'En retard', value: stats.tachesEnRetard, color: '#e74c3c' }
+  ];
+
+  // Calculer les angles pour le donut
+  const total = stats.tachesTotales;
+  let currentAngle = 0;
+  const donutSegments = donutData.map(segment => {
+    const angle = total > 0 ? (segment.value / total) * 360 : 0;
+    const startAngle = currentAngle;
+    currentAngle += angle;
+    return { ...segment, startAngle, angle };
+  });
+
+  const weeklyData = generateWeeklyData();
+  const monthlyCalendar = generateMonthlyCalendar();
 
   if (loading) {
     return (
@@ -334,148 +269,285 @@ const HomeScreen = () => {
 
   return (
     <div className="dashboard-container">
-      {/* Header avec dégradé */}
+      {/* Header */}
       <div className="dashboard-header">
         <h1>Bonjour, {userInfo.name} {userInfo.prenom}</h1>
         <div className="today-date">{formatTodayDate()}</div>
       </div>
 
-      {/* Actions rapides - sans défilement, icônes inclinés
-      <div className="quick-actions-container">
-        <div className="quick-actions-slider">
-          {quickActions.map((action, index) => (
-            <button
-              key={index}
-              className={`action-btn2 ${action.className}`}
-            >
-              <i className={`bi ${action.icon}`}></i>
-              {action.label}
-            </button>
-          ))}
-        </div>
-      </div> */}
-
-      {/* Layout 3 colonnes horizontales */}
-      <div className="main-content-grid">
-        {/* Colonne 1: Tâches aujourd'hui */}
-        <div className="today-tasks-section">
-          <div className="tasks-header">
-            <h3>Tâches aujourd'hui</h3>
-            <div className="task-progress-indicator">
-              {completedTasksCount}/{allTodayTasks.length}
-            </div>
-          </div>
-          <div className="tasks-list">
-            {allTodayTasks.slice(0, 4).map((task, index) => (
-              <div key={index} className={`task-item ${task.completed || task.statut === 'Terminé' ? 'completed' : ''}`}>
-                <div 
-                  className={`task-checkbox ${task.completed || task.statut === 'Terminé' ? 'checked' : ''}`}
-                  onClick={() => toggleTaskCompletion(task.id)}
-                >
-                  {(task.completed || task.statut === 'Terminé') && '✓'}
-                </div>
-                <div className="task-info">
-                  <span className={`task-name ${task.completed || task.statut === 'Terminé' ? 'completed' : ''}`}>
-                    {task.nom_tache}
-                  </span>
-                  <span className="task-project">{task.nom_projet}</span>
-                </div>
+      {/* Grille principale améliorée */}
+      <div className="dashboard-grid">
+        
+        {/* Première ligne : Tâches aujourd'hui + Graphique activité */}
+        <div className="grid-row row-1">
+          {/* Section des tâches aujourd'hui */}
+          <div className="card today-tasks-card">
+            <div className="card-header">
+              <div className="header-with-icon">
+                <i className="bi bi-list-task"></i>
+                <h3>Tâches aujourd'hui</h3>
               </div>
-            ))}
-            {allTodayTasks.length === 0 && (
-              <div className="no-tasks">Aucune tâche aujourd'hui</div>
-            )}
-          </div>
-        </div>
-
-        {/* Colonne 2: Calendrier avec bouton d'ajout */}
-        <div className="calendar-section">
-          <div className="calendar-widget">
-            <h3>Cette semaine</h3>
-            <div className="week-calendar-grid">
-              {weekDays.map((dayObj, index) => (
-                <div key={index} className="week-day-container">
-                  <div className="week-day-header">{dayObj.dayName}</div>
+              <span className="task-count">{todayTasks.length}</span>
+            </div>
+            <div className="tasks-list">
+              {todayTasks.slice(0, 8).map((task, index) => (
+                <div key={index} className="task-item">
                   <div 
-                    className={`week-day ${
-                      dayObj.isToday ? 'today' : ''
-                    } ${dayObj.hasTask ? 'has-task' : ''}`}
+                    className="task-checkbox"
+                    onClick={() => toggleTaskCompletion(task.id)}
                   >
-                    {dayObj.day}
+                    <i className="bi bi-circle"></i>
+                  </div>
+                  <div className="task-info">
+                    <span className="task-name">{task.nom_tache}</span>
+                    <span className="task-project">{task.nom_projet}</span>
                   </div>
                 </div>
               ))}
+              {todayTasks.length === 0 && (
+                <div className="no-tasks">
+                  <i className="bi bi-check-circle-fill"></i>
+                  <span>Toutes les tâches terminées !</span>
+                </div>
+              )}
             </div>
           </div>
-          
-          <button className="add-task-btn" title="Ajouter une tâche aujourd'hui">
-            <i className="bi bi-plus" style={{ fontSize: '1.5rem' }}></i>
-          </button>
+
+          {/* Graphique activité hebdomadaire */}
+          <div className="card weekly-activity-card">
+            <div className="card-header">
+              <div className="header-with-icon">
+                <i className="bi bi-graph-up"></i>
+                <h3>Activité de la semaine</h3>
+              </div>
+              <span className="total-completed">
+                <i className="bi bi-trophy-fill"></i>
+                {weeklyData.reduce((sum, day) => sum + day.taches, 0)} accomplies
+              </span>
+            </div>
+            <div className="chart-container">
+              <ResponsiveContainer width="100%" height={160}>
+                <LineChart data={weeklyData} margin={{ top: 10, right: 10, left: 10, bottom: 10 }}>
+                  <CartesianGrid strokeDasharray="2 2" stroke="#282850" />
+                  <XAxis 
+                    dataKey="name" 
+                    stroke="#514f84" 
+                    fontSize={11}
+                    axisLine={false}
+                    tickLine={false}
+                  />
+                  <YAxis 
+                    stroke="#514f84" 
+                    fontSize={11}
+                    axisLine={false}
+                    tickLine={false}
+                  />
+                  <Tooltip 
+                    contentStyle={{
+                      backgroundColor: '#181835',
+                      border: '1px solid #f7e395',
+                      borderRadius: '8px',
+                      color: '#f7e395',
+                      fontSize: '12px',
+                      boxShadow: '0 4px 20px rgba(247, 227, 149, 0.3)'
+                    }}
+                    labelStyle={{ color: '#f7e395' }}
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="taches" 
+                    stroke="#f7e395" 
+                    strokeWidth={3}
+                    dot={{ fill: '#f7e395', strokeWidth: 0, r: 5 }}
+                    activeDot={{ r: 7, fill: '#f39c12', stroke: '#f7e395', strokeWidth: 2 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
         </div>
 
-        {/* Colonne 3: Avancement global */}
-        <div className="global-progress-section">
-          <h3>Avancement global</h3>
-          <div className="progress-circle-large">
-            <svg width="120" height="120" viewBox="0 0 120 120">
-              <circle cx="60" cy="60" r="50" fill="none" stroke="#282850" strokeWidth="8"/>
-              <circle 
-                cx="60" cy="60" r="50" fill="none" stroke="#f7e395" strokeWidth="8"
-                strokeDasharray={`${(globalProgress / 100) * 314.16} 314.16`}
-                strokeLinecap="round"
-              />
-            </svg>
-            <div className="progress-text">{Math.round(globalProgress)}%</div>
+        {/* Deuxième ligne : Diagramme donut + Calendrier mensuel */}
+        <div className="grid-row row-2">
+          {/* Diagramme donut avec statistiques */}
+          <div className="card donut-stats-card">
+            <div className="card-header">
+              <div className="header-with-icon">
+                <i className="bi bi-pie-chart-fill"></i>
+                <h3>Répartition des tâches</h3>
+              </div>
+            </div>
+            <div className="donut-section">
+              <div className="donut-chart-container">
+                <svg width="140" height="140" viewBox="0 0 140 140">
+                  <defs>
+                    {donutSegments.map((segment, index) => (
+                      <linearGradient key={index} id={`gradient-${index}`} x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stopColor={segment.color} />
+                        <stop offset="100%" stopColor={segment.color} opacity="0.8" />
+                      </linearGradient>
+                    ))}
+                  </defs>
+                  <circle cx="70" cy="70" r="50" fill="none" stroke="#282850" strokeWidth="12" />
+                  {donutSegments.map((segment, index) => {
+                    if (segment.value === 0) return null;
+                    const startAngleRad = (segment.startAngle - 90) * (Math.PI / 180);
+                    const endAngleRad = (segment.startAngle + segment.angle - 90) * (Math.PI / 180);
+                    const largeArcFlag = segment.angle > 180 ? 1 : 0;
+                    
+                    const x1 = 70 + 50 * Math.cos(startAngleRad);
+                    const y1 = 70 + 50 * Math.sin(startAngleRad);
+                    const x2 = 70 + 50 * Math.cos(endAngleRad);
+                    const y2 = 70 + 50 * Math.sin(endAngleRad);
+                    
+                    return (
+                      <path
+                        key={index}
+                        d={`M 70 70 L ${x1} ${y1} A 50 50 0 ${largeArcFlag} 1 ${x2} ${y2} Z`}
+                        fill={`url(#gradient-${index})`}
+                        opacity="0.9"
+                      />
+                    );
+                  })}
+                  <circle cx="70" cy="70" r="30" fill="#181835" />
+                  <text x="70" y="65" textAnchor="middle" fill="#f7e395" fontSize="20" fontWeight="bold">
+                    {total}
+                  </text>
+                  <text x="70" y="80" textAnchor="middle" fill="#ccc" fontSize="10">
+                    Total
+                  </text>
+                </svg>
+              </div>
+              <div className="donut-legend">
+                <div className="legend-item">
+                  <div className="legend-color" style={{ backgroundColor: '#27ae60' }}></div>
+                  <span className="legend-label">Accomplies</span>
+                  <span className="legend-value">{stats.tachesAccomplies}</span>
+                </div>
+                <div className="legend-item">
+                  <div className="legend-color" style={{ backgroundColor: '#f39c12' }}></div>
+                  <span className="legend-label">En cours</span>
+                  <span className="legend-value">{stats.tachesEnCours}</span>
+                </div>
+                <div className="legend-item">
+                  <div className="legend-color" style={{ backgroundColor: '#95a5a6' }}></div>
+                  <span className="legend-label">Non démarrées</span>
+                  <span className="legend-value">{stats.tachesNonDemarrees}</span>
+                </div>
+                <div className="legend-item">
+                  <div className="legend-color" style={{ backgroundColor: '#e74c3c' }}></div>
+                  <span className="legend-label">En retard</span>
+                  <span className="legend-value">{stats.tachesEnRetard}</span>
+                </div>
+              </div>
+            </div>
           </div>
-          <div className="global-stats">
-            <div className="stat-item">
-              <div className="stat-value">{stats.projetsActifs}</div>
-              <div className="stat-label">Projets actifs</div>
+
+          {/* Calendrier mensuel */}
+          <div className="card monthly-calendar-card">
+            <div className="card-header">
+              <div className="header-with-icon">
+                <i className="bi bi-calendar-month"></i>
+                <h3>Calendrier du mois</h3>
+              </div>
             </div>
-            <div className="stat-item">
-              <div className="stat-value">{stats.tachesTotales}</div>
-              <div className="stat-label">Total tâches</div>
-            </div>
-            <div className="stat-item">
-              <div className="stat-value">{stats.tachesEnRetard}</div>
-              <div className="stat-label">En retard</div>
-            </div>
-            <div className="stat-item">
-              <div className="stat-value">{Math.round(stats.efficacite)}%</div>
-              <div className="stat-label">Efficacité</div>
+            <div className="calendar-wrapper">
+              <div className="calendar-header">
+                {['L', 'M', 'M', 'J', 'V', 'S', 'D'].map((day, index) => (
+                  <div key={index} className="calendar-header-day">{day}</div>
+                ))}
+              </div>
+              <div className="calendar-body">
+                {monthlyCalendar.map((dayObj, index) => (
+                  <div 
+                    key={index} 
+                    className={`calendar-day ${
+                      dayObj.isToday ? 'today' : ''
+                    } ${dayObj.hasTask ? 'has-task' : ''} ${
+                      !dayObj.isCurrentMonth ? 'other-month' : ''
+                    }`}
+                    onMouseEnter={() => setHoveredTask(dayObj)}
+                    onMouseLeave={() => setHoveredTask(null)}
+                  >
+                    <span className="day-number">{dayObj.day}</span>
+                    {dayObj.hasTask && <div className="task-indicator"></div>}
+                    
+                    {/* Tooltip pour les tâches */}
+                    {hoveredTask === dayObj && dayObj.tasks.length > 0 && (
+                      <div className="task-tooltip">
+                        <div className="tooltip-arrow"></div>
+                        <div className="tooltip-content">
+                          {dayObj.tasks.slice(0, 3).map((task, taskIndex) => (
+                            <div key={taskIndex} className="tooltip-task">
+                              <span className="tooltip-task-name">{task.nom_tache}</span>
+                            </div>
+                          ))}
+                          {dayObj.tasks.length > 3 && (
+                            <div className="tooltip-more">+{dayObj.tasks.length - 3} autres</div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Activité de la semaine */}
-      <div className="weekly-activity-section">
-        <h3>Activité de la semaine</h3>
-        <ResponsiveContainer width="100%" height={250}>
-          <LineChart data={weeklyData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#282850" />
-            <XAxis dataKey="name" stroke="#a0a0a0" fontSize={12} />
-            <YAxis stroke="#a0a0a0" fontSize={12} />
-            <Tooltip 
-              contentStyle={{
-                backgroundColor: '#181835',
-                border: '1px solid #514f84',
-                borderRadius: '12px',
-                color: '#e2e8f0'
-              }}
-            />
-            <Line 
-              type="monotone" 
-              dataKey="taches" 
-              stroke="#6c5ce7" 
-              strokeWidth={3}
-              dot={{ fill: '#6c5ce7', strokeWidth: 2, r: 6 }}
-              activeDot={{ r: 8, fill: '#5a4fcf' }}
-            />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
+        {/* Troisième ligne : Avancement des projets (pleine largeur) */}
+        <div className="grid-row row-3">
+          <div className="card projects-progress-card">
+            <div className="card-header">
+              <div className="header-with-icon">
+                <i className="bi bi-folder-fill"></i>
+                <h3>Avancement des projets</h3>
+              </div>
+              <button 
+                className="voir-plus-btn"
+                onClick={() => setShowAllProjects(!showAllProjects)}
+              >
+                {showAllProjects ? 'Voir moins' : 'Voir plus'}
+                <i className={`bi ${showAllProjects ? 'bi-chevron-up' : 'bi-chevron-down'}`}></i>
+              </button>
+            </div>
+            <div className="projects-grid">
+              {(showAllProjects ? avancementProjets : avancementProjets.slice(0, 6)).map((projet, index) => (
+                <div key={index} className="project-card">
+                  <div className="project-header">
+                    <div className="project-icon-wrapper">
+                      <i className="bi bi-briefcase-fill"></i>
+                    </div>
+                    <div className="project-info">
+                      <h4 className="project-name">{projet.nom}</h4>
+                      <span className="project-progress-text">
+                        {projet.tachesTerminees}/{projet.totalTaches} tâches
+                      </span>
+                    </div>
+                    <div className="project-percentage">
+                      <span className="percentage-value">{Math.round(projet.avancement)}%</span>
+                    </div>
+                  </div>
+                  <div className="progress-bar">
+                    <div 
+                      className="progress-fill"
+                      style={{ width: `${Math.min(projet.avancement, 100)}%` }}
+                    ></div>
+                  </div>
 
+                </div>
+              ))}
+              {avancementProjets.length === 0 && (
+                <div className="no-projects">
+                  <i className="bi bi-folder-x"></i>
+                  <span>Aucun projet en cours</span>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+      </div>
     </div>
   );
 };
