@@ -4,7 +4,9 @@ import { jwtDecode } from "jwt-decode";
 import ModalUpdatePassword from "../modals/ModalUpdatePassword";
 import "../styles/Header.css";
 import AlertScreen from "../screen/AlertScreen";
+import NotificationScreen from "../screen/NotificationScreen";
 import { DevisService } from "../services/DevisService";
+import { TacheService } from "../services/TacheService";  
 
 const Header = () => {
   const navigate = useNavigate();
@@ -15,6 +17,10 @@ const Header = () => {
 
   const [showAlerts, setShowAlerts] = useState(false);
   const [alertsCount, setAlertsCount] = useState(0);
+
+  // États pour les notifications
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notificationsCount, setNotificationsCount] = useState(0);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -35,7 +41,6 @@ const Header = () => {
 
   const checkAlerts = async () => {
     try {
-      // Correction principale: ajout des parenthèses pour appeler la fonction
       const phases = await DevisService.getAllProjetsPhase();
 
       if (!phases || !Array.isArray(phases)) {
@@ -45,27 +50,24 @@ const Header = () => {
       }
 
       const today = new Date();
-      today.setHours(23, 59, 59, 999); // Fin de la journée actuelle
+      today.setHours(23, 59, 59, 999);
 
       const alertsCount = phases.filter((phase) => {
-        // Vérification de la validité de l'objet phase
         if (!phase || typeof phase !== 'object') {
           return false;
         }
 
-        // Si la phase n'est pas terminée (date_fin_reelle === null)
         if (phase.date_fin_reelle === null || phase.date_fin_reelle === undefined) {
           if (phase.date_fin) {
             const dateFin = new Date(phase.date_fin);
             
-            // Vérification que la date est valide
             if (isNaN(dateFin.getTime())) {
               console.warn("Date invalide pour la phase:", phase);
               return false;
             }
             
-            dateFin.setHours(23, 59, 59, 999); // Fin de la journée de deadline
-            return dateFin < today; // Strictement inférieur pour compter les jours de retard
+            dateFin.setHours(23, 59, 59, 999);
+            return dateFin < today;
           }
         }
         return false;
@@ -75,16 +77,63 @@ const Header = () => {
       setAlertsCount(alertsCount);
     } catch (error) {
       console.error("Erreur lors de la récupération des alertes:", error);
-      setAlertsCount(0); // Réinitialiser en cas d'erreur
+      setAlertsCount(0);
+    }
+  };
+
+  // Fonction pour vérifier les notifications
+  const checkNotifications = async () => {
+    try {
+      if (!userInfo?.matricule) return;
+
+      const notifications = await TacheService.get_user_notification(userInfo.matricule);
+
+      if (!notifications || !Array.isArray(notifications)) {
+        console.error("Les notifications reçues ne sont pas un tableau:", notifications);
+        setNotificationsCount(0);
+        return;
+      }
+
+      const now = new Date();
+      
+      // Filtrer les notifications non expirées
+      const validNotifications = notifications.filter((notification) => {
+        if (!notification || !notification.expire_at) {
+          return false;
+        }
+        
+        const expireDate = new Date(notification.expire_at);
+        if (isNaN(expireDate.getTime())) {
+          console.warn("Date d'expiration invalide pour la notification:", notification);
+          return false;
+        }
+        
+        return expireDate > now; // Notifications non expirées
+      });
+
+      console.log(`Nombre de notifications valides: ${validNotifications.length}`);
+      setNotificationsCount(validNotifications.length);
+    } catch (error) {
+      console.error("Erreur lors de la récupération des notifications:", error);
+      setNotificationsCount(0);
     }
   };
 
   useEffect(() => {
     checkAlerts();
-    // Optionnel: actualiser toutes les 5 minutes
     const interval = setInterval(checkAlerts, 5 * 60 * 1000);
     return () => clearInterval(interval);
   }, []);
+
+  // Effect pour les notifications
+  useEffect(() => {
+    if (userInfo?.matricule) {
+      checkNotifications();
+      // Actualiser toutes les 2 minutes
+      const interval = setInterval(checkNotifications, 2 * 60 * 1000);
+      return () => clearInterval(interval);
+    }
+  }, [userInfo]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -145,9 +194,18 @@ const Header = () => {
             )}
           </div>
 
-          {/* Div regroupant les icônes */}
-          <div className="navbar-item1 notification-icon">
+          {/* Div pour les notifications */}
+          <div 
+            className="navbar-item1 notification-icon notification-container"
+            onClick={() => setShowNotifications(true)}
+            style={{ cursor: 'pointer' }}
+          >
             <i className="bi bi-bell-fill header-bell-icon"></i>
+            {notificationsCount > 0 && (
+              <span className="alert-badge">
+                {notificationsCount > 99 ? "99+" : notificationsCount}
+              </span>
+            )}
           </div>
 
           <div
@@ -214,6 +272,12 @@ const Header = () => {
         visible={showAlerts}
         onClose={() => setShowAlerts(false)}
         onRefresh={checkAlerts}
+      />
+      <NotificationScreen
+        visible={showNotifications}
+        onClose={() => setShowNotifications(false)}
+        onRefresh={checkNotifications}
+        matricule={userInfo.matricule}
       />
       <ModalUpdatePassword
         visible={showPasswordModal}

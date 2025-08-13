@@ -55,6 +55,7 @@ export const ProjetService = {
     });
     return await response.json();
   },
+  
   getUsersByPhase: async (userPhaseData) => {
     const response = await fetch(`${API_URL}/user_phase`, {
       method: "POST",

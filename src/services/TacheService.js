@@ -123,6 +123,18 @@ export const TacheService = {
       throw error;
     }
   },
+  get_user_notification: async (matricule) => {
+    try {
+      const response = await fetch(`${API_URL}/tache/notification_user/${matricule}`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch all taches");
+      }
+      return await response.json();
+    } catch (error) {
+      console.error("Error fetching all taches:", error);
+      throw error;
+    }
+  },
 
   createTache: async (tacheData) => {
     try {

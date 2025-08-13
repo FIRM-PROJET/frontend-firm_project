@@ -27,6 +27,40 @@
   animation: pulse 2s infinite;
 }
 
+/* Ajoutez ces styles à votre Header.css existant */
+
+.notification-container {
+  position: relative;
+}
+
+.notification-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background-color: #ef4444;
+  color: #fff;
+  border-radius: 10px;
+  padding: 2px 6px;
+  font-size: 10px;
+  font-weight: 600;
+  min-width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--background-color, #fff);
+  animation: pulse 2s infinite;
+  z-index: 10;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
 @keyframes pulse {
   0% {
     transform: scale(1);
@@ -74,7 +108,7 @@
 }
 
 .header-bell-icon {
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   color: #E9DFFF;
 }
 .header-bell-icon:hover {
@@ -87,7 +121,7 @@
 }
 
 .header-profile-icon {
-  font-size: 1.3rem;
+  font-size: 1.4rem;
   color: #E9DFFF;
 }
 
