@@ -284,7 +284,7 @@ export const TacheService = {
   get_task_finished_by_user: async (matricule) => {
     try {
       const response = await fetch(
-        `${API_URL}/accomplies/${matricule}`
+        `${API_URL}/tache/accomplies/${matricule}`
       );
       if (!response.ok) {
         throw new Error("Failed to fetch all completed tasks by user");
