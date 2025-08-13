@@ -5,7 +5,7 @@ import { DevisService } from "../services/DevisService";
 import { ProjetService } from "../services/ProjetService";
 import "../styles/ProjetCSS/CreateProjectModal.css";
 
-const CreateProjectModal = ({ isOpen, onClose, onProjectCreated }) => {
+const CreateProjectModal = ({ isOpen, onClose }) => {
   const [formData, setFormData] = useState({
     nom_projet: "",
     description: "",
@@ -170,8 +170,6 @@ const CreateProjectModal = ({ isOpen, onClose, onProjectCreated }) => {
       const response = await ProjetService.createProject(formData);
       
       if (response && response.success !== false) {
-        // Success
-        onProjectCreated(response);
         onClose();
       } else {
         setError(response?.message || "Erreur lors de la création du projet");

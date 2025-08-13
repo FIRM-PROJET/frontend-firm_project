@@ -515,9 +515,6 @@ const HomeScreen = () => {
               {(showAllProjects ? avancementProjets : avancementProjets.slice(0, 6)).map((projet, index) => (
                 <div key={index} className="project-card">
                   <div className="project-header">
-                    <div className="project-icon-wrapper">
-                      <i className="bi bi-briefcase-fill"></i>
-                    </div>
                     <div className="project-info">
                       <h4 className="project-name">{projet.nom}</h4>
                       <span className="project-progress-text">

@@ -29,10 +29,10 @@ const ProjetsScreen = () => {
   const [error, setError] = useState(null);
   const [selectedProject, setSelectedProject] = useState(null);
   const [showCalendar, setShowCalendar] = useState(false);
-  
+
   // État pour la liste d'avancement
   const [avancementProjetData, setAvancementProjetData] = useState([]);
-  
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -47,7 +47,7 @@ const ProjetsScreen = () => {
   const fetchAvancementProjetData = async () => {
     try {
       const response = await TacheService.AvancementParProjet();
-      
+
       // Vérifier différentes structures possibles
       if (response && response.data && Array.isArray(response.data)) {
         setAvancementProjetData(response.data);
@@ -163,7 +163,7 @@ const ProjetsScreen = () => {
 
   // Trouver le nom du projet
   const getProjetNom = (refProjet) => {
-    const projet = projetPhases.find(p => p.ref_projet === refProjet);
+    const projet = projetPhases.find((p) => p.ref_projet === refProjet);
     return projet ? projet.nom_projet : refProjet;
   };
 
@@ -196,7 +196,7 @@ const ProjetsScreen = () => {
           </button>
         </div>
       </div>
-      
+
       <div className="header">
         {/* Statistiques alignées horizontalement */}
         <div className="stats-grid-horizontal">
@@ -219,26 +219,6 @@ const ProjetsScreen = () => {
               <p className="stat-label">Total Phases</p>
             </div>
           </div>
-
-          <div className="stat-card">
-            <div className="stat-icon">
-              <FontAwesomeIcon icon={faPlayCircle} />
-            </div>
-            <div className="stat-content">
-              <h3 className="stat-number">{stats.projetsEnCours}</h3>
-              <p className="stat-label">En Cours</p>
-            </div>
-          </div>
-
-          <div className="stat-card">
-            <div className="stat-icon">
-              <FontAwesomeIcon icon={faCheckCircle} />
-            </div>
-            <div className="stat-content">
-              <h3 className="stat-number">{stats.projetsTermines}</h3>
-              <p className="stat-label">Terminés</p>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -249,25 +229,36 @@ const ProjetsScreen = () => {
         </div>
 
         {avancementProjetData.length === 0 ? (
-          <div style={{ color: '#ccc', padding: '20px', textAlign: 'center' }}>
+          <div style={{ color: "#ccc", padding: "20px", textAlign: "center" }}>
             Aucune donnée d'avancement disponible
           </div>
         ) : (
           <div className="avancement-list">
             {avancementProjetData.map((item, index) => {
-              const avancement = parseFloat(item.avancement_global_pourcent || 0);
+              const avancement = parseFloat(
+                item.avancement_global_pourcent || 0
+              );
               const totalTaches = parseInt(item.total_taches_projet || 0);
-              const tachesTerminees = parseInt(item.taches_terminees_projet || 0);
-              
+              const tachesTerminees = parseInt(
+                item.taches_terminees_projet || 0
+              );
+
               return (
-                <div key={item.ref_projet || index} className="avancement-list-item">
+                <div
+                  key={item.ref_projet || index}
+                  className="avancement-list-item"
+                >
                   <div className="avancement-item-header">
                     <div className="avancement-item-info">
-                      <h4 className="avancement-item-ref">{item.ref_projet || 'N/A'}</h4>
-                      <p className="avancement-item-nom">{getProjetNom(item.ref_projet) || 'Projet inconnu'}</p>
+                      <h4 className="avancement-item-ref">
+                        {item.ref_projet || "N/A"}
+                      </h4>
+                      <p className="avancement-item-nom">
+                        {getProjetNom(item.ref_projet) || "Projet inconnu"}
+                      </p>
                     </div>
                     <div className="avancement-item-percentage">
-                      <span 
+                      <span
                         className="percentage-text"
                         style={{ color: getAvancementColor(avancement) }}
                       >
@@ -275,7 +266,7 @@ const ProjetsScreen = () => {
                       </span>
                     </div>
                   </div>
-                  
+
                   <div className="avancement-item-details">
                     <div className="task-count">
                       <span className="task-completed">{tachesTerminees}</span>
@@ -283,11 +274,11 @@ const ProjetsScreen = () => {
                       <span className="task-total">{totalTaches}</span>
                       <span className="task-label">tâches terminées</span>
                     </div>
-                    <div 
+                    <div
                       className="status-badge"
-                      style={{ 
+                      style={{
                         color: getAvancementColor(avancement),
-                        borderColor: getAvancementColor(avancement)
+                        borderColor: getAvancementColor(avancement),
                       }}
                     >
                       {getProjetStatus(avancement)}
@@ -307,9 +298,11 @@ const ProjetsScreen = () => {
                   </div>
 
                   <div className="avancement-item-actions">
-                    <button 
+                    <button
                       className="voir-plus-btn"
-                      onClick={() => handleProjectClick({ ref_projet: item.ref_projet })}
+                      onClick={() =>
+                        handleProjectClick({ ref_projet: item.ref_projet })
+                      }
                     >
                       <FontAwesomeIcon icon={faEye} />
                       Voir plus
@@ -426,7 +419,10 @@ const ProjetsScreen = () => {
       </div>
 
       {showCreateModal && (
-        <CreateProjectModal onClose={() => setShowCreateModal(false)} />
+        <CreateProjectModal
+          isOpen={showCreateModal}
+          onClose={() => setShowCreateModal(false)}
+        />
       )}
     </div>
   );
