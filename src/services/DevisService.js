@@ -425,6 +425,26 @@ export const DevisService = {
       throw error;
     }
   },
+  add_3_surface_projet: async (surface_data) => {
+    try {
+      const response = await fetch(`${API_URL}/projets/add_3_surface`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(surface_data),
+      });
+
+      if (!response.ok) {
+        throw new Error("Erreur lors de la création du projet");
+      }
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Erreur création projet:", error);
+      throw error;
+    }
+  },
   createClient: async (clienData) => {
     try {
       const response = await fetch(`${API_URL}/projets/create_client`, {

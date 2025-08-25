@@ -25,6 +25,10 @@ const NewProjectScreen = () => {
     id_menuiserie: "",
     id_toiture: "",
     id_type_plancher: "",
+    // Nouveaux champs pour les 3 types de surface
+    surfaceSHAB: "",
+    surfaceSHON: "",
+    surfaceSHOB: "",
   });
 
   const [fondations, setFondations] = useState([]);
@@ -220,6 +224,16 @@ const NewProjectScreen = () => {
 
       await DevisService.createProjectDetails(detailsPayload);
 
+      // Ajout des 3 types de surface
+      const surfacePayload = {
+        id_projet: projectResult.id_projet,
+        surfaceSHAB: parseFloat(projectDetails.surfaceSHAB),
+        surfaceSHON: parseFloat(projectDetails.surfaceSHON),
+        surfaceSHOB: parseFloat(projectDetails.surfaceSHOB),
+      };
+
+      await DevisService.add_3_surface_projet(surfacePayload);
+
       // Sauvegarde l'ID du projet pour les fichiers
       setCreatedProjectId(projectResult.id_projet);
 
@@ -258,6 +272,9 @@ const NewProjectScreen = () => {
       id_menuiserie: "",
       id_toiture: "",
       id_type_plancher: "",
+      surfaceSHAB: "",
+      surfaceSHON: "",
+      surfaceSHOB: "",
     });
     setDevisFile(null);
     setImageFiles([]);
@@ -286,7 +303,14 @@ const NewProjectScreen = () => {
           projectDetails.id_type_surface !== "" &&
           projectDetails.id_toiture !== "" &&
           projectDetails.id_type_plancher !== "" &&
-          projectDetails.id_menuiserie !== ""
+          projectDetails.id_menuiserie !== "" &&
+          // Validation des nouveaux champs obligatoires
+          projectDetails.surfaceSHAB !== "" &&
+          projectDetails.surfaceSHON !== "" &&
+          projectDetails.surfaceSHOB !== "" &&
+          parseFloat(projectDetails.surfaceSHAB) > 0 &&
+          parseFloat(projectDetails.surfaceSHON) > 0 &&
+          parseFloat(projectDetails.surfaceSHOB) > 0
         );
       case 3:
         return true;
@@ -368,8 +392,7 @@ const NewProjectScreen = () => {
                       type="button"
                       className="add-icon-button"
                       onClick={() => setShowClientModal(true)}
-                      title="Ajouter un client
-                      "
+                      title="Ajouter un client"
                     >
                       <i className="fas fa-plus"></i>
                     </button>
@@ -559,6 +582,74 @@ const NewProjectScreen = () => {
                       </option>
                     ))}
                   </select>
+                </div>
+
+                {/* Section des 3 types de surface obligatoires */}
+                <div className="form-group form-grid-full">
+                  <div className="surface-section">
+                    <h4 className="surface-section-title">
+                      <i className="fas fa-ruler-combined"></i>
+                      Surfaces spécifiques *
+                    </h4>
+                    <div className="surface-grid">
+                      <div className="form-group">
+                        <label className="form-label surface-label">
+                          <i className="fas fa-home"></i>
+                          Surface SHAB (m²) *
+                          <span className="surface-info">Surface Habitable</span>
+                        </label>
+                        <input
+                          type="number"
+                          name="surfaceSHAB"
+                          value={projectDetails.surfaceSHAB}
+                          onChange={handleDetailsChange}
+                          className="form-input"
+                          placeholder="Surface SHAB"
+                          min="0"
+                          step="0.01"
+                          required
+                        />
+                      </div>
+
+                      <div className="form-group">
+                        <label className="form-label surface-label">
+                          <i className="fas fa-expand"></i>
+                          Surface SHON (m²) *
+                          <span className="surface-info">Surface Hors Œuvre Nette</span>
+                        </label>
+                        <input
+                          type="number"
+                          name="surfaceSHON"
+                          value={projectDetails.surfaceSHON}
+                          onChange={handleDetailsChange}
+                          className="form-input"
+                          placeholder="Surface SHON"
+                          min="0"
+                          step="0.01"
+                          required
+                        />
+                      </div>
+
+                      <div className="form-group">
+                        <label className="form-label surface-label">
+                          <i className="fas fa-vector-square"></i>
+                          Surface SHOB (m²) *
+                          <span className="surface-info">Surface Hors Œuvre Brute</span>
+                        </label>
+                        <input
+                          type="number"
+                          name="surfaceSHOB"
+                          value={projectDetails.surfaceSHOB}
+                          onChange={handleDetailsChange}
+                          className="form-input"
+                          placeholder="Surface SHOB"
+                          min="0"
+                          step="0.01"
+                          required
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 <div className="form-group">
