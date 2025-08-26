@@ -77,81 +77,78 @@ const AlertScreen = ({ visible, onClose, onRefresh }) => {
   if (!visible) return null;
 
   return (
-    <div className="alerts-modal" onClick={handleClose}>
-      <div className="alerts-content" onClick={(e) => e.stopPropagation()}>
-        <div className="alerts-header">
-          <i className="bi bi-exclamation-diamond-fill alerts-icon"></i>
-          <h2 className="alerts-title">Alertes de Projets</h2>
-          <button className="alerts-close-btn" onClick={handleClose}>
-            <i className="bi bi-x-lg"></i>
+    <div className="alert-sidebar-overlay" onClick={handleClose}>
+      <div className="alert-sidebar-container" onClick={(e) => e.stopPropagation()}>
+        <div className="alert-sidebar-header">
+          <div className="alert-sidebar-title">
+            <i className="bi bi-exclamation-diamond-fill"></i>
+            Alertes de Projets
+          </div>
+          {alerts.length > 0 && (
+            <div className="alert-count-badge">
+              {alerts.length}
+            </div>
+          )}
+          <button className="alert-sidebar-close" onClick={handleClose}>
+            <i class="bi bi-chevron-bar-right"></i>
           </button>
         </div>
 
-        {loading ? (
-          <div className="alerts-loading">
-            <i className="bi bi-arrow-clockwise loading-spinner"></i>
-            <p>Chargement des alertes...</p>
-          </div>
-        ) : alerts.length === 0 ? (
-          <div className="alerts-empty">
-            <i className="bi bi-check-circle alerts-success-icon"></i>
-            <h3>Aucune alerte</h3>
-            <p>Tous vos projets sont à jour !</p>
-          </div>
-        ) : (
-          <div className="alerts-list">
-            <div className="alerts-summary">
-              <span className="alerts-count">{alerts.length}</span>
-              <span className="alerts-text">
-                {alerts.length === 1 ? "phase en retard" : "phases en retard"}
-              </span>
+        <div className="alert-sidebar-content">
+          {loading ? (
+            <div className="alert-loading">
+              <i className="bi bi-arrow-clockwise alert-loading-icon"></i>
+              <span>Chargement des alertes...</span>
             </div>
+          ) : alerts.length === 0 ? (
+            <div className="alert-empty">
+              <i className="bi bi-check-circle"></i>
+              <span>Aucune alerte</span>
+              <p>Tous vos projets sont à jour !</p>
+            </div>
+          ) : (
+            <div className="alert-list">
 
-            {alerts.map((alert, index) => (
-              <div key={index} className="alert-item">
-                <div className="alert-icon">
-                  <i className="bi bi-exclamation-triangle-fill"></i>
-                </div>
-                <div className="alert-content">
-                  <div className="alert-title">
-                    Phase "<strong>{alert.libelle_phase}</strong>" du projet "
-                    <strong>{alert.nom_projet}</strong>" est en retard
+              {alerts.map((alert, index) => (
+                <div key={index} className="alert-item">
+                  <div className="alert-indicator">
+                    <i className="bi bi-circle-fill"></i>
                   </div>
-                  <div className="alert-details">
-                    <div className="alert-deadline">
-                      <i className="bi bi-calendar-x"></i>
-                      Deadline prévue : {formatDate(alert.date_fin)}
+                  <div className="alert-content">
+                    <div className="alert-message">
+                      Phase "<strong>{alert.libelle_phase}</strong>" du projet "
+                      <strong>{alert.nom_projet}</strong>" est en retard
                     </div>
-                    <div className="alert-status">
-                      <i className="bi bi-clock-history"></i>
-                      {alert.daysLate === 0
-                        ? "Échue aujourd'hui"
-                        : `${alert.daysLate} jour${
-                            alert.daysLate > 1 ? "s" : ""
-                          } de retard`}
+                    <div className="alert-footer">
+                      <div className="alert-date">
+                        <i className="bi bi-calendar-x"></i>
+                        Deadline : {formatDate(alert.date_fin)}
+                      </div>
+                      <div className={`alert-status ${alert.daysLate === 0 ? 'today' : alert.daysLate <= 7 ? 'recent' : 'critical'}`}>
+                        {alert.daysLate === 0
+                          ? "Échue aujourd'hui"
+                          : `${alert.daysLate}j de retard`}
+                      </div>
                     </div>
                     <div className="alert-missing">
                       <i className="bi bi-question-circle"></i>
-                      Toujours pas de date de fin réelle
+                      Aucune date de fin réelle
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        )}
+              ))}
+            </div>
+          )}
+        </div>
 
-        <div className="alerts-footer">
+        <div className="alert-sidebar-footer">
           <button
-            className="btn-refresh"
+            className="alert-refresh-btn"
             onClick={loadAlerts}
             disabled={loading}
           >
             <i className="bi bi-arrow-clockwise"></i>
             Actualiser
-          </button>
-          <button className="btn-close" onClick={handleClose}>
-            Fermer
           </button>
         </div>
       </div>

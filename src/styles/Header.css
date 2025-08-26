@@ -1,4 +1,4 @@
-/* Header Container */
+/* Header Container - INCHANGÉ */
 .container-header {
   background: #181835;
   border-bottom: 1px solid #282850;
@@ -18,7 +18,7 @@
   margin: 0 auto;
 }
 
-/* Notification Icons */
+/* Notification Icons - INCHANGÉ */
 .navbar-item1 {
   position: relative;
   display: flex;
@@ -43,7 +43,7 @@
   color: #514f84;
 }
 
-/* Notification Dots */
+/* Notification Dots - INCHANGÉ */
 .notification-dot {
   position: absolute;
   top: -2px;
@@ -62,9 +62,10 @@
   background: #ccc;
 }
 
-/* Profile Container */
+/* Profile Container - MODIFIÉ pour le cursor pointer */
 .header-profile-container {
   position: relative;
+  cursor: pointer;
 }
 
 .header-profile-preview {
@@ -72,6 +73,7 @@
   align-items: center;
   gap: 12px;
   transition: all 0.3s ease;
+  cursor: pointer;
 }
 
 .header-profile-preview:hover {
@@ -124,61 +126,131 @@
   line-height: 1.2;
 }
 
-/* Profile Dropdown */
-.header-profile-dropdown {
-  position: absolute;
-  top: calc(100% + 8px);
+/* NOUVEAU: Profile Sidebar (comme le notification screen) */
+.profile-screen-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
   right: 0;
-  background: #282850;
-  border-radius: 12px;
-  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5);
-  min-width: 400px;
-  min-height: 480px;
-  z-index: 1001;
-  animation: dropdownFadeIn 0.4s ease;
+  bottom: 0;
+  background-color: rgba(24, 24, 53, 0.6);
+  display: flex;
+  justify-content: flex-end;
+  align-items: stretch;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.profile-screen-container {
+  background-color: #181835;
+  width: 400px;
+  height: 100vh;
   display: flex;
   flex-direction: column;
+  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+  border-left: 1px solid #282850;
+  animation: slideInFromRight 0.3s ease-out;
+  overflow: hidden;
 }
 
-@keyframes dropdownFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-15px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.profile-screen-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 25px;
+  border-bottom: 1px solid #282850;
+  background-color: #1a1a3a;
+  flex-shrink: 0;
 }
 
-.header-profile-info {
-  padding: 24px;
-  border-bottom: 1px solid #3a3a5c;
+.profile-screen-title {
+  color: #fff;
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.profile-screen-title i {
+  color: #6b69af;
+  font-size: 22px;
+}
+
+.profile-screen-close {
+  background: none;
+  border: none;
+  color: #d9e4f6;
+  font-weight: 800;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 8px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+}
+
+.profile-screen-close:hover {
+  color: #fff;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+}
+
+.profile-screen-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0;
+  background-color: #181835;
+}
+
+.profile-screen-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.profile-screen-content::-webkit-scrollbar-track {
+  background: #1a1a3a;
+}
+
+.profile-screen-content::-webkit-scrollbar-thumb {
+  background: #374151;
+  border-radius: 3px;
+}
+
+.profile-screen-content::-webkit-scrollbar-thumb:hover {
+  background: #4b5563;
+}
+
+/* Profile Info Section dans le sidebar */
+.profile-info-section {
+  padding: 30px 25px;
+  border-bottom: 1px solid #282850;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 16px;
-  flex-shrink: 0;
   text-align: center;
+  gap: 20px;
 }
 
-.header-profile-avatar {
-  width: 80px;
-  height: 80px;
+.profile-avatar-large {
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
   overflow: hidden;
-  border: 3px solid #514f84;
-  margin-bottom: 8px;
+  border: 4px solid #514f84;
+  box-shadow: 0 8px 32px rgba(81, 79, 132, 0.3);
 }
 
-.header-avatar-image {
+.profile-avatar-image-large {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.header-default-avatar {
+.profile-default-avatar-large {
   width: 100%;
   height: 100%;
   background: linear-gradient(135deg, #514f84, #686ae1);
@@ -187,192 +259,194 @@
   justify-content: center;
   font-weight: bold;
   color: white;
-  font-size: 28px;
+  font-size: 36px;
 }
 
-.header-profile-details {
+.profile-details {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 4px;
+  gap: 8px;
 }
 
-.header-profile-name {
+.profile-name {
   color: #ffffff;
-  font-size: 20px;
+  font-size: 24px;
   font-weight: 700;
   margin: 0;
   line-height: 1.2;
 }
 
-.header-profile-email {
+.profile-email {
   color: #8b8bb3;
-  font-size: 14px;
+  font-size: 16px;
   margin: 0;
   line-height: 1.2;
 }
 
-.header-profile-poste {
+.profile-poste {
   color: #ccc;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 500;
   margin: 0;
   letter-spacing: 1px;
   opacity: 0.8;
 }
 
-/* Extended Modal */
-.header-extended-modal {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  animation: modalSlideIn 0.4s ease;
-}
-
-@keyframes modalSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Calendar Section */
-.header-calendar-section {
-  padding: 24px;
+/* Calendar Section dans le sidebar */
+.profile-calendar-section {
+  padding: 25px;
   border-bottom: 1px solid #282850;
-  flex: 1;
 }
 
-.calendar-title1 {
-  color: #ccc;
+.profile-calendar-title {
+  color: #6b69af;
   font-size: 16px;
-  font-weight: 600;
-  margin: 0 0 20px 0;
+  font-weight: 700;
+  margin: 0 0 25px 0;
   text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
 }
 
-.calendar-week1 {
+.profile-calendar-title i {
+  font-size: 18px;
+}
+
+.profile-calendar-week {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 10px;
-  width: 100%;
-  max-width: 280px;
+  gap: 8px;
+  max-width: 350px;
+  margin: 0 auto;
 }
 
-.calendar-day1 {
+.profile-calendar-day {
   background: #1e1e42;
   border-radius: 8px;
-  padding: 15px 6px;
+  padding: 12px 4px;
   text-align: center;
   transition: all 0.3s ease;
   cursor: pointer;
-  min-height: 60px;
+  min-height: 50px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
+  gap: 4px;
 }
 
-.calendar-day1:hover {
+.profile-calendar-day:hover {
   background: #514f84;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(81, 79, 132, 0.4);
 }
 
-.calendar-day1.today {
+.profile-calendar-day.today {
   background: linear-gradient(135deg, #514f84, #686ae1);
-  border-color: #ccc;
   box-shadow: 0 6px 20px rgba(81, 79, 132, 0.5);
 }
 
-.day-name {
+.profile-day-name {
   color: #8b8bb3;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  margin-bottom: 8px;
 }
 
-.calendar-day.today .day-name {
+.profile-calendar-day.today .profile-day-name {
   color: #ffffff;
 }
 
-.day-number {
+.profile-day-number {
   color: #ccc;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 700;
 }
 
-.calendar-day.today .day-number {
+.profile-calendar-day.today .profile-day-number {
   color: #ffffff;
 }
 
-/* Menu Items */
-.header-profile-menu-items {
-  padding: 24px;
+/* Menu Actions Section */
+.profile-actions-section {
+  padding: 25px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  gap: 14px;
-  flex-shrink: 0;
+  gap: 15px;
 }
 
-.header-menu-button {
-  width: 100%;
-  max-width: 280px;
-  padding: 14px 20px;
+.profile-action-button {
+  width: 80%;
+  padding: 15px 20px;
   border: none;
-  border-radius: 8px;
+  border-radius: 7px;
   cursor: pointer;
   transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 12px;
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 15px;
+  font-weight: 600;
   text-align: center;
 }
 
-.header-password-button {
-  background: #514f84;
+.profile-password-button {
+  background: linear-gradient(135deg, #514f84, #686ae1);
   color: #ffffff;
-  border: 1px solid #514f84;
+  border: 1px solid transparent;
+  box-shadow: 0 4px 12px rgba(81, 79, 132, 0.3);
 }
 
-.header-password-button:hover {
-  background: #686ae1;
-  color: #ffffff;
-  border-color: #686ae1;
+.profile-password-button:hover {
+  background: linear-gradient(135deg, #686ae1, #7c7ce5);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(104, 106, 225, 0.4);
+  box-shadow: 0 6px 20px rgba(104, 106, 225, 0.5);
 }
 
-.header-logout-button {
+.profile-logout-button {
   background: transparent;
   color: #ccc;
   border: 1px solid #514f84;
 }
 
-.header-logout-button:hover {
-  background: #d24643;
+.profile-logout-button:hover {
+  background: linear-gradient(135deg, #c94543, #dc2626);
   color: white;
-  border: none;
+  border-color: transparent;
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
 }
 
-.header-key-icon,
-.header-logout-icon {
+.profile-button-icon {
   font-size: 16px;
 }
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInFromRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* ANCIEN Profile Dropdown - SUPPRIMÉ pour éviter les conflits */
+/* Toutes les classes .header-profile-dropdown sont supprimées */
 
 /* Responsive Design */
 @media (max-width: 768px) {
@@ -380,44 +454,62 @@
     padding: 8px 16px;
   }
 
-  .header-profile-dropdown {
-    min-width: 320px;
-    right: -20px;
-    min-height: 450px;
+  .profile-screen-container {
+    width: 100%;
+    max-width: 100%;
   }
 
-  .calendar-week {
-    gap: 8px;
-    max-width: 260px;
+  .profile-screen-header {
+    padding: 18px 20px;
   }
 
-  .calendar-day {
-    padding: 10px 4px;
-    min-height: 55px;
+  .profile-screen-title {
+    font-size: 18px;
   }
 
-  .day-name {
-    font-size: 10px;
+  .profile-info-section {
+    padding: 25px 20px;
   }
 
-  .day-number {
-    font-size: 14px;
+  .profile-calendar-section {
+    padding: 20px;
   }
 
-  .header-menu-button {
-    max-width: 260px;
-    padding: 12px 18px;
+  .profile-calendar-week {
+    gap: 6px;
+    max-width: 300px;
+  }
+
+  .profile-calendar-day {
+    padding: 10px 3px;
+    min-height: 45px;
+  }
+
+  .profile-day-name {
+    font-size: 9px;
+  }
+
+  .profile-day-number {
+    font-size: 12px;
+  }
+
+  .profile-actions-section {
+    padding: 20px;
+  }
+
+  .profile-action-button {
+    padding: 14px 18px;
   }
 }
 
 @media (max-width: 480px) {
   .header-profile-preview {
-    padding: 6px 10px;
+    gap: 8px;
   }
 
   .header-profile-avatar-preview {
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
   }
 
   .header-profile-name-preview {
@@ -428,17 +520,11 @@
     font-size: 11px;
   }
 
-  .header-profile-dropdown {
-    min-width: 280px;
-    right: -30px;
-    min-height: 420px;
+  .profile-screen-container {
+    width: 100vw;
   }
 
-  .calendar-week {
-    max-width: 240px;
-  }
-
-  .header-menu-button {
-    max-width: 240px;
+  .profile-calendar-week {
+    max-width: 280px;
   }
 }

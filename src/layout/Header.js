@@ -5,15 +5,14 @@ import ModalUpdatePassword from "../modals/ModalUpdatePassword";
 import "../styles/Header.css";
 import AlertScreen from "../screen/AlertScreen";
 import NotificationScreen from "../screen/NotificationScreen";
+import ProfileScreen from "../modals/ProfileScreen"; // Nouveau import
 import { DevisService } from "../services/DevisService";
 import { TacheService } from "../services/TacheService";  
 
 const Header = () => {
   const navigate = useNavigate();
-  const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [userInfo, setUserInfo] = useState(null);
-  const dropdownRef = useRef(null);
 
   const [showAlerts, setShowAlerts] = useState(false);
   const [hasAlerts, setHasAlerts] = useState(false);
@@ -22,8 +21,8 @@ const Header = () => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [hasNotifications, setHasNotifications] = useState(false);
 
-  // État pour contrôler l'affichage du modal étendu
-  const [showExtendedModal, setShowExtendedModal] = useState(false);
+  // NOUVEAU: État pour le profile sidebar
+  const [showProfile, setShowProfile] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -136,46 +135,29 @@ const Header = () => {
     }
   }, [userInfo]);
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setShowProfileMenu(false);
-        setShowExtendedModal(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
   const handleLogout = () => {
     try {
       localStorage.removeItem("token");
       localStorage.removeItem("matricule");
-      setShowProfileMenu(false);
-      setShowExtendedModal(false);
+      setShowProfile(false); // Fermer le profile sidebar
       navigate("/login");
     } catch (error) {
       console.error("Erreur lors de la déconnexion:", error);
     }
   };
 
-  const toggleProfileMenu = () => {
-    setShowProfileMenu(!showProfileMenu);
-    setShowExtendedModal(false);
+  // NOUVEAU: Fonction pour ouvrir/fermer le profile sidebar
+  const toggleProfileSidebar = () => {
+    setShowProfile(!showProfile);
   };
 
   const openPasswordModal = () => {
     setShowPasswordModal(true);
-    setShowProfileMenu(false);
-    setShowExtendedModal(false);
+    setShowProfile(false); // Fermer le profile sidebar
   };
 
   const closePasswordModal = () => {
     setShowPasswordModal(false);
-  };
-
-  const toggleExtendedModal = () => {
-    setShowExtendedModal(!showExtendedModal);
   };
 
   // Fonction pour générer l'avatar à partir de l'email
@@ -186,26 +168,6 @@ const Header = () => {
     return `https://www.gravatar.com/avatar/${emailHash}?d=identicon&s=40`;
   };
 
-  // Fonction pour obtenir les jours de la semaine
-  const getWeekDays = () => {
-    const today = new Date();
-    const days = [];
-    const startOfWeek = new Date(today);
-    startOfWeek.setDate(today.getDate() - today.getDay() + 1); // Lundi
-
-    for (let i = 0; i < 7; i++) {
-      const day = new Date(startOfWeek);
-      day.setDate(startOfWeek.getDate() + i);
-      days.push({
-        date: day,
-        isToday: day.toDateString() === today.toDateString(),
-        dayName: day.toLocaleDateString('fr-FR', { weekday: 'short' }),
-        dayNumber: day.getDate()
-      });
-    }
-    return days;
-  };
-
   if (!userInfo) {
     return (
       <header className="container-header">
@@ -213,8 +175,6 @@ const Header = () => {
       </header>
     );
   }
-
-  const weekDays = getWeekDays();
 
   return (
     <>
@@ -240,13 +200,12 @@ const Header = () => {
 
           <div
             className="navbar-item1 header-profile-container"
-            onClick={toggleProfileMenu}
-            ref={dropdownRef}
+            onClick={toggleProfileSidebar}
             style={{ cursor: 'pointer' }}
           >
             <div className="header-profile-preview">
               <div className="header-profile-avatar-preview">
-                { getAvatarUrl(userInfo.email) ? (
+                {getAvatarUrl(userInfo.email) ? (
                   <img
                     src={getAvatarUrl(userInfo.email)}
                     alt="Avatar"
@@ -263,88 +222,33 @@ const Header = () => {
                 <p className="header-profile-poste-preview">{userInfo.poste}</p>
               </div>
             </div>
-
-            {showProfileMenu && (
-              <div className="header-profile-dropdown">
-                <div className="header-profile-info">
-                  <div className="header-profile-avatar">
-                    {userInfo.avatar || getAvatarUrl(userInfo.email) ? (
-                      <img
-                        src={userInfo.avatar || getAvatarUrl(userInfo.email)}
-                        alt="Avatar"
-                        className="header-avatar-image"
-                      />
-                    ) : (
-                      <div className="header-default-avatar">
-                        {userInfo.name.charAt(0).toUpperCase()}
-                      </div>
-                    )}
-                  </div>
-                  <div className="header-profile-details">
-                    <h3 className="header-profile-name">{userInfo.name}</h3>
-                    <p className="header-profile-email">{userInfo.email}</p>
-                    <p className="header-profile-poste">{userInfo.poste}</p>
-                  </div>
-                </div>
-
-                  <div className="header-extended-modal">
-                    <div className="header-calendar-section">
-                      <h4 className="calendar-title1">Cette semaine</h4>
-                      <div className="calendar-week1">
-                        {weekDays.map((day, index) => (
-                          <div 
-                            key={index} 
-                            className={`calendar-day1 ${day.isToday ? 'today' : ''}`}
-                          >
-                            <div className="day-name">{day.dayName}</div>
-                            <div className="day-number">{day.dayNumber}</div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="header-profile-menu-items">
-                      <button
-                        className="header-menu-button header-password-button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          openPasswordModal();
-                        }}
-                        type="button"
-                      >
-                        <i className="bi bi-key-fill header-key-icon"></i>
-                        Changer le mot de passe
-                      </button>
-
-                      <button
-                        className="header-menu-button header-logout-button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleLogout();
-                        }}
-                        type="button"
-                      >
-                        <i className="bi bi-box-arrow-right header-logout-icon"></i>
-                        Déconnexion
-                      </button>
-                    </div>
-                  </div>
-              </div>
-            )}
           </div>
         </div>
       </header>
+
+      {/* NOUVEAU: ProfileScreen sidebar */}
+      <ProfileScreen
+        visible={showProfile}
+        onClose={() => setShowProfile(false)}
+        userInfo={userInfo}
+        onOpenPasswordModal={openPasswordModal}
+        onLogout={handleLogout}
+        getAvatarUrl={getAvatarUrl}
+      />
+
       <AlertScreen
         visible={showAlerts}
         onClose={() => setShowAlerts(false)}
         onRefresh={checkAlerts}
       />
+
       <NotificationScreen
         visible={showNotifications}
         onClose={() => setShowNotifications(false)}
         onRefresh={checkNotifications}
         matricule={userInfo.matricule}
       />
+
       <ModalUpdatePassword
         visible={showPasswordModal}
         onClose={closePasswordModal}

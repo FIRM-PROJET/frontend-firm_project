@@ -2,13 +2,13 @@
 
 /* NAVBAR CONTAINER */
 .navbar {
-  background: #181835;
+  background: linear-gradient(135deg, #181835, #282850);
   padding: 0.75rem 0.25rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   color: #E9DFFF;
-  border-right: 1px solid #3F3F42;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
   font-family: 'Bw Modelica';
   min-height: 100vh;
   width: 200px;
@@ -16,6 +16,7 @@
   left: 0;
   top: 0;
   z-index: 100;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
 }
 
 /* LOGO SECTION */
@@ -55,16 +56,17 @@
 .navbar-item {
   position: relative;
   cursor: pointer;
-  padding: 0.75rem 3.3rem; /* Padding plus équilibré */
-  border-radius: 5px;
-  transition: all 0.3s ease;
+  padding: 0.75rem 3.3rem;
+  border-radius: 8px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   align-items: center;
   font-family: 'Bw Modelica';
   overflow: hidden;
   border: 1px solid transparent;
   margin-bottom: 0.1rem;
-  min-height: 44px; /* Hauteur minimale pour un meilleur alignement */
+  min-height: 44px;
+  background: transparent;
 }
 
 .navbar-item-content {
@@ -82,22 +84,23 @@
   top: 0;
   width: 4px;
   height: 100%;
+  background: linear-gradient(180deg, #514f84, #686ae1);
   transform: scaleY(0);
-  transition: transform 0.3s ease;
-  border-radius: 0 1px 1px 0;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 0 2px 2px 0;
 }
 
 .navbar-item i {
   font-size: 1rem;
   color: #E9DFFF;
-  transition: color 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   flex-shrink: 0;
-  width: 16px; /* Largeur fixe pour un alignement cohérent */
-  height: 16px; /* Hauteur fixe */
+  width: 16px;
+  height: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  line-height: 1; /* Supprime l'espacement de ligne par défaut */
+  line-height: 1;
 }
 
 .navbar-text {
@@ -105,39 +108,71 @@
   font-size: 0.9rem;
   font-weight: 600;
   color: #E9DFFF;
-  transition: color 0.3s ease;
-  line-height: 1.2; /* Ligne de hauteur optimisée */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  line-height: 1.2;
   white-space: nowrap;
   display: flex;
-  align-items: center; /* Alignement vertical du texte */
+  align-items: center;
   height: 100%;
 }
 
 /* HOVER EFFECTS */
 .navbar-item:hover {
-  background: transparent;
-  border-color: rgba(105, 100, 167, 0.3);
-  box-shadow: 0 4px 20px rgba(105, 100, 167, 0.3);
-  transform: translateX(5px);
+   background: linear-gradient(135deg, #181835, #282850);
+  border-color: none;
+  box-shadow: 
+    inset 0 2px 8px rgba(0, 0, 0, 0.3),
+    0 2px 10px rgba(81, 79, 132, 0.3);
+  transform: translateX(3px);
 }
 
 .navbar-item:hover::before {
   transform: scaleY(1);
-  background: #514f84;
 }
 
 .navbar-item:hover i {
-  color: #8682c0;
+  color: #ffffff;
+  transform: scale(1.1);
 }
 
 .navbar-item:hover .navbar-text {
-  color: #8682c0;
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
-/* ACTIVE STATE */
-.navbar-item:active {
-  transform: translateX(0);
-  box-shadow: 0 2px 10px rgba(105, 100, 167, 0.3);
+/* ACTIVE STATE - Style qui reste au clic */
+.navbar-item:active,
+.navbar-item.active {
+  background: linear-gradient(135deg, #181835, #282850);
+  border-color: none;
+  box-shadow: 
+    inset 0 2px 8px rgba(0, 0, 0, 0.3),
+    0 2px 10px rgba(81, 79, 132, 0.3);
+  transform: translateX(3px);
+}
+
+.navbar-item:active::before,
+.navbar-item.active::before {
+  transform: scaleY(1);
+  background: linear-gradient(180deg, #514f84, #686ae1);
+}
+
+.navbar-item:active i,
+.navbar-item.active i {
+  color: #E9DFFF;
+  transform: scale(1.05);
+}
+
+.navbar-item:active .navbar-text,
+.navbar-item.active .navbar-text {
+  color: #E9DFFF;
+  font-weight: 700;
+}
+
+/* FOCUS STATE pour l'accessibilité */
+.navbar-item:focus {
+  outline: 2px solid rgba(233, 223, 255, 0.5);
+  outline-offset: 2px;
 }
 
 /* LOADING & ERROR STATES */
@@ -152,7 +187,7 @@
 }
 
 .navbar-error {
-  color: #ff6b6b;
+  color: #ff8a95;
 }
 
 /* RESPONSIVE DESIGN */
