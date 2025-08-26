@@ -16,11 +16,14 @@ const Header = () => {
   const dropdownRef = useRef(null);
 
   const [showAlerts, setShowAlerts] = useState(false);
-  const [alertsCount, setAlertsCount] = useState(0);
+  const [hasAlerts, setHasAlerts] = useState(false);
 
   // États pour les notifications
   const [showNotifications, setShowNotifications] = useState(false);
-  const [notificationsCount, setNotificationsCount] = useState(0);
+  const [hasNotifications, setHasNotifications] = useState(false);
+
+  // État pour contrôler l'affichage du modal étendu
+  const [showExtendedModal, setShowExtendedModal] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -30,8 +33,8 @@ const Header = () => {
         setUserInfo({
           name: decoded.nom || decoded.name || "Utilisateur",
           email: decoded.email || "",
-          avatar: decoded.avatar || null,
           matricule: decoded.matricule || "",
+          poste: decoded.intitule_poste,
         });
       } catch (err) {
         console.error("Erreur de décodage du token :", err);
@@ -45,14 +48,14 @@ const Header = () => {
 
       if (!phases || !Array.isArray(phases)) {
         console.error("Les données reçues ne sont pas un tableau:", phases);
-        setAlertsCount(0);
+        setHasAlerts(false);
         return;
       }
 
       const today = new Date();
       today.setHours(23, 59, 59, 999);
 
-      const alertsCount = phases.filter((phase) => {
+      const alertsExist = phases.some((phase) => {
         if (!phase || typeof phase !== 'object') {
           return false;
         }
@@ -71,13 +74,12 @@ const Header = () => {
           }
         }
         return false;
-      }).length;
+      });
 
-      console.log(`Nombre d'alertes trouvées: ${alertsCount}`);
-      setAlertsCount(alertsCount);
+      setHasAlerts(alertsExist);
     } catch (error) {
       console.error("Erreur lors de la récupération des alertes:", error);
-      setAlertsCount(0);
+      setHasAlerts(false);
     }
   };
 
@@ -90,7 +92,7 @@ const Header = () => {
 
       if (!notifications || !Array.isArray(notifications)) {
         console.error("Les notifications reçues ne sont pas un tableau:", notifications);
-        setNotificationsCount(0);
+        setHasNotifications(false);
         return;
       }
 
@@ -111,11 +113,10 @@ const Header = () => {
         return expireDate > now; // Notifications non expirées
       });
 
-      console.log(`Nombre de notifications valides: ${validNotifications.length}`);
-      setNotificationsCount(validNotifications.length);
+      setHasNotifications(validNotifications.length > 0);
     } catch (error) {
       console.error("Erreur lors de la récupération des notifications:", error);
-      setNotificationsCount(0);
+      setHasNotifications(false);
     }
   };
 
@@ -139,6 +140,7 @@ const Header = () => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setShowProfileMenu(false);
+        setShowExtendedModal(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -150,6 +152,7 @@ const Header = () => {
       localStorage.removeItem("token");
       localStorage.removeItem("matricule");
       setShowProfileMenu(false);
+      setShowExtendedModal(false);
       navigate("/login");
     } catch (error) {
       console.error("Erreur lors de la déconnexion:", error);
@@ -158,15 +161,49 @@ const Header = () => {
 
   const toggleProfileMenu = () => {
     setShowProfileMenu(!showProfileMenu);
+    setShowExtendedModal(false);
   };
 
   const openPasswordModal = () => {
     setShowPasswordModal(true);
     setShowProfileMenu(false);
+    setShowExtendedModal(false);
   };
 
   const closePasswordModal = () => {
     setShowPasswordModal(false);
+  };
+
+  const toggleExtendedModal = () => {
+    setShowExtendedModal(!showExtendedModal);
+  };
+
+  // Fonction pour générer l'avatar à partir de l'email
+  const getAvatarUrl = (email) => {
+    if (!email) return null;
+    // Utiliser Gravatar comme service d'avatar basé sur l'email
+    const emailHash = btoa(email.toLowerCase().trim()).replace(/[^a-zA-Z0-9]/g, '');
+    return `https://www.gravatar.com/avatar/${emailHash}?d=identicon&s=40`;
+  };
+
+  // Fonction pour obtenir les jours de la semaine
+  const getWeekDays = () => {
+    const today = new Date();
+    const days = [];
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - today.getDay() + 1); // Lundi
+
+    for (let i = 0; i < 7; i++) {
+      const day = new Date(startOfWeek);
+      day.setDate(startOfWeek.getDate() + i);
+      days.push({
+        date: day,
+        isToday: day.toDateString() === today.toDateString(),
+        dayName: day.toLocaleDateString('fr-FR', { weekday: 'short' }),
+        dayNumber: day.getDate()
+      });
+    }
+    return days;
   };
 
   if (!userInfo) {
@@ -176,6 +213,8 @@ const Header = () => {
       </header>
     );
   }
+
+  const weekDays = getWeekDays();
 
   return (
     <>
@@ -187,25 +226,16 @@ const Header = () => {
             style={{ cursor: 'pointer' }}
           >
             <i className="bi bi-exclamation-diamond-fill header-alert-icon"></i>
-            {alertsCount > 0 && (
-              <span className="alert-badge">
-                {alertsCount > 99 ? "99+" : alertsCount}
-              </span>
-            )}
+            {hasAlerts && <div className="notification-dot alert-dot"></div>}
           </div>
 
-          {/* Div pour les notifications */}
           <div 
             className="navbar-item1 notification-icon notification-container"
             onClick={() => setShowNotifications(true)}
             style={{ cursor: 'pointer' }}
           >
             <i className="bi bi-bell-fill header-bell-icon"></i>
-            {notificationsCount > 0 && (
-              <span className="alert-badge">
-                {notificationsCount > 99 ? "99+" : notificationsCount}
-              </span>
-            )}
+            {hasNotifications && <div className="notification-dot notification-dot-item"></div>}
           </div>
 
           <div
@@ -214,55 +244,91 @@ const Header = () => {
             ref={dropdownRef}
             style={{ cursor: 'pointer' }}
           >
-            <span className="header-profile-icon">
-              <i className="bi bi-person-fill"></i>
-            </span>
+            <div className="header-profile-preview">
+              <div className="header-profile-avatar-preview">
+                { getAvatarUrl(userInfo.email) ? (
+                  <img
+                    src={getAvatarUrl(userInfo.email)}
+                    alt="Avatar"
+                    className="header-avatar-image-preview"
+                  />
+                ) : (
+                  <div className="header-default-avatar-preview">
+                    {userInfo.name.charAt(0).toUpperCase()}
+                  </div>
+                )}
+              </div>
+              <div className="header-profile-info-preview">
+                <h4 className="header-profile-name-preview">{userInfo.name}</h4>
+                <p className="header-profile-poste-preview">{userInfo.poste}</p>
+              </div>
+            </div>
 
             {showProfileMenu && (
               <div className="header-profile-dropdown">
                 <div className="header-profile-info">
                   <div className="header-profile-avatar">
-                    {userInfo.avatar ? (
+                    {userInfo.avatar || getAvatarUrl(userInfo.email) ? (
                       <img
-                        src={userInfo.avatar}
+                        src={userInfo.avatar || getAvatarUrl(userInfo.email)}
                         alt="Avatar"
                         className="header-avatar-image"
                       />
                     ) : (
-                      <i className="bi bi-person-circle header-default-avatar"></i>
+                      <div className="header-default-avatar">
+                        {userInfo.name.charAt(0).toUpperCase()}
+                      </div>
                     )}
                   </div>
                   <div className="header-profile-details">
                     <h3 className="header-profile-name">{userInfo.name}</h3>
                     <p className="header-profile-email">{userInfo.email}</p>
+                    <p className="header-profile-poste">{userInfo.poste}</p>
                   </div>
                 </div>
 
-                <div className="header-profile-menu-items">
-                  <button
-                    className="header-menu-button header-password-button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      openPasswordModal();
-                    }}
-                    type="button"
-                  >
-                    <i className="bi bi-key-fill header-key-icon"></i>
-                    Changer le mot de passe
-                  </button>
+                  <div className="header-extended-modal">
+                    <div className="header-calendar-section">
+                      <h4 className="calendar-title1">Cette semaine</h4>
+                      <div className="calendar-week1">
+                        {weekDays.map((day, index) => (
+                          <div 
+                            key={index} 
+                            className={`calendar-day1 ${day.isToday ? 'today' : ''}`}
+                          >
+                            <div className="day-name">{day.dayName}</div>
+                            <div className="day-number">{day.dayNumber}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
 
-                  <button
-                    className="header-menu-button header-logout-button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleLogout();
-                    }}
-                    type="button"
-                  >
-                    <i className="bi bi-box-arrow-right header-logout-icon"></i>
-                    Déconnexion
-                  </button>
-                </div>
+                    <div className="header-profile-menu-items">
+                      <button
+                        className="header-menu-button header-password-button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openPasswordModal();
+                        }}
+                        type="button"
+                      >
+                        <i className="bi bi-key-fill header-key-icon"></i>
+                        Changer le mot de passe
+                      </button>
+
+                      <button
+                        className="header-menu-button header-logout-button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleLogout();
+                        }}
+                        type="button"
+                      >
+                        <i className="bi bi-box-arrow-right header-logout-icon"></i>
+                        Déconnexion
+                      </button>
+                    </div>
+                  </div>
               </div>
             )}
           </div>

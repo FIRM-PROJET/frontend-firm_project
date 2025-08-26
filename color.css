@@ -1,14 +1,13 @@
-.test{
-    color: #181835;
-    color: #282850;
-    color: #514f84;
-    color: #ccc;
-    
-    color: #f7e395;
-    color:#7cc48b;
-    color: #a1bcee;
-    background: linear-gradient(135deg, #10b981, #059669);
-    background: linear-gradient(135deg, #514f84, #686ae1);
+.test {
+  color: #181835;
+  color: #282850;
+  color: #514f84;
+  color: #ccc;
 
-
+  color: #f7e395;
+  color: #7cc48b;
+  color: #a1bcee;
+  background: linear-gradient(135deg, #10b981, #059669);
+  background: linear-gradient(135deg, #514f84, #686ae1);
+  background: linear-gradient(135deg, #514f84, #686ae1);
 }

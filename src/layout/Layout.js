@@ -25,7 +25,7 @@ const Layout = () => {
   );
 };
 
-const headerHeight = 80; // tu peux ajuster selon ta vraie hauteur
+const headerHeight = 60; // tu peux ajuster selon ta vraie hauteur
 
 const styles = {
   container: {
