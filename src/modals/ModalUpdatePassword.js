@@ -109,7 +109,7 @@ const ModalUpdatePassword = ({ visible, onClose, matricule }) => {
           <div className="password-modal-actions">
             <button type="button" onClick={onClose} disabled={loading} className="cancel-password-btn">Annuler</button>
             <button type="submit" disabled={loading} className="save-password-btn">
-              {loading ? "Modification..." : "Modifier le mot de passe"}
+              {loading ? "Modification..." : "Modifier"}
             </button>
           </div>
         </form>
