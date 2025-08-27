@@ -1,8 +1,8 @@
 .test {
-  color: #181835;
-  color: #282850;
-  color: #514f84;
-  color: #ccc;
+    color: #181835;
+    color: #282850;
+    color: #514f84;
+    color: #ccc;
   color:#d24643;
 
   color: #f7e395;
@@ -11,4 +11,6 @@
   background: linear-gradient(135deg, #10b981, #059669);
   background: linear-gradient(135deg, #514f84, #686ae1);
   background: linear-gradient(135deg, #686ae1, #7c3aed);
+    background: linear-gradient(135deg, #afaecf, #5b4cb1);
+
 }
