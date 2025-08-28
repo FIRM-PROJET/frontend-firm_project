@@ -429,8 +429,7 @@
 /* Jour actuel */
 .calendar-day.today {
   background: linear-gradient(135deg, #5b4cb1, #5b4cb1);
-  box-shadow: 0 0 4px rgba(175, 174, 207, 0.3);
-  border: 2px solid #afaecf;
+  box-shadow: 0 0 4px rgba(219, 219, 234, 0.4);
 }
 
 .calendar-day.today .day-number {
