@@ -298,15 +298,13 @@
 }
 
 .status-text.en-cours {
-  color: #fbbf24;
-  background: rgba(245, 158, 11, 0.1);
-  border-color: rgba(245, 158, 11, 0.3);
+      background: rgba(247, 227, 149, 0.2);
+  color: #d4c578;
 }
 
 .status-text.termine {
   color: #34d399;
-  background: rgba(16, 185, 129, 0.1);
-  border-color: rgba(16, 185, 129, 0.3);
+  background: rgba(22, 208, 146, 0.1);
 }
 
 .task-dates {

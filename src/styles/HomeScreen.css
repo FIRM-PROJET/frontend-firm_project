@@ -428,7 +428,7 @@
 
 /* Jour actuel */
 .calendar-day.today {
-  background: linear-gradient(135deg, #5b4cb1, #5b4cb1);
+  background: linear-gradient(135deg, #8786ac, #8786ac);
   box-shadow: 0 0 4px rgba(219, 219, 234, 0.4);
 }
 

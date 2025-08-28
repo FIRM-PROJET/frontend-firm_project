@@ -222,7 +222,7 @@ const CalendarView = ({ taches, allTaches, onTacheClick, userInfo }) => {
       case "Non démarré":
         return "#6366f1";
       case "En cours":
-        return "#f7e395";
+        return "#e9cf64ff";
       case "Terminé":
         return "#10b981";
       default:

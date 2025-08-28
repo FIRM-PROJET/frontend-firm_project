@@ -49,6 +49,10 @@ const TacheScreen = () => {
     navigate("/tache/new");
   };
 
+  const handleNavigateToList = () => {
+    setActiveTab("Liste");
+  };
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -147,6 +151,7 @@ const TacheScreen = () => {
 
     return grouped;
   };
+
   const getFileIcon = (fileName) => {
     const extension = fileName.split(".").pop()?.toLowerCase();
 
@@ -219,6 +224,24 @@ const TacheScreen = () => {
     });
   };
 
+  const getKanbanTaches = () => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    return taches.filter((tache) => {
+      const dateDebut = new Date(tache.date_debut);
+      const dateFinPrevu = new Date(tache.date_fin_prevu);
+      const dateFinReelle = tache.date_fin_reelle;
+      dateDebut.setHours(0, 0, 0, 0);
+      dateFinPrevu.setHours(0, 0, 0, 0);
+      return (
+        dateDebut.getTime() <= today.getTime() &&
+        dateFinPrevu.getTime() >= today.getTime() &&
+        (!dateFinReelle || dateFinReelle.trim() === "")
+      );
+    });
+  };
+
   const getOngoingTasks = () => {
     return taches.filter((tache) => tache.statut === "En cours");
   };
@@ -245,7 +268,7 @@ const TacheScreen = () => {
     const total = data.nonDemarre + data.enCours + data.termine;
     if (total === 0) return <div className="no-data">Aucune donnée</div>;
 
-    const radius = 45;
+    const radius = 35;
     const circumference = 2 * Math.PI * radius;
 
     const nonDemarrePercent = (data.nonDemarre / total) * 100;
@@ -259,61 +282,61 @@ const TacheScreen = () => {
 
     return (
       <div className="donut-container">
-        <svg width="120" height="120" className="donut-chart">
+        <svg width="90" height="90" className="donut-chart">
           <circle
-            cx="60"
-            cy="60"
+            cx="45"
+            cy="45"
             r={radius}
             fill="transparent"
             stroke="#404040"
-            strokeWidth="20"
+            strokeWidth="12"
           />
           {data.nonDemarre > 0 && (
             <circle
-              cx="60"
-              cy="60"
+              cx="45"
+              cy="45"
               r={radius}
               fill="transparent"
               stroke="#514f84"
-              strokeWidth="20"
+              strokeWidth="12"
               strokeDasharray={`${
                 (nonDemarrePercent / 100) * circumference
               } ${circumference}`}
               strokeDashoffset={-nonDemarreOffset}
-              transform="rotate(-90 60 60)"
+              transform="rotate(-90 45 45)"
             />
           )}
           {data.enCours > 0 && (
             <circle
-              cx="60"
-              cy="60"
+              cx="45"
+              cy="45"
               r={radius}
               fill="transparent"
-              stroke="#181835"
-              strokeWidth="20"
+              stroke="#f7e395"
+              strokeWidth="12"
               strokeDasharray={`${
                 (enCoursPercent / 100) * circumference
               } ${circumference}`}
               strokeDashoffset={-enCoursOffset}
-              transform="rotate(-90 60 60)"
+              transform="rotate(-90 45 45)"
             />
           )}
           {data.termine > 0 && (
             <circle
-              cx="60"
-              cy="60"
+              cx="45"
+              cy="45"
               r={radius}
               fill="transparent"
-              stroke="#b298eaff"
-              strokeWidth="20"
+              stroke="#7cc48b"
+              strokeWidth="12"
               strokeDasharray={`${
                 (terminePercent / 100) * circumference
               } ${circumference}`}
               strokeDashoffset={-termineOffset}
-              transform="rotate(-90 60 60)"
+              transform="rotate(-90 45 45)"
             />
           )}
-          <text x="60" y="65" textAnchor="middle" className="donut-center-text">
+          <text x="45" y="50" textAnchor="middle" className="donut-center-text">
             {total}
           </text>
         </svg>
@@ -321,25 +344,100 @@ const TacheScreen = () => {
           <div className="legend-item">
             <span
               className="legend-color"
-              style={{ backgroundColor: "#514f84" }}
+              style={{ background: "linear-gradient(135deg, #514f84, #6b5bb8)" }}
             ></span>
             <span>Non démarré ({data.nonDemarre})</span>
           </div>
           <div className="legend-item">
             <span
               className="legend-color"
-              style={{ backgroundColor: "#181835" }}
+              style={{ background: "linear-gradient(135deg, #f7e395, #f4d03f)" }}
             ></span>
             <span>En cours ({data.enCours})</span>
           </div>
           <div className="legend-item">
             <span
               className="legend-color"
-              style={{ backgroundColor: "#b298eaff" }}
+              style={{ background: "linear-gradient(135deg, #7cc48b, #5dbd72)" }}
             ></span>
             <span>Terminé ({data.termine})</span>
           </div>
         </div>
+      </div>
+    );
+  };
+
+  const KanbanBoard = ({ taches }) => {
+    const groupedTaches = {
+      "Non démarré": taches.filter((t) => t.statut === "Non démarré"),
+      "En cours": taches.filter((t) => t.statut === "En cours"),
+      "Terminé": taches.filter((t) => t.statut === "Terminé"),
+    };
+
+    const columnConfig = {
+      "Non démarré": {
+        color: "#514f84",
+        gradient: "linear-gradient(135deg, #514f84, #6b5bb8)",
+        icon: "bi-pause-circle"
+      },
+      "En cours": {
+        color: "#f7e395",
+        gradient: "linear-gradient(135deg, #dfc14aff, #efdf9eff)",
+        icon: "bi-clock"
+      },
+      "Terminé": {
+        color: "#7cc48b",
+        gradient: "linear-gradient(135deg, #7cc48b, #5dbd72)",
+        icon: "bi-check-circle"
+      }
+    };
+
+    const isOverdue = (dateFinPrevu, statut) => {
+      if (statut === "Terminé") return false;
+      const today = new Date();
+      const echeance = new Date(dateFinPrevu);
+      return echeance < today;
+    };
+
+    return (
+      <div className="kanban-board">
+        {Object.entries(groupedTaches).map(([statut, tachesStatut]) => (
+          <div key={statut} className="kanban-column">
+            <div 
+              className="kanban-header"
+              style={{ background: columnConfig[statut].gradient }}
+            >
+              <div className="kanban-title">
+                <i className={`bi ${columnConfig[statut].icon}`}></i>
+                <span>{statut}</span>
+                <span className="kanban-count">({tachesStatut.length})</span>
+              </div>
+            </div>
+            <div className="kanban-content">
+              {tachesStatut.length > 0 ? (
+                tachesStatut.map((tache) => (
+                  <div
+                    key={tache.ref_tache}
+                    className={`kanban-card ${isOverdue(tache.date_fin_prevu, tache.statut) ? 'overdue' : ''}`}
+                    onClick={() => handleTacheClick(tache)}
+                  >
+                    <div className="kanban-card-title-simple">
+                      {tache.nom_tache}
+                      {isOverdue(tache.date_fin_prevu, tache.statut) && (
+                        <i className="bi bi-exclamation-triangle-fill overdue-icon"></i>
+                      )}
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="kanban-empty">
+                  <i className={`bi ${columnConfig[statut].icon}`}></i>
+                  <p>Aucune tâche</p>
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
       </div>
     );
   };
@@ -375,6 +473,7 @@ const TacheScreen = () => {
   }
 
   const tachesAujourdhui = getTachesAujourdhui();
+  const kanbanTaches = getKanbanTaches();
   const ongoingTasks = getOngoingTasks();
   const statusStats = getStatusStats();
 
@@ -383,143 +482,67 @@ const TacheScreen = () => {
       case "Aperçu":
         return (
           <>
-            {/* Trois sections alignées */}
-            <div className="summary-grid">
-              <div className="summary-card">
-                <div className="summary-header">
+            {/* Layout avec Kanban à gauche et sections à droite */}
+            <div className="dashboard-grid">
+              {/* Tableau Kanban à gauche */}
+              <div className="kanban-section">
+                <div className="section-header1">
                   <h3>
-                    <i className="bi bi-calendar-day-fill"></i> Aujourd'hui
+                    <i className="bi bi-kanban"></i>
+                    Tâches d'aujourd'hui
                   </h3>
                 </div>
-                <div className="summary-content">
-                  <div className="task-list-container">
-                    {tachesAujourdhui.length > 0 ? (
-                      <div className="task-mini-list">
-                        {tachesAujourdhui.slice(0, 3).map((tache) => (
-                          <div
-                            key={tache.ref_tache}
-                            className="task-mini-item"
-                            onClick={() => handleTacheClick(tache)}
-                            data-priority={tache.priorite?.toLowerCase()}
-                          >
-                            <div className="task-mini-title">
-                              {tache.nom_tache}
-                            </div>
-                            <div className="task-mini-ref">
-                              {tache.description}
-                            </div>
-                          </div>
-                        ))}
-                        {tachesAujourdhui.length > 3 && (
-                          <div className="task-mini-more">
-                            +{tachesAujourdhui.length - 3} autres
-                          </div>
-                        )}
-                      </div>
+                <KanbanBoard taches={kanbanTaches} />
+              </div>
+
+              {/* Colonne de droite avec statuts et tâches récentes */}
+              <div className="right-column">
+                {/* Section Statuts */}
+                <div className="status-section">
+                  <div className="section-header1">
+                    <h3>
+                      <i className="bi bi-pie-chart-fill"></i> Statuts
+                    </h3>
+                  </div>
+                  <div className="status-content">
+                    <DonutChart data={statusStats} />
+                  </div>
+                </div>
+
+                {/* Section Tâches récentes */}
+                <div className="recent-tasks-mini-section">
+                  <div className="section-header1">
+                    <h3>
+                      <i className="bi bi-clock-history"></i>
+                      Tâches récentes
+                    </h3>
+                    <button className="view-list-btn" onClick={handleNavigateToList}>
+                      <i className="bi bi-list-ul"></i>
+                      Voir la liste
+                    </button>
+                  </div>
+                  <div className="recent-tasks-mini-list">
+                    {taches.length > 0 ? (
+                      taches.slice(0, 5).map((tache) => (
+                        <div
+                          key={tache.ref_tache}
+                          className="recent-task-mini-item"
+                          onClick={() => handleTacheClick(tache)}
+                          data-status={tache.statut}
+                        >
+                          <div className="task-mini-indicator"></div>
+                          <div className="task-mini-title">{tache.nom_tache}</div>
+                        </div>
+                      ))
                     ) : (
                       <div className="no-tasks-mini">
-                        <i className="bi bi-check-circle"></i>
-                        <span>Aucune tâche aujourd'hui</span>
+                        <i className="bi bi-clipboard-x"></i>
+                        <span>Aucune tâche</span>
                       </div>
                     )}
                   </div>
                 </div>
               </div>
-
-              <div className="summary-card">
-                <div className="summary-header">
-                  <h3>
-                    <i className="bi bi-clock-fill"></i> En cours
-                  </h3>
-                </div>
-                <div className="summary-content">
-                  <div className="task-list-container">
-                    {ongoingTasks.length > 0 ? (
-                      <div className="task-mini-list">
-                        {ongoingTasks.slice(0, 3).map((tache) => (
-                          <div
-                            key={tache.ref_tache}
-                            className="task-mini-item"
-                            onClick={() => handleTacheClick(tache)}
-                            data-priority={tache.priorite?.toLowerCase()}
-                          >
-                            <div className="task-mini-title">
-                              {tache.nom_tache}
-                            </div>
-                            <div className="task-mini-ref">
-                              {tache.description}
-                            </div>
-                          </div>
-                        ))}
-                        {ongoingTasks.length > 3 && (
-                          <div className="task-mini-more">
-                            +{ongoingTasks.length - 3} autres
-                          </div>
-                        )}
-                      </div>
-                    ) : (
-                      <div className="no-tasks-mini">
-                        <i className="bi bi-pause-circle"></i>
-                        <span>Aucune tâche en cours</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              <div className="summary-card">
-                <div className="summary-header">
-                  <h3>
-                    <i className="bi bi-pie-chart-fill"></i> Statuts
-                  </h3>
-                </div>
-                <div className="summary-content">
-                  <DonutChart data={statusStats} />
-                </div>
-              </div>
-            </div>
-
-            {/* Tâches récentes */}
-            <div className="recent-tasks-section">
-              <div className="section-header1">
-                <h2>
-                  <i className="bi bi-clock-history"></i>
-                  Tâches récentes
-                </h2>
-                <button className="view-all-btn1">
-                  <i className="bi bi-eye-fill"></i>
-                  Voir toutes
-                </button>
-              </div>
-
-              {taches.length > 0 ? (
-                <div className="recent-tasks-list">
-                  {taches.slice(0, 8).map((tache) => (
-                    <div
-                      key={tache.ref_tache}
-                      className="recent-task-item"
-                      onClick={() => handleTacheClick(tache)}
-                    >
-                      <div className="task-info">
-                        <div className="task-title-recent">
-                          {tache.nom_tache}
-                        </div>
-                        <div className="task-ref-recent">
-                          {tache.description}
-                        </div>
-                      </div>
-                      <div className="task-date-recent">
-                        Tâche à commencer le : {formatDate(tache.date_debut)}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="no-tasks">
-                  <i className="bi bi-clipboard-x-fill"></i>
-                  <p>Aucune tâche trouvée</p>
-                </div>
-              )}
             </div>
           </>
         );
@@ -546,7 +569,7 @@ const TacheScreen = () => {
           <div className="files-view">
             <div className="files-header">
               <h2>
-                <i className="bi bi-files"></i> Tous les fichiers
+                <i class="bi bi-folder-symlink-fill"></i> Tous les fichiers
               </h2>
               <button
                 className="refresh-files-btn"
@@ -607,9 +630,21 @@ const TacheScreen = () => {
                                 >
                                   {file.nom_fichier}
                                 </div>
+                                <div className="file-details">
+                                  {file.tache_nom && (
+                                    <span className="file-tache">
+                                      {file.tache_nom}
+                                    </span>
+                                  )}
+                                  {file.taille && (
+                                    <span className="file-size">
+                                      {file.taille}
+                                    </span>
+                                  )}
+                                </div>
                                 {file.date_upload && (
                                   <div className="file-date">
-                                    {new Date(
+                                    Ajouté le {new Date(
                                       file.date_upload
                                     ).toLocaleDateString("fr-FR")}
                                   </div>
