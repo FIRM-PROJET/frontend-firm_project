@@ -1,157 +1,157 @@
-/* Variables CSS pour le thème dark */
+/* Variables CSS simplifiées */
 :root {
   --primary-dark: #181835;
   --secondary-dark: #282850;
   --tertiary-dark: #514f84;
   --text-light: #ccc;
   --text-white: #ffffff;
-  --accent-blue: #4a90e2;
-  --accent-green: #27ae60;
-  --accent-red: #e74c3c;
-  --border-color: #3a3a5c;
-  --hover-bg: #363654;
-  --card-bg: #1e1e3a;
-  --input-bg: #2a2a4a;
+  --border-color: #514f84;
+  --hover-bg: #282850;
+  --card-bg: #282850;
+  --input-bg: #181835;
+  --success-color: #27ae60;
+  --error-color: #e74c3c;
+  --warning-color: #f39c12;
 }
 
 .create-tache-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--secondary-dark) 100%);
-  padding: 2rem;
+  background-color: var(--primary-dark);
+  padding: 20px;
   display: flex;
   justify-content: center;
   align-items: flex-start;
 }
 
 .create-tache-card {
-  background: var(--card-bg);
-  border-radius: 16px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  background-color: var(--card-bg);
+  border-radius: 3px;
   width: 100%;
   max-width: 800px;
   overflow: hidden;
-  border: 1px solid var(--border-color);
 }
-
-/* Header avec steps */
+/* Header avec steps - Version simplifiée */
 .steps-header {
-  background: var(--secondary-dark);
-  padding: 2rem;
+  background-color: var(--primary-dark);
+  padding: 15px 20px;
   border-bottom: 1px solid var(--border-color);
 }
 
 .steps-container {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 2rem;
+  justify-content: flex-start;
+  gap: 40px;
 }
 
 .step {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 8px;
   color: var(--text-light);
-  transition: color 0.3s ease;
+  font-size: 14px;
 }
 
 .step.active {
   color: var(--text-white);
+  font-weight: 600;
 }
 
 .step-number {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: var(--tertiary-dark);
+  width: 25px;
+  height: 25px;
+  border-radius: 3px;
+  background-color: var(--tertiary-dark);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 600;
-  border: 2px solid var(--border-color);
-  transition: all 0.3s ease;
+  font-size: 12px;
+  border: 1px solid var(--border-color);
 }
 
 .step.active .step-number {
-  background: var(--accent-blue);
-  border-color: var(--accent-blue);
+  background-color: var(--success-color);
+  border-color: var(--success-color);
   color: var(--text-white);
-  box-shadow: 0 0 20px rgba(74, 144, 226, 0.3);
 }
 
 .step-label {
-  font-weight: 500;
-  font-size: 0.95rem;
+  font-weight: inherit;
 }
 
 .step-connector {
-  height: 2px;
-  width: 60px;
-  background: var(--border-color);
-  position: relative;
+  height: 1px;
+  width: 30px;
+  background-color: var(--border-color);
 }
 
 /* Contenu des étapes */
 .step-content {
-  padding: 2.5rem;
+  padding: 30px;
 }
 
 .step-form {
-  animation: fadeIn 0.3s ease-in-out;
+  animation: fadeIn 0.3s ease;
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { 
+    opacity: 0; 
+    transform: translateY(10px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
 }
 
 .step-title {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 10px;
   color: var(--text-white);
-  font-size: 1.5rem;
+  font-size: 20px;
   font-weight: 600;
-  margin-bottom: 2rem;
+  margin-bottom: 25px;
 }
 
 .step-title svg {
-  color: var(--accent-blue);
+  color: var(--tertiary-dark);
 }
 
 /* Formulaire */
 .form-group {
-  margin-bottom: 1.5rem;
+  margin-bottom: 20px;
 }
 
 .form-group label {
   display: block;
   color: var(--text-light);
   font-weight: 500;
-  margin-bottom: 0.5rem;
-  font-size: 0.95rem;
+  margin-bottom: 8px;
+  font-size: 14px;
 }
 
 .form-input,
 .form-textarea,
 .form-select {
   width: 100%;
-  padding: 0.875rem 1rem;
-  background: var(--input-bg);
+  padding: 12px 15px;
+  background-color: var(--input-bg);
   border: 1px solid var(--border-color);
-  border-radius: 8px;
+  border-radius: 3px;
   color: var(--text-white);
-  font-size: 0.95rem;
-  transition: all 0.3s ease;
+  font-size: 14px;
+  box-sizing: border-box;
 }
 
 .form-input:focus,
 .form-textarea:focus,
 .form-select:focus {
   outline: none;
-  border-color: var(--accent-blue);
-  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
-  background: var(--secondary-dark);
+  border-color: var(--success-color);
+  background-color: var(--secondary-dark);
 }
 
 .form-input::placeholder,
@@ -161,7 +161,8 @@
 
 .form-textarea {
   resize: vertical;
-  min-height: 120px;
+  min-height: 100px;
+  font-family: inherit;
 }
 
 .form-select {
@@ -176,59 +177,48 @@
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+  gap: 15px;
 }
 
 /* Section assignation utilisateurs */
 .assignation-section {
-  background: var(--secondary-dark);
-  border-radius: 12px;
-  padding: 1.5rem;
-  margin-top: 1.5rem;
+  background-color: var(--primary-dark);
+  border-radius: 3px;
+  padding: 20px;
+  margin-top: 25px;
   border: 1px solid var(--border-color);
 }
 
 .assignation-title {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 8px;
   color: var(--text-white);
   font-weight: 600;
-  margin-bottom: 1rem;
-  font-size: 1.1rem;
+  margin-bottom: 15px;
+  font-size: 16px;
 }
 
 .users-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 0.75rem;
+  grid-template-columns: 1fr;
+  gap: 10px;
   max-height: 200px;
   overflow-y: auto;
-  padding-right: 0.5rem;
 }
 
 .user-checkbox {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem;
-  background: var(--input-bg);
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border: 1px solid transparent;
+  justify-content: space-between;
+  padding: 12px;
+  background-color: var(--input-bg);
+  border-radius: 3px;
+  border: 1px solid var(--border-color);
 }
 
 .user-checkbox:hover {
-  background: var(--hover-bg);
-  border-color: var(--accent-blue);
-}
-
-.user-checkbox input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
-  accent-color: var(--accent-blue);
-  cursor: pointer;
+  background-color: var(--hover-bg);
 }
 
 .user-info {
@@ -238,55 +228,103 @@
 .user-name {
   color: var(--text-white);
   font-weight: 500;
-  font-size: 0.9rem;
+  font-size: 14px;
 }
 
 .user-email {
   color: var(--text-light);
-  font-size: 0.8rem;
-  margin-top: 0.25rem;
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.checkbox-group {
+  display: flex;
+  gap: 15px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--text-light);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.checkbox-label.exception {
+  color: var(--warning-color);
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--success-color);
+}
+
+.checkbox-label.exception input[type="checkbox"] {
+  accent-color: var(--warning-color);
+}
+
+.no-users {
+  color: var(--text-light);
+  font-style: italic;
+  text-align: center;
+  padding: 20px;
+}
+
+.assignment-summary {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid var(--border-color);
+}
+
+.assignment-summary p {
+  color: var(--text-light);
+  font-size: 13px;
+  margin: 5px 0;
 }
 
 /* Section résumé */
 .summary-section {
-  background: var(--secondary-dark);
-  border-radius: 12px;
-  padding: 1.5rem;
-  margin-top: 1.5rem;
+  background-color: var(--primary-dark);
+  border-radius: 3px;
+  padding: 20px;
+  margin-top: 25px;
   border: 1px solid var(--border-color);
 }
 
 .summary-section h3 {
   color: var(--text-white);
-  font-size: 1.1rem;
+  font-size: 16px;
   font-weight: 600;
-  margin-bottom: 1rem;
+  margin-bottom: 15px;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 8px;
 }
 
 .summary-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
+  gap: 15px;
 }
 
 .summary-item {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 3px;
 }
 
 .summary-item .label {
   color: var(--text-light);
-  font-size: 0.85rem;
+  font-size: 12px;
   font-weight: 500;
 }
 
 .summary-item .value {
   color: var(--text-white);
   font-weight: 600;
+  font-size: 14px;
 }
 
 /* Boutons */
@@ -294,27 +332,27 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 2rem;
+  padding: 20px;
   border-top: 1px solid var(--border-color);
-  background: var(--secondary-dark);
+  background-color: var(--primary-dark);
 }
 
 .actions-right {
   display: flex;
-  gap: 1rem;
+  gap: 10px;
 }
 
 .btn {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.875rem 1.5rem;
+  gap: 8px;
+  padding: 12px 20px;
   border: none;
-  border-radius: 8px;
+  border-radius: 3px;
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 14px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   text-decoration: none;
   min-width: 120px;
   justify-content: center;
@@ -326,38 +364,33 @@
 }
 
 .btn-primary {
-  background: var(--accent-blue);
+  background-color: var(--tertiary-dark);
   color: var(--text-white);
-  box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+  border: 1px solid var(--border-color);
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: #3a7bc8;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(74, 144, 226, 0.4);
+  background-color: var(--hover-bg);
 }
 
 .btn-secondary {
-  background: var(--tertiary-dark);
+  background-color: var(--secondary-dark);
   color: var(--text-white);
   border: 1px solid var(--border-color);
 }
 
 .btn-secondary:hover:not(:disabled) {
-  background: var(--hover-bg);
-  transform: translateY(-2px);
+  background-color: var(--hover-bg);
 }
 
 .btn-success {
-  background: var(--accent-green);
+  background-color: var(--success-color);
   color: var(--text-white);
-  box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+  border: 1px solid var(--success-color);
 }
 
 .btn-success:hover:not(:disabled) {
-  background: #219a52;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(39, 174, 96, 0.4);
+  background-color: #219a52;
 }
 
 /* Loading spinner */
@@ -366,22 +399,22 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 4rem;
+  padding: 60px;
 }
 
 .spinner {
   width: 40px;
   height: 40px;
   border: 3px solid var(--border-color);
-  border-top: 3px solid var(--accent-blue);
+  border-top: 3px solid var(--tertiary-dark);
   border-radius: 50%;
   animation: spin 1s linear infinite;
-  margin-bottom: 1rem;
+  margin-bottom: 15px;
 }
 
 .spinner-small {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   border: 2px solid rgba(255, 255, 255, 0.3);
   border-top: 2px solid var(--text-white);
   border-radius: 50%;
@@ -395,7 +428,7 @@
 
 .loading-spinner p {
   color: var(--text-light);
-  font-size: 1rem;
+  font-size: 14px;
 }
 
 /* Scrollbar personnalisée */
@@ -404,23 +437,27 @@
 }
 
 .users-grid::-webkit-scrollbar-track {
-  background: var(--input-bg);
+  background-color: var(--input-bg);
   border-radius: 3px;
 }
 
 .users-grid::-webkit-scrollbar-thumb {
-  background: var(--tertiary-dark);
+  background-color: var(--tertiary-dark);
   border-radius: 3px;
 }
 
 .users-grid::-webkit-scrollbar-thumb:hover {
-  background: var(--accent-blue);
+  background-color: var(--border-color);
 }
 
 /* Responsive */
 @media (max-width: 768px) {
   .create-tache-container {
-    padding: 1rem;
+    padding: 10px;
+  }
+  
+  .step-content {
+    padding: 20px;
   }
   
   .form-row {
@@ -428,15 +465,16 @@
   }
   
   .steps-container {
-    gap: 1rem;
+    gap: 20px;
   }
   
   .step-connector {
-    width: 40px;
+    width: 30px;
   }
   
-  .users-grid {
-    grid-template-columns: 1fr;
+  .checkbox-group {
+    flex-direction: column;
+    gap: 8px;
   }
   
   .summary-grid {
@@ -445,11 +483,23 @@
   
   .form-actions {
     flex-direction: column;
-    gap: 1rem;
+    gap: 15px;
   }
   
   .actions-right {
     width: 100%;
     justify-content: center;
+  }
+  
+  .user-checkbox {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .checkbox-group {
+    align-self: flex-end;
+    flex-direction: row;
+    gap: 15px;
   }
 }

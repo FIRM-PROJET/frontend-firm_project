@@ -203,6 +203,24 @@ export const TacheService = {
       throw error;
     }
   },
+  assign_user_tache_sans_condition: async (tacheData) => {
+    try {
+      const response = await fetch(`${API_URL}/tache/assign_user_tache_sans_condition`, {
+        method: "POST",
+        body: JSON.stringify(tacheData),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) {
+        throw new Error("Failed to create tache");
+      }
+      return await response.json();
+    } catch (error) {
+      console.error("Error creating tache:", error);
+      throw error;
+    }
+  },
   // Ajouter un utilisateurs à une tache
   assign_user_sous_tache: async (tacheData) => {
     try {

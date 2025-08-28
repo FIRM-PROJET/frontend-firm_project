@@ -836,11 +836,11 @@ const TacheModal = ({ tache, isOpen, onClose, onStatusUpdate }) => {
               </div>
             </div>
             {/* Section utilisateurs assignés */}
-            <div className="assigned-users-section">
-              <h3 className="assigned-users-title">
+            <div className="assigned-users-section1">
+              <h3 className="assigned-users-title1">
                 <i className="bi bi-people-fill"></i> Utilisateurs assignés
               </h3>
-              <div className="assigned-users-list">
+              <div className="assigned-users-list1">
                 {getAssignedUsers().length > 0 ? (
                   getAssignedUsers().map((user, index) => (
                     <div
@@ -1593,8 +1593,7 @@ const TacheModal = ({ tache, isOpen, onClose, onStatusUpdate }) => {
             >
               <div className="confirmation-header">
                 <h3>
-                  <i className="bi bi-question-circle-fill"></i> Confirmer
-                  l'assignation
+                  <i className="bi bi-question-circle-fill"></i>Confirmer l'assignation
                 </h3>
               </div>
               <div className="confirmation-body">

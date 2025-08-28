@@ -220,13 +220,13 @@ const CalendarView = ({ taches, allTaches, onTacheClick, userInfo }) => {
   const getStatusColor = (statut) => {
     switch (statut) {
       case "Non démarré":
-        return "#6366f1";
+        return "#514f84";
       case "En cours":
-        return "#e9cf64ff";
+        return "#e3c85eff";
       case "Terminé":
-        return "#10b981";
+        return "#569d64ff";
       default:
-        return "#6366f1";
+        return "#514f84";
     }
   };
 
