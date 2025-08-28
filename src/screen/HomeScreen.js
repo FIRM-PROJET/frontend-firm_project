@@ -200,82 +200,81 @@ const HomeScreen = () => {
         taches: tasksCompletedOnDay,
       };
     });
-  };
-
-  // Fonction corrigée pour obtenir les tâches d'aujourd'hui
+  }; // Fonction corrigée pour obtenir les tâches d'aujourd'hui (local date)
   const getTodayTasks = () => {
     if (!userTasks || userTasks.length === 0) {
       return [];
     }
-    console.log("Toutes les tâches utilisateur:", userTasks);
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    // Helpers: normaliser au début/fin de journée LOCALE
+    const startOfDayLocal = (dLike) => {
+      const d = new Date(dLike);
+      return new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0, 0);
+    };
+    const endOfDayLocal = (dLike) => {
+      const d = new Date(dLike);
+      return new Date(
+        d.getFullYear(),
+        d.getMonth(),
+        d.getDate(),
+        23,
+        59,
+        59,
+        999
+      );
+    };
+
+    const today = startOfDayLocal(new Date());
 
     const tachesAujourdhui = userTasks.filter((task) => {
       if (!task) return false;
 
       try {
-        // Vérifier si date_debut existe
-        if (!task.date_debut) {
-          return false;
-        }
-
-        const dateDebut = new Date(task.date_debut);
+        // Vérifier date_debut
+        if (!task.date_debut) return false;
+        const dateDebut = startOfDayLocal(task.date_debut);
         if (isNaN(dateDebut.getTime())) {
           console.warn(
-            "Date de début invalide pour la tâche:",
+            "Date de début invalide:",
             task.nom_tache,
             task.date_debut
           );
           return false;
         }
-        dateDebut.setHours(0, 0, 0, 0);
 
-        // Gérer la date de fin prévue (peut être undefined)
-        let dateFinPrevu;
-        if (task.date_fin_prevue) {
-          dateFinPrevu = new Date(task.date_fin_prevue);
-          if (isNaN(dateFinPrevu.getTime())) {
-            console.warn(
-              "Date de fin prévue invalide pour la tâche:",
-              task.nom_tache,
-              task.date_fin_prevue
-            );
-            return false;
-          }
-          dateFinPrevu.setHours(0, 0, 0, 0);
-        } else {
-          // Si pas de date de fin prévue, considérer que la tâche est en cours indéfiniment
-          dateFinPrevu = new Date();
-          dateFinPrevu.setHours(23, 59, 59, 999); // Fin de journée
+        // Prendre en compte les deux variantes: date_fin_prevue / date_fin_prevu
+        const finSrc = task.date_fin_prevue ?? task.date_fin_prevu ?? null;
+
+        // Si pas de date de fin => considérer "en cours" indéfiniment (jusqu'à très loin)
+        const dateFinPrevu = finSrc
+          ? endOfDayLocal(finSrc)
+          : new Date(9999, 11, 31, 23, 59, 59, 999);
+
+        if (isNaN(dateFinPrevu.getTime())) {
+          return false;
         }
-
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
 
         const estDansPeriode =
           dateDebut.getTime() <= today.getTime() &&
           dateFinPrevu.getTime() >= today.getTime();
 
-          console.log("Vérification de la tâche:", estDansPeriode)
-        return estDansPeriode ;
-      } catch (error) {
-        console.error("Erreur lors du filtrage de la tâche:", task.nom_tache, error);
+        // // Debug lisible en locale
+        // console.log(
+        //   `[${
+        //     task.nom_tache
+        //   }] Début=${dateDebut.toLocaleDateString()} Fin=${dateFinPrevu.toLocaleDateString()} Today=${today.toLocaleDateString()} ->`,
+        //   estDansPeriode
+        // );
+
+        return estDansPeriode;
+      } catch (err) {
+        console.error("Erreur filtrage tâche:", task.nom_tache, err);
         return false;
       }
     });
 
+    // console.log("Tâches prévues pour aujourd'hui:", tachesAujourdhui);
     return tachesAujourdhui;
-  };
-
-  const formatTodayDate = () => {
-    const date = new Date().toLocaleDateString("fr-FR", {
-      weekday: "long",
-      day: "numeric",
-      month: "long",
-    });
-    return date.charAt(0).toUpperCase() + date.slice(1);
   };
 
   // Données pour le diagramme donut 3D
@@ -287,19 +286,16 @@ const HomeScreen = () => {
           name: "Accomplies",
           value: 1,
           color: "url(#gradientAccomplies)",
-          description: "Tâches terminées",
         },
         {
           name: "En cours",
           value: 1,
           color: "url(#gradientEnCours)",
-          description: "En progression",
         },
         {
           name: "Non démarrées",
           value: 1,
           color: "url(#gradientNonDemarrees)",
-          description: "À commencer",
         },
       ];
     }
@@ -309,26 +305,26 @@ const HomeScreen = () => {
         name: "Accomplies",
         value: stats.tachesAccomplies,
         color: "url(#gradientAccomplies)",
-        description: "Tâches terminées",
+        textColor: "#7cc48b",
       },
       {
         name: "En cours",
         value: stats.tachesEnCours,
         color: "url(#gradientEnCours)",
-        description: "Tâches en cours",
+        textColor: "#f7e395",
       },
       {
         name: "Non démarrées",
         value: stats.tachesNonDemarrees,
         color: "url(#gradientNonDemarrees)",
-        description: "Tâches en attente de démarrage",
+        textColor: "#514f84",
       },
       {
         name: "En retard",
         value: stats.tachesEnRetard,
         color: "#e74c3c",
-        description: "Tâches dépassant la date prévue",
-      }, // Rouge fixe
+        textColor: "#e74c3c",
+      },
     ].filter((item) => item.value > 0);
   };
 
@@ -351,31 +347,36 @@ const HomeScreen = () => {
     return null;
   };
 
-  // Fonction pour obtenir l'icône selon la priorité
-  const getPriorityIcon = (priorite) => {
-    switch (priorite) {
-      case "Haute":
-        return "bi-exclamation-triangle-fill";
-      case "Moyenne":
-        return "bi-exclamation-circle-fill";
-      case "Basse":
-        return "bi-info-circle-fill";
+  // Fonction pour obtenir la classe CSS selon le statut
+  const getStatusClass = (statut) => {
+    switch (statut) {
+      case "Terminé":
+        return "status-terminé";
+      case "En cours":
+        return "status-en-cours";
+      case "Non démarré":
+      case "En attente":
+        return "status-non-démarré";
       default:
-        return "bi-circle-fill";
+        return "status-normal";
     }
   };
 
-  // Fonction pour obtenir la classe CSS selon la priorité
-  const getPriorityClass = (priorite) => {
-    switch (priorite) {
-      case "Haute":
-        return "priority-high";
-      case "Moyenne":
-        return "priority-medium";
-      case "Basse":
-        return "priority-low";
-      default:
-        return "priority-normal";
+  // Fonction pour formater la date d'échéance
+  const formatEcheanceDate = (dateString) => {
+    if (!dateString) return "Pas d'échéance";
+
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return "Date invalide";
+
+      return date.toLocaleDateString("fr-FR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      });
+    } catch (error) {
+      return "Date invalide";
     }
   };
 
@@ -397,15 +398,21 @@ const HomeScreen = () => {
 
       try {
         const dateDebut = new Date(task.date_debut);
-        const dateFinPrevu = task.date_fin_prevue ? new Date(task.date_fin_prevue) : dateDebut;
-        
-        if (isNaN(dateDebut.getTime()) || isNaN(dateFinPrevu.getTime())) return false;
+        const dateFinPrevu = task.date_fin_prevue
+          ? new Date(task.date_fin_prevue)
+          : dateDebut;
+
+        if (isNaN(dateDebut.getTime()) || isNaN(dateFinPrevu.getTime()))
+          return false;
 
         dateDebut.setHours(0, 0, 0, 0);
         dateFinPrevu.setHours(23, 59, 59, 999);
         date.setHours(0, 0, 0, 0);
 
-        return date.getTime() >= dateDebut.getTime() && date.getTime() <= dateFinPrevu.getTime();
+        return (
+          date.getTime() >= dateDebut.getTime() &&
+          date.getTime() <= dateFinPrevu.getTime()
+        );
       } catch (error) {
         return false;
       }
@@ -413,61 +420,67 @@ const HomeScreen = () => {
   };
 
   const changeMonth = (direction) => {
-    setCurrentDate(prev => {
+    setCurrentDate((prev) => {
       const newDate = new Date(prev);
       newDate.setMonth(prev.getMonth() + direction);
       return newDate;
     });
   };
-const generateCalendar = () => {
-  const daysInMonth = getDaysInMonth(currentDate);
-  const firstDay = getFirstDayOfMonth(currentDate); // lundi = 0, dimanche = 6
-  const days = [];
-  const today = new Date();
-  today.setHours(0,0,0,0);
 
-  // Jours vides avant le premier jour du mois
-  for (let i = 0; i < firstDay; i++) {
-    days.push(<div key={`empty-${i}`} className="calendar-day empty"></div>);
-  }
+  const generateCalendar = () => {
+    const daysInMonth = getDaysInMonth(currentDate);
+    const firstDay = getFirstDayOfMonth(currentDate); // lundi = 0, dimanche = 6
+    const days = [];
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
-  // Jours du mois
-  for (let day = 1; day <= daysInMonth; day++) {
-    const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
-    date.setHours(0,0,0,0);
+    // Jours vides avant le premier jour du mois
+    for (let i = 0; i < firstDay; i++) {
+      days.push(<div key={`empty-${i}`} className="calendar-day empty"></div>);
+    }
 
-    const tasksForDay = getTasksForDate(date);
-    const isToday = date.getTime() === today.getTime();
+    // Jours du mois
+    for (let day = 1; day <= daysInMonth; day++) {
+      const date = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth(),
+        day
+      );
+      date.setHours(0, 0, 0, 0);
 
-    days.push(
-      <div
-        key={day}
-        className={`calendar-day ${isToday ? 'today' : ''}`}
-        onClick={() => tasksForDay.length > 0 && openModal(tasksForDay[0])}
-        style={{ cursor: tasksForDay.length > 0 ? 'pointer' : 'default' }}
-      >
-        <span className="day-number">{day}</span>
-        {tasksForDay.length > 0 && (
-          <div className="task-dots">
-            {tasksForDay.slice(0, 3).map((task, index) => (
-              <div
-                key={index}
-                className={`task-dot ${getPriorityClass(task.priorite)}`}
-                title={task.nom_tache}
-              />
-            ))}
-            {tasksForDay.length > 3 && (
-              <div className="task-dot-more">+{tasksForDay.length - 3}</div>
-            )}
-          </div>
-        )}
-      </div>
-    );
-  }
+      const tasksForDay = getTasksForDate(date);
+      const isToday = date.getTime() === today.getTime();
 
-  return days;
-};
+      days.push(
+        <div
+          key={day}
+          className={`calendar-day ${isToday ? "today" : ""} ${
+            tasksForDay.length > 0 ? "has-tasks" : ""
+          }`}
+          onClick={() => tasksForDay.length > 0 && openModal(tasksForDay[0])}
+          style={{ cursor: tasksForDay.length > 0 ? "pointer" : "default" }}
+        >
+          <span className="day-number">{day}</span>
+          {tasksForDay.length > 0 && (
+            <div className="task-dots">
+              {tasksForDay.slice(0, 3).map((task, index) => (
+                <div
+                  key={index}
+                  className={`task-dot ${getStatusClass(task.statut)}`}
+                  title={task.nom_tache}
+                />
+              ))}
+              {tasksForDay.length > 3 && (
+                <div className="task-dot-more">+{tasksForDay.length - 3}</div>
+              )}
+            </div>
+          )}
+        </div>
+      );
+    }
 
+    return days;
+  };
 
   const weeklyData = generateWeeklyData();
   const donutData = getDonutData();
@@ -496,7 +509,7 @@ const generateCalendar = () => {
 
       {/* Dashboard optimisé sans scroll */}
       <div className="clean-dashboard">
-        {/* Première ligne : Activité hebdomadaire + Répartition des tâches + Tâches aujourd'hui */}
+        {/* Première ligne : Activité hebdomadaire + Répartition des tâches + PETIT CALENDRIER */}
         <div className="dashboard-row-first">
           {/* Graphique d'activité avec border gradient */}
           <div className="card activity-chart">
@@ -665,11 +678,19 @@ const generateCalendar = () => {
                   <div key={index} className="legend-item-3d-small">
                     <div
                       className="legend-dot-3d-small"
-                      style={{ backgroundColor: entry.color, border: "none" }}
+                      style={{
+                        backgroundColor: entry.textColor,
+                        border: "none",
+                      }}
                     />
                     <div className="legend-content-small">
-                      <span className="legend-name-small">{entry.name}</span>
                       <span className="legend-value-small">{entry.value}</span>
+                      <span
+                        className="legend-name-small"
+                        style={{ color: entry.textColor }}
+                      >
+                        {entry.name}
+                      </span>
                     </div>
                   </div>
                 ))}
@@ -677,80 +698,43 @@ const generateCalendar = () => {
             </div>
           </div>
 
-          {/* Composant Tâches aujourd'hui corrigé */}
-          <div className="card today-tasks">
-            <h3 className="card-title">
-              <i className="bi bi-calendar-day"></i>
-              Tâches aujourd'hui
-            </h3>
-            <div className="today-tasks-container">
-              {todayTasks.length > 0 ? (
-                <div className="tasks-list-today">
-                  {todayTasks.slice(0, 4).map((task, index) => (
-                    <div 
-                      key={index} 
-                      className="task-item-today"
-                      onClick={() => openModal(task)}
-                      style={{ cursor: 'pointer' }}
-                    >
-                      <div className="task-priority">
-                        <i
-                          className={`bi ${getPriorityIcon(
-                            task.priorite
-                          )} ${getPriorityClass(task.priorite)}`}
-                        ></i>
-                      </div>
-                      <div className="task-content">
-                        <div className="task-title">{task.nom_tache}</div>
-                        <div className="task-meta">
-                          <span
-                            className={`task-status status-${task.statut
-                              ?.toLowerCase()
-                              .replace(/\s+/g, "-")}`}
-                          >
-                            {task.statut}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                  {todayTasks.length > 4 && (
-                    <div className="more-tasks">
-                      +{todayTasks.length - 4} autres tâches
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="no-tasks-today">
-                  <div className="no-tasks-icon">
-                    <i className="bi bi-check-circle-fill"></i>
-                  </div>
-                  <p className="no-tasks-text">
-                    Aucune tâche prévue aujourd'hui
-                  </p>
-                </div>
-              )}
+          {/* PETIT CALENDRIER - remplace "Tâches aujourd'hui" */}
+          <div className="card calendar-small">
+            <div className="calendar-header">
+              <button className="calendar-nav" onClick={() => changeMonth(-1)}>
+                <i className="bi bi-chevron-left"></i>
+              </button>
+              <h3 className="calendar-title">
+                {currentDate.toLocaleDateString("fr-FR", {
+                  month: "long",
+                  year: "numeric",
+                })}
+              </h3>
+              <button className="calendar-nav" onClick={() => changeMonth(1)}>
+                <i className="bi bi-chevron-right"></i>
+              </button>
             </div>
-            <div className="today-summary">
-              <div className="summary-item">
-                <span className="summary-label">Total</span>
-                <span className="summary-value">{todayTasks.length}</span>
-              </div>
-              <div className="summary-item">
-                <span className="summary-label">Terminées</span>
-                <span className="summary-value completed">
-                  {todayTasks.filter((t) => t.statut === "Terminé").length}
-                </span>
-              </div>
+
+            <div className="calendar-weekdays">
+              {["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"].map((day) => (
+                <div key={day} className="weekday">
+                  {day}
+                </div>
+              ))}
             </div>
+
+            <div className="calendar-grid-small">{generateCalendar()}</div>
           </div>
         </div>
 
-        {/* Deuxième ligne : Avancement des projets + Calendrier */}
+        {/* Deuxième ligne : Avancement des projets + TÂCHES AUJOURD'HUI */}
         <div className="dashboard-row-second">
           {/* Avancement des projets amélioré */}
           <div className="card project-progress-enhanced">
-            <h3 className="card-title">Avancement des projets</h3>
+            <h3 className="card-title">
+              <i className="bi bi-bar-chart-fill"></i>
+              Avancement des projets
+            </h3>
             <div className="project-list-enhanced">
               {avancementProjets.slice(0, 5).map((projet, index) => (
                 <div key={index} className="project-item-enhanced">
@@ -782,33 +766,75 @@ const generateCalendar = () => {
             </div>
           </div>
 
-          {/* Calendrier avec points de tâches */}
-          <div className="card calendar-enhanced">
-            <div className="calendar-header">
-              <button className="calendar-nav" onClick={() => changeMonth(-1)}>
-                <i className="bi bi-chevron-left"></i>
-              </button>
-              <h3 className="calendar-title">
-                {currentDate.toLocaleDateString("fr-FR", {
-                  month: "long",
-                  year: "numeric",
-                })}
-              </h3>
-              <button className="calendar-nav" onClick={() => changeMonth(1)}>
-                <i className="bi bi-chevron-right"></i>
-              </button>
-            </div>
-
-            <div className="calendar-weekdays">
-              {["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"].map((day) => (
-                <div key={day} className="weekday">
-                  {day}
+          {/* TÂCHES AUJOURD'HUI - remplace le gros calendrier */}
+          <div className="card today-tasks">
+            <h3 className="card-title">
+              <i className="bi bi-calendar2-week-fill"></i> Tâches aujourd'hui
+            </h3>
+            <div className="today-tasks-container">
+              {todayTasks.length > 0 ? (
+                <div className="tasks-list-today">
+                  {todayTasks.slice(0, 4).map((task, index) => (
+                    <div
+                      key={index}
+                      className="task-item-today"
+                      onClick={() => openModal(task)}
+                      style={{ cursor: "pointer" }}
+                    >
+                      <div className="task-status-dot">
+                        <div
+                          className={`status-dot ${getStatusClass(
+                            task.statut
+                          )}`}
+                        ></div>
+                      </div>
+                      <div className="task-content">
+                        <div className="task-title">{task.nom_tache}</div>
+                        <div className="task-meta">
+                          <span
+                            className={`task-status ${getStatusClass(
+                              task.statut
+                            )}`}
+                          >
+                            {task.statut}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="task-deadline">
+                        <span className="deadline-text">
+                          Échéance : {formatEcheanceDate(task.date_fin_prevu)}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                  {todayTasks.length > 4 && (
+                    <div className="more-tasks">
+                      +{todayTasks.length - 4} autres tâches
+                    </div>
+                  )}
                 </div>
-              ))}
+              ) : (
+                <div className="no-tasks-today">
+                  <div className="no-tasks-icon">
+                    <i className="bi bi-check-circle-fill"></i>
+                  </div>
+                  <p className="no-tasks-text">
+                    Aucune tâche prévue aujourd'hui
+                  </p>
+                </div>
+              )}
             </div>
-
-            <div className="calendar-grid">
-              {generateCalendar()}
+            <div className="today-summary">
+              <div className="summary-item">
+                <span className="summary-label">Total</span>
+                <span className="summary-value">{todayTasks.length}</span>
+              </div>
+              <div className="summary-item">
+                <span className="summary-label">Terminées</span>
+                <span className="summary-value completed">
+                  {todayTasks.filter((t) => t.statut === "Terminé").length}
+                </span>
+              </div>
             </div>
           </div>
         </div>
