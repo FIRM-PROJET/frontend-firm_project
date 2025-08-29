@@ -5,7 +5,29 @@
   max-width: 1200px;
   margin: 0 auto;
   color: #e0e0e0;
-  min-height: 100vh;
+    max-height: 100vh;   /* occupe tout l’écran */
+  overflow-y: auto;    /* active le scroll si les tâches dépassent */
+}
+
+/* Cible tout élément avec scroll */
+::-webkit-scrollbar {
+  width: 8px;              /* largeur de la scrollbar */
+  height: 8px;             /* hauteur si horizontal */
+}
+
+::-webkit-scrollbar-track {
+  background: #1e1e41;      /* fond du rail */
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #514f84;      /* couleur du "pouce" */
+  border-radius: 10px;
+  transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #514f84;      /* couleur au survol */
 }
 
 /* Navigation des filtres */
