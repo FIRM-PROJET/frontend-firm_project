@@ -529,6 +529,7 @@
 
 .calendrier-timeline-item {
   display: flex;
+  height: 100%;
   align-items: center;
   gap: 16px;
   background: linear-gradient(135deg, rgba(40, 40, 80, 0.6), rgba(24, 24, 53, 0.8));

@@ -254,14 +254,7 @@ const ProjetsScreen = () => {
                           handleProjectClick({ ref_projet: item.ref_projet })
                         }
                       >
-                        <div className="projet-card-header">
-                          <div className="projet-ref-badge">
-                            {item.ref_projet}
-                          </div>
-                          <div className="projet-phases-count">
-                            {nombrePhases}
-                          </div>
-                        </div>
+  
                         <div className="projet-card-body">
                           <h4 className="projet-card-nom">{nom}</h4>
                           <div className="projet-card-meta">
@@ -271,6 +264,12 @@ const ProjetsScreen = () => {
                                 ? dateFin.toLocaleDateString("fr-FR")
                                 : "Non défini"}
                             </div>
+                          </div>
+                        </div>
+                        <div className="projet-card-header">
+                          <div className="projet-phases-count">
+                            <p>Total phase(s): </p>
+                            {nombrePhases}
                           </div>
                         </div>
                         <div className="projet-card-progress">
