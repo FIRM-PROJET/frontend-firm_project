@@ -344,21 +344,27 @@ const TacheScreen = () => {
           <div className="legend-item">
             <span
               className="legend-color"
-              style={{ background: "linear-gradient(135deg, #514f84, #6b5bb8)" }}
+              style={{
+                background: "linear-gradient(135deg, #514f84, #6b5bb8)",
+              }}
             ></span>
             <span>Non démarré ({data.nonDemarre})</span>
           </div>
           <div className="legend-item">
             <span
               className="legend-color"
-              style={{ background: "linear-gradient(135deg, #f7e395, #f4d03f)" }}
+              style={{
+                background: "linear-gradient(135deg, #f7e395, #f4d03f)",
+              }}
             ></span>
             <span>En cours ({data.enCours})</span>
           </div>
           <div className="legend-item">
             <span
               className="legend-color"
-              style={{ background: "linear-gradient(135deg, #7cc48b, #5dbd72)" }}
+              style={{
+                background: "linear-gradient(135deg, #7cc48b, #5dbd72)",
+              }}
             ></span>
             <span>Terminé ({data.termine})</span>
           </div>
@@ -371,25 +377,25 @@ const TacheScreen = () => {
     const groupedTaches = {
       "Non démarré": taches.filter((t) => t.statut === "Non démarré"),
       "En cours": taches.filter((t) => t.statut === "En cours"),
-      "Terminé": taches.filter((t) => t.statut === "Terminé"),
+      Terminé: taches.filter((t) => t.statut === "Terminé"),
     };
 
     const columnConfig = {
       "Non démarré": {
         color: "#514f84",
         gradient: "linear-gradient(135deg, #514f84, #6b5bb8)",
-        icon: "bi-pause-circle"
+        icon: "bi-pause-circle",
       },
       "En cours": {
         color: "#f7e395",
         gradient: "linear-gradient(135deg, #dfc14aff, #efdf9eff)",
-        icon: "bi-clock"
+        icon: "bi-clock",
       },
-      "Terminé": {
+      Terminé: {
         color: "#7cc48b",
         gradient: "linear-gradient(135deg, #7cc48b, #5dbd72)",
-        icon: "bi-check-circle"
-      }
+        icon: "bi-check-circle",
+      },
     };
 
     const isOverdue = (dateFinPrevu, statut) => {
@@ -403,7 +409,7 @@ const TacheScreen = () => {
       <div className="kanban-board">
         {Object.entries(groupedTaches).map(([statut, tachesStatut]) => (
           <div key={statut} className="kanban-column">
-            <div 
+            <div
               className="kanban-header"
               style={{ background: columnConfig[statut].gradient }}
             >
@@ -418,7 +424,11 @@ const TacheScreen = () => {
                 tachesStatut.map((tache) => (
                   <div
                     key={tache.ref_tache}
-                    className={`kanban-card ${isOverdue(tache.date_fin_prevu, tache.statut) ? 'overdue' : ''}`}
+                    className={`kanban-card ${
+                      isOverdue(tache.date_fin_prevu, tache.statut)
+                        ? "overdue"
+                        : ""
+                    }`}
                     onClick={() => handleTacheClick(tache)}
                   >
                     <div className="kanban-card-title-simple">
@@ -516,7 +526,10 @@ const TacheScreen = () => {
                       <i className="bi bi-clock-history"></i>
                       Tâches récentes
                     </h3>
-                    <button className="view-list-btn" onClick={handleNavigateToList}>
+                    <button
+                      className="view-list-btn"
+                      onClick={handleNavigateToList}
+                    >
                       <i className="bi bi-list-ul"></i>
                       Voir la liste
                     </button>
@@ -531,7 +544,9 @@ const TacheScreen = () => {
                           data-status={tache.statut}
                         >
                           <div className="task-mini-indicator"></div>
-                          <div className="task-mini-title">{tache.nom_tache}</div>
+                          <div className="task-mini-title">
+                            {tache.nom_tache}
+                          </div>
                         </div>
                       ))
                     ) : (
@@ -644,7 +659,8 @@ const TacheScreen = () => {
                                 </div>
                                 {file.date_upload && (
                                   <div className="file-date">
-                                    Ajouté le {new Date(
+                                    Ajouté le{" "}
+                                    {new Date(
                                       file.date_upload
                                     ).toLocaleDateString("fr-FR")}
                                   </div>
@@ -733,8 +749,7 @@ const TacheScreen = () => {
             }
           }}
         >
-          <i className="bi bi-files"></i>
-          <span>Fichiers</span>
+          <i class="bi bi-layers-fill"></i> <span>Fichiers</span>
         </button>
       </div>
 

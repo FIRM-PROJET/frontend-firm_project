@@ -5,16 +5,16 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import CreateProjectModal from "../modals/CreateProjectModal";
 import {
   faBuilding,
-  faFileText,
-  faPlusSquare,
   faCheckCircle,
   faPlayCircle,
   faCalendarAlt,
-  faPercentage,
   faExclamationTriangle,
-  faChartLine,
-  faClock,
   faEye,
+  faList,
+  faTable,
+  faHome,
+  faCalendarWeek,
+  faChartPie,
 } from "@fortawesome/free-solid-svg-icons";
 import "../styles/ProjetScreen.css";
 import { useNavigate } from "react-router-dom";
@@ -28,7 +28,7 @@ const ProjetsScreen = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedProject, setSelectedProject] = useState(null);
-  const [showCalendar, setShowCalendar] = useState(false);
+  const [activeTab, setActiveTab] = useState("apercu");
 
   // État pour la liste d'avancement
   const [avancementProjetData, setAvancementProjetData] = useState([]);
@@ -48,7 +48,6 @@ const ProjetsScreen = () => {
     try {
       const response = await TacheService.AvancementParProjet();
 
-      // Vérifier différentes structures possibles
       if (response && response.data && Array.isArray(response.data)) {
         setAvancementProjetData(response.data);
       } else if (response && Array.isArray(response)) {
@@ -89,21 +88,51 @@ const ProjetsScreen = () => {
             projet.ref_projet
           );
           if (phasesProjetResponse.success) {
+            const projectPhases = phasesProjetResponse.data || [];
+
+            // Calculer les vraies dates de début et fin basées sur les phases
+            let dateDebut = null;
+            let dateFin = null;
+
+            if (projectPhases.length > 0) {
+              const dates = projectPhases
+                .map((phase) => ({
+                  debut: phase.date_debut ? new Date(phase.date_debut) : null,
+                  fin: phase.date_fin ? new Date(phase.date_fin) : null,
+                }))
+                .filter((d) => d.debut && d.fin);
+
+              if (dates.length > 0) {
+                dateDebut = new Date(
+                  Math.min(...dates.map((d) => d.debut.getTime()))
+                );
+                dateFin = new Date(
+                  Math.max(...dates.map((d) => d.fin.getTime()))
+                );
+              }
+            }
+
+            // Dates de fallback si pas de phases avec dates
+            if (!dateDebut || !dateFin) {
+              dateDebut = new Date(
+                2024,
+                Math.floor(Math.random() * 6),
+                Math.floor(Math.random() * 28) + 1
+              );
+              dateFin = new Date(
+                2024 + Math.floor(Math.random() * 2),
+                Math.floor(Math.random() * 6) + 6,
+                Math.floor(Math.random() * 28) + 1
+              );
+            }
+
             projetPhasesData.push({
               ref_projet: projet.ref_projet,
               nom_projet: projet.nom_projet,
               client: projet.id_client,
-              phases: phasesProjetResponse.data || [],
-              date_debut: new Date(
-                2024,
-                Math.floor(Math.random() * 6),
-                Math.floor(Math.random() * 28) + 1
-              ),
-              date_fin: new Date(
-                2024 + Math.floor(Math.random() * 2),
-                Math.floor(Math.random() * 6) + 6,
-                Math.floor(Math.random() * 28) + 1
-              ),
+              phases: projectPhases,
+              date_debut: dateDebut,
+              date_fin: dateFin,
             });
           }
         } catch (err) {
@@ -127,14 +156,9 @@ const ProjetsScreen = () => {
     setSelectedProject(null);
   };
 
-  const toggleCalendar = () => {
-    setShowCalendar(!showCalendar);
-  };
-
-  // Calculer les statistiques des phases
+  // Calculer les statistiques des projets
   const stats = {
     totalProjets: projets.length,
-    totalPhases: phases.length,
     projetsEnCours: avancementProjetData.filter((p) => {
       const avancement = parseFloat(p.avancement_global_pourcent);
       return avancement > 0 && avancement < 100;
@@ -143,14 +167,27 @@ const ProjetsScreen = () => {
       const avancement = parseFloat(p.avancement_global_pourcent);
       return avancement === 100;
     }).length,
+    projetsEnRetard: avancementProjetData.filter((p) => {
+      const avancement = parseFloat(p.avancement_global_pourcent);
+      return avancement > 0 && avancement < 30;
+    }).length,
   };
+
+  // Calculer l'avancement global de tous les projets
+  const avancementGlobalMoyen =
+    avancementProjetData.length > 0
+      ? avancementProjetData.reduce(
+          (sum, p) => sum + parseFloat(p.avancement_global_pourcent || 0),
+          0
+        ) / avancementProjetData.length
+      : 0;
 
   // Obtenir la couleur selon l'avancement
   const getAvancementColor = (avancement) => {
-    if (avancement >= 80) return "#28a745";
-    if (avancement >= 50) return "#ffc107";
-    if (avancement >= 30) return "#fd7e14";
-    return "#dc3545";
+    if (avancement >= 80) return "#7cc48b";
+    if (avancement >= 50) return "#f7e395";
+    if (avancement >= 30) return "#f7e395";
+    return "#ff6b6b";
   };
 
   // Obtenir le statut du projet
@@ -167,6 +204,517 @@ const ProjetsScreen = () => {
     return projet ? projet.nom_projet : refProjet;
   };
 
+  // Obtenir la date de fin max pour un projet
+  const getDateFinProjet = (refProjet) => {
+    const projet = projetPhases.find((p) => p.ref_projet === refProjet);
+    return projet ? projet.date_fin : null;
+  };
+
+  // Obtenir le nombre de phases pour un projet
+  const getNombrePhasesProjet = (refProjet) => {
+    const projet = projetPhases.find((p) => p.ref_projet === refProjet);
+    return projet ? projet.phases.length : 0;
+  };
+
+  // Rendu du contenu selon l'onglet actif
+  const renderContent = () => {
+    switch (activeTab) {
+      case "apercu":
+        return (
+          <div className="apercu-dashboard-new">
+            {/* Colonne de gauche: Liste des projets */}
+            <div className="projets-liste-section">
+              <div className="section-card">
+                <div className="section-card-header">
+                  <h3 className="section-card-title">
+                    <FontAwesomeIcon icon={faBuilding} />
+                    Projets en cours
+                  </h3>
+                  <button
+                    className="voir-plus-btn-compact"
+                    onClick={() => setActiveTab("liste")}
+                  >
+                    <FontAwesomeIcon icon={faEye} />
+                  </button>
+                </div>
+                <div className="projets-liste-scroll">
+                  {avancementProjetData.slice(0, 6).map((item, index) => {
+                    const avancement = parseFloat(
+                      item.avancement_global_pourcent || 0
+                    );
+                    const nom = getProjetNom(item.ref_projet);
+                    const dateFin = getDateFinProjet(item.ref_projet);
+                    const nombrePhases = getNombrePhasesProjet(item.ref_projet);
+
+                    return (
+                      <div
+                        key={item.ref_projet || index}
+                        className="projet-card-mini"
+                        onClick={() =>
+                          handleProjectClick({ ref_projet: item.ref_projet })
+                        }
+                      >
+                        <div className="projet-card-header">
+                          <div className="projet-ref-badge">
+                            {item.ref_projet}
+                          </div>
+                          <div className="projet-phases-count">
+                            {nombrePhases}
+                          </div>
+                        </div>
+                        <div className="projet-card-body">
+                          <h4 className="projet-card-nom">{nom}</h4>
+                          <div className="projet-card-meta">
+                            <div className="projet-date-fin">
+                              <FontAwesomeIcon icon={faCalendarAlt} />
+                              {dateFin
+                                ? dateFin.toLocaleDateString("fr-FR")
+                                : "Non défini"}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="projet-card-progress">
+                          <div className="projet-card-progress-bar">
+                            <div
+                              className="projet-card-progress-fill"
+                              style={{
+                                width: `${avancement}%`,
+                                background: `linear-gradient(90deg, ${getAvancementColor(
+                                  avancement
+                                )}, ${getAvancementColor(avancement)}dd)`,
+                              }}
+                            ></div>
+                          </div>
+                          <span
+                            className="projet-card-percentage"
+                            style={{ color: getAvancementColor(avancement) }}
+                          >
+                            {avancement.toFixed(0)}%
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {/* Colonne centrale: Avancement global 3D */}
+            <div className="avancement-global-section">
+              <div className="section-card avancement-3d-card">
+                <div className="section-card-header">
+                  <h3 className="section-card-title">
+                    <FontAwesomeIcon icon={faChartPie} />
+                    Avancement Global
+                  </h3>
+                </div>
+                <div className="avancement-3d-container">
+                  <div className="avancement-3d-display">
+                    <div className="avancement-sphere-3d">
+                      <div className="sphere-outer">
+                        <div className="sphere-inner">
+                          <div className="percentage-3d">
+                            <span className="percentage-number">
+                              {avancementGlobalMoyen.toFixed(0)}
+                            </span>
+                            <span className="percentage-symbol">%</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        className="sphere-glow"
+                        style={{
+                          background: `radial-gradient(circle, ${getAvancementColor(
+                            avancementGlobalMoyen
+                          )}33, transparent 70%)`,
+                        }}
+                      ></div>
+                    </div>
+                  </div>
+                  <div className="stats-mini-grid">
+                    <div className="stat-mini-item">
+                      <div
+                        className="stat-mini-icon"
+                        style={{ color: "#7cc48b" }}
+                      >
+                        <FontAwesomeIcon icon={faCheckCircle} />
+                      </div>
+                      <div className="stat-mini-info">
+                        <span className="stat-mini-number">
+                          {stats.projetsTermines}
+                        </span>
+                        <span className="stat-mini-label">Terminés</span>
+                      </div>
+                    </div>
+                    <div className="stat-mini-item">
+                      <div
+                        className="stat-mini-icon"
+                        style={{ color: "#f7e395" }}
+                      >
+                        <FontAwesomeIcon icon={faPlayCircle} />
+                      </div>
+                      <div className="stat-mini-info">
+                        <span className="stat-mini-number">
+                          {stats.projetsEnCours}
+                        </span>
+                        <span className="stat-mini-label">En cours</span>
+                      </div>
+                    </div>
+                    <div className="stat-mini-item">
+                      <div
+                        className="stat-mini-icon"
+                        style={{ color: "#ff6b6b" }}
+                      >
+                        <FontAwesomeIcon icon={faExclamationTriangle} />
+                      </div>
+                      <div className="stat-mini-info">
+                        <span className="stat-mini-number">
+                          {stats.projetsEnRetard}
+                        </span>
+                        <span className="stat-mini-label">En retard</span>
+                      </div>
+                    </div>
+                    <div className="stat-mini-item">
+                      <div
+                        className="stat-mini-icon"
+                        style={{ color: "#afaecf" }}
+                      >
+                        <FontAwesomeIcon icon={faBuilding} />
+                      </div>
+                      <div className="stat-mini-info">
+                        <span className="stat-mini-number">
+                          {stats.totalProjets}
+                        </span>
+                        <span className="stat-mini-label">Total</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Colonne de droite: Calendrier compact */}
+            <div className="calendrier-compact-section">
+              <div className="section-card">
+                <div className="section-card-header">
+                  <h3 className="section-card-title">
+                    <FontAwesomeIcon icon={faCalendarWeek} />
+                    Échéances
+                  </h3>
+                  <button
+                    className="voir-plus-btn-compact"
+                    onClick={() => setActiveTab("calendrier")}
+                  >
+                    <FontAwesomeIcon icon={faCalendarAlt} />
+                  </button>
+                </div>
+                <div className="calendrier-compact-container">
+                  <div className="calendrier-timeline">
+                    {projetPhases
+                      .sort(
+                        (a, b) => new Date(a.date_fin) - new Date(b.date_fin)
+                      )
+                      .slice(0, 5)
+                      .map((projet, index) => {
+                        const avancement = avancementProjetData.find(
+                          (p) => p.ref_projet === projet.ref_projet
+                        );
+                        const pourcentage = avancement
+                          ? parseFloat(
+                              avancement.avancement_global_pourcent || 0
+                            )
+                          : 0;
+                        const joursRestants = Math.ceil(
+                          (projet.date_fin - new Date()) / (1000 * 60 * 60 * 24)
+                        );
+
+                        return (
+                          <div
+                            key={projet.ref_projet}
+                            className="calendrier-timeline-item"
+                          >
+                            <div className="timeline-date-marker">
+                              <div
+                                className="date-circle"
+                                style={{
+                                  background: `linear-gradient(135deg, ${getAvancementColor(
+                                    pourcentage
+                                  )}, ${getAvancementColor(pourcentage)}aa)`,
+                                }}
+                              >
+                                <span className="date-day">
+                                  {projet.date_fin.getDate()}
+                                </span>
+                              </div>
+                              <div className="date-month">
+                                {projet.date_fin.toLocaleDateString("fr-FR", {
+                                  month: "short",
+                                })}
+                              </div>
+                            </div>
+                            <div className="timeline-content">
+                              <div className="timeline-projet-nom">
+                                {projet.nom_projet}
+                              </div>
+                              <div className="timeline-meta">
+                                <span className="timeline-ref">
+                                  {projet.ref_projet}
+                                </span>
+                                <span className="timeline-jours">
+                                  {joursRestants > 0
+                                    ? `${joursRestants}j restants`
+                                    : "Échéance dépassée"}
+                                </span>
+                              </div>
+                              <div className="timeline-progress-mini">
+                                <div className="timeline-progress-bar">
+                                  <div
+                                    className="timeline-progress-fill"
+                                    style={{
+                                      width: `${pourcentage}%`,
+                                      background:
+                                        getAvancementColor(pourcentage),
+                                    }}
+                                  ></div>
+                                </div>
+                                <span className="timeline-percentage">
+                                  {pourcentage.toFixed(0)}%
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+
+      case "liste":
+        return (
+          <div className="liste-view-compact">
+            <div className="section-compact">
+              <div className="section-header-compact">
+                <h3 className="section-title-compact">Liste des Projets</h3>
+              </div>
+              {avancementProjetData.length === 0 ? (
+                <div className="no-data-message">
+                  Aucune donnée d'avancement disponible
+                </div>
+              ) : (
+                <div className="avancement-list-compact">
+                  {avancementProjetData.map((item, index) => {
+                    const avancement = parseFloat(
+                      item.avancement_global_pourcent || 0
+                    );
+                    const totalTaches = parseInt(item.total_taches_projet || 0);
+                    const tachesTerminees = parseInt(
+                      item.taches_terminees_projet || 0
+                    );
+                    const nom = getProjetNom(item.ref_projet);
+                    const dateFin = getDateFinProjet(item.ref_projet);
+                    const nombrePhases = getNombrePhasesProjet(item.ref_projet);
+
+                    return (
+                      <div
+                        key={item.ref_projet || index}
+                        className="avancement-item-compact"
+                      >
+                        <div className="avancement-header-compact">
+                          <div className="projet-info-compact">
+                            <div className="projet-ref-compact">
+                              {item.ref_projet}
+                            </div>
+                            <div className="projet-nom-compact">{nom}</div>
+                          </div>
+                          <div className="projet-meta-compact">
+                            <div className="phases-badge-compact">
+                              <i class="fa-solid fa-layer-group"></i>{" "}
+                              {nombrePhases} phases
+                            </div>
+                            <div className="date-fin-compact">
+                              <FontAwesomeIcon icon={faCalendarAlt} />
+                              {dateFin
+                                ? dateFin.toLocaleDateString("fr-FR")
+                                : "Non défini"}
+                            </div>
+                          </div>
+                          <div
+                            className="avancement-percentage-compact"
+                            style={{ color: getAvancementColor(avancement) }}
+                          >
+                            {avancement.toFixed(1)}%
+                          </div>
+                        </div>
+                        <div className="avancement-progress-compact">
+                          <div className="progress-bar-compact">
+                            <div
+                              className="progress-fill-compact"
+                              style={{
+                                width: `${avancement}%`,
+                                backgroundColor: getAvancementColor(avancement),
+                              }}
+                            ></div>
+                          </div>
+                          <div className="tasks-info-compact">
+                            {tachesTerminees}/{totalTaches} tâches
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
+        );
+
+      case "calendrier":
+        return (
+          <div className="calendrier-view-compact">
+            <div className="section-compact">
+              <div className="section-header-compact">
+                <h3 className="section-title-compact">
+                  Calendrier des projets
+                </h3>
+              </div>
+              <div className="calendar-grid-compact">
+                {projetPhases.map((projet) => {
+                  const avancement = avancementProjetData.find(
+                    (p) => p.ref_projet === projet.ref_projet
+                  );
+                  const pourcentage = avancement
+                    ? parseFloat(avancement.avancement_global_pourcent || 0)
+                    : 0;
+
+                  return (
+                    <div
+                      key={projet.ref_projet}
+                      className="calendar-item-compact"
+                    >
+                      <div className="calendar-project-header">
+                        <div className="calendar-ref-compact">
+                          {projet.ref_projet}
+                        </div>
+                        <div
+                          className="calendar-progress-badge"
+                          style={{ color: getAvancementColor(pourcentage) }}
+                        >
+                          {pourcentage.toFixed(0)}%
+                        </div>
+                      </div>
+                      <div className="calendar-project-nom-compact">
+                        {projet.nom_projet}
+                      </div>
+                      <div className="calendar-dates-compact">
+                        <div className="date-item-compact">
+                          <FontAwesomeIcon
+                            icon={faPlayCircle}
+                            className="date-icon"
+                          />
+                          <span className="date-value-compact">
+                            {projet.date_debut?.toLocaleDateString("fr-FR")}
+                          </span>
+                        </div>
+                        <div className="date-item-compact">
+                          <FontAwesomeIcon
+                            icon={faCheckCircle}
+                            className="date-icon"
+                          />
+                          <span className="date-value-compact">
+                            {projet.date_fin?.toLocaleDateString("fr-FR")}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        );
+
+      case "tableau":
+        return (
+          <div className="tableau-view-compact">
+            <div className="section-compact">
+              <div className="section-header-compact">
+                <h3 className="section-title-compact">Tableau des phases</h3>
+              </div>
+              <div className="phases-table-container-compact">
+                <table className="phases-table-compact">
+                  <thead>
+                    <tr>
+                      <th>Projet</th>
+                      <th>Phases</th>
+                      <th>Avancement</th>
+                      <th>Échéance</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {projetPhases.map((projet) => {
+                      const avancement = avancementProjetData.find(
+                        (p) => p.ref_projet === projet.ref_projet
+                      );
+                      const pourcentage = avancement
+                        ? parseFloat(avancement.avancement_global_pourcent || 0)
+                        : 0;
+
+                      return (
+                        <tr
+                          key={projet.ref_projet}
+                          onClick={() =>
+                            handleProjectClick({
+                              ref_projet: projet.ref_projet,
+                            })
+                          }
+                        >
+                          <td>
+                            <div className="tableau-projet-info">
+                              <div className="tableau-ref">
+                                {projet.ref_projet}
+                              </div>
+                              <div className="tableau-nom">
+                                {projet.nom_projet}
+                              </div>
+                            </div>
+                          </td>
+                          <td>
+                            <div className="tableau-phases-info">
+                              <i class="fa-solid fa-layer-group"></i>{" "}
+                              {projet.phases.length} phases
+                            </div>
+                          </td>
+                          <td>
+                            <div
+                              className="tableau-avancement"
+                              style={{ color: getAvancementColor(pourcentage) }}
+                            >
+                              {pourcentage.toFixed(1)}%
+                            </div>
+                          </td>
+                          <td>
+                            <div className="tableau-date">
+                              {projet.date_fin?.toLocaleDateString("fr-FR")}
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        );
+
+      default:
+        return <div>Contenu non trouvé</div>;
+    }
+  };
+
   if (selectedProject) {
     return (
       <ProjectPhasesScreen
@@ -176,8 +724,25 @@ const ProjetsScreen = () => {
     );
   }
 
-  if (loading) return <div className="loading">Chargement des projets...</div>;
-  if (error) return <div className="error">{error}</div>;
+  if (loading)
+    return (
+      <div className="loading-container">
+        <div className="loading-content">
+          <i className="loading-spinner bi bi-arrow-repeat"></i>
+          <div>Chargement des projets...</div>
+        </div>
+      </div>
+    );
+
+  if (error)
+    return (
+      <div className="error-container">
+        <div className="error-content">
+          <i className="error-icon bi bi-exclamation-triangle-fill"></i>
+          <div>{error}</div>
+        </div>
+      </div>
+    );
 
   return (
     <div className="container">
@@ -197,226 +762,40 @@ const ProjetsScreen = () => {
         </div>
       </div>
 
-      <div className="header">
-        {/* Statistiques alignées horizontalement */}
-        <div className="stats-grid-horizontal">
-          <div className="stat-card">
-            <div className="stat-icon">
-              <FontAwesomeIcon icon={faBuilding} />
-            </div>
-            <div className="stat-content">
-              <h3 className="stat-number">{stats.totalProjets}</h3>
-              <p className="stat-label">Total Projets</p>
-            </div>
-          </div>
-
-          <div className="stat-card">
-            <div className="stat-icon">
-              <FontAwesomeIcon icon={faFileText} />
-            </div>
-            <div className="stat-content">
-              <h3 className="stat-number">{stats.totalPhases}</h3>
-              <p className="stat-label">Total Phases</p>
-            </div>
-          </div>
-        </div>
+      {/* Navigation Bar */}
+      <div className="nav-bar">
+        <button
+          className={`nav-item ${activeTab === "apercu" ? "active" : ""}`}
+          onClick={() => setActiveTab("apercu")}
+        >
+          <FontAwesomeIcon icon={faHome} />
+          <span>Aperçu</span>
+        </button>
+        <button
+          className={`nav-item ${activeTab === "liste" ? "active" : ""}`}
+          onClick={() => setActiveTab("liste")}
+        >
+          <FontAwesomeIcon icon={faList} />
+          <span>Liste</span>
+        </button>
+        <button
+          className={`nav-item ${activeTab === "calendrier" ? "active" : ""}`}
+          onClick={() => setActiveTab("calendrier")}
+        >
+          <FontAwesomeIcon icon={faCalendarAlt} />
+          <span>Calendrier</span>
+        </button>
+        <button
+          className={`nav-item ${activeTab === "tableau" ? "active" : ""}`}
+          onClick={() => setActiveTab("tableau")}
+        >
+          <FontAwesomeIcon icon={faTable} />
+          <span>Tableau</span>
+        </button>
       </div>
 
-      {/* Liste d'avancement des projets */}
-      <div className="section">
-        <div className="section-header">
-          <h3 className="section-title">Avancement des Projets</h3>
-        </div>
-
-        {avancementProjetData.length === 0 ? (
-          <div style={{ color: "#ccc", padding: "20px", textAlign: "center" }}>
-            Aucune donnée d'avancement disponible
-          </div>
-        ) : (
-          <div className="avancement-list">
-            {avancementProjetData.map((item, index) => {
-              const avancement = parseFloat(
-                item.avancement_global_pourcent || 0
-              );
-              const totalTaches = parseInt(item.total_taches_projet || 0);
-              const tachesTerminees = parseInt(
-                item.taches_terminees_projet || 0
-              );
-
-              return (
-                <div
-                  key={item.ref_projet || index}
-                  className="avancement-list-item"
-                >
-                  <div className="avancement-item-header">
-                    <div className="avancement-item-info">
-                      <h4 className="avancement-item-ref">
-                        {item.ref_projet || "N/A"}
-                      </h4>
-                      <p className="avancement-item-nom">
-                        {getProjetNom(item.ref_projet) || "Projet inconnu"}
-                      </p>
-                    </div>
-                    <div className="avancement-item-percentage">
-                      <span
-                        className="percentage-text"
-                        style={{ color: getAvancementColor(avancement) }}
-                      >
-                        {avancement.toFixed(1)}%
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="avancement-item-details">
-                    <div className="task-count">
-                      <span className="task-completed">{tachesTerminees}</span>
-                      <span className="task-separator">/</span>
-                      <span className="task-total">{totalTaches}</span>
-                      <span className="task-label">tâches terminées</span>
-                    </div>
-                    <div
-                      className="status-badge"
-                      style={{
-                        color: getAvancementColor(avancement),
-                        borderColor: getAvancementColor(avancement),
-                      }}
-                    >
-                      {getProjetStatus(avancement)}
-                    </div>
-                  </div>
-
-                  <div className="avancement-item-progress">
-                    <div className="progress-bar">
-                      <div
-                        className="progress-fill"
-                        style={{
-                          width: `${avancement}%`,
-                          backgroundColor: getAvancementColor(avancement),
-                        }}
-                      ></div>
-                    </div>
-                  </div>
-
-                  <div className="avancement-item-actions">
-                    <button
-                      className="voir-plus-btn"
-                      onClick={() =>
-                        handleProjectClick({ ref_projet: item.ref_projet })
-                      }
-                    >
-                      <FontAwesomeIcon icon={faEye} />
-                      Voir plus
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
-
-      {/* Tableau des phases avec tous les projets */}
-      <div className="section">
-        <div className="section-header">
-          <h3 className="section-title">Tableau des phases par projet</h3>
-        </div>
-
-        <div className="phases-table-container">
-          <table className="phases-table">
-            <thead>
-              <tr>
-                <th>Projet</th>
-                <th>Client</th>
-                {phases.map((phase) => (
-                  <th key={phase.id_phase}>{phase.libelle_phase}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {projetPhases.map((projet) => (
-                <tr
-                  key={projet.ref_projet}
-                  onClick={() =>
-                    handleProjectClick({ ref_projet: projet.ref_projet })
-                  }
-                >
-                  <td className="projet-cell">
-                    <div className="projet-info">
-                      <span className="projet-ref">{projet.ref_projet}</span>
-                      <span className="projet-nom">{projet.nom_projet}</span>
-                    </div>
-                  </td>
-                  <td>{projet.client}</td>
-                  {phases.map((phase) => {
-                    const projetPhase = projet.phases.find(
-                      (p) => p.id_phase === phase.id_phase
-                    );
-                    return (
-                      <td key={phase.id_phase} className="phase-cell">
-                        {projetPhase ? (
-                          <span className="phase-status-badge active">
-                            <FontAwesomeIcon icon={faCheckCircle} />
-                          </span>
-                        ) : (
-                          <span className="phase-status-badge inactive">-</span>
-                        )}
-                      </td>
-                    );
-                  })}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Calendrier des projets */}
-      <div className="section">
-        <div className="section-header">
-          <h3 className="section-title">Calendrier des projets</h3>
-          <button className="view-all-button" onClick={toggleCalendar}>
-            <FontAwesomeIcon icon={faCalendarAlt} />
-            {showCalendar ? "Masquer calendrier" : "Afficher calendrier"}
-          </button>
-        </div>
-
-        {showCalendar && (
-          <div className="calendar-container">
-            <div className="calendar-grid">
-              {projetPhases.map((projet) => (
-                <div key={projet.ref_projet} className="calendar-item">
-                  <div className="calendar-project-info">
-                    <div className="calendar-ref">{projet.ref_projet}</div>
-                    <div className="calendar-nom">{projet.nom_projet}</div>
-                  </div>
-                  <div className="calendar-dates">
-                    <div className="date-item">
-                      <span className="date-label">Début:</span>
-                      <span className="date-value">
-                        {projet.date_debut?.toLocaleDateString("fr-FR")}
-                      </span>
-                    </div>
-                    <div className="date-item">
-                      <span className="date-label">Fin:</span>
-                      <span className="date-value">
-                        {projet.date_fin?.toLocaleDateString("fr-FR")}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="calendar-duration">
-                    Durée:{" "}
-                    {Math.ceil(
-                      (projet.date_fin - projet.date_debut) /
-                        (1000 * 60 * 60 * 24)
-                    )}{" "}
-                    jours
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
+      {/* Contenu selon l'onglet actif */}
+      {renderContent()}
 
       {showCreateModal && (
         <CreateProjectModal
