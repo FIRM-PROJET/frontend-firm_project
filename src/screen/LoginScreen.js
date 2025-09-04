@@ -71,7 +71,6 @@ const LoginScreen = () => {
 
     try {
       const response = await UtilisateurService.login(email, password);
-      console.log("Connexion réussie :", response);
       const matricule = localStorage.getItem("matricule");
       if (!matricule) throw new Error("Matricule manquant");
       navigate("/home");

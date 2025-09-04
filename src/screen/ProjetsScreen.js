@@ -398,7 +398,7 @@ const ProjetsScreen = () => {
                 <div className="section-card-header">
                   <h3 className="section-card-title">
                     <FontAwesomeIcon icon={faCalendarWeek} />
-                    Échéances
+                    Projets
                   </h3>
                   <button
                     className="voir-plus-btn-compact"
@@ -462,7 +462,7 @@ const ProjetsScreen = () => {
                                 <span className="timeline-jours">
                                   {joursRestants > 0
                                     ? `${joursRestants}j restants`
-                                    : "Échéance dépassée"}
+                                    : "Aucune phase entrée"}
                                 </span>
                               </div>
                               <div className="timeline-progress-mini">

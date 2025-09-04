@@ -65,7 +65,9 @@ const ProjectPhasesScreen = ({ refProjet = "", onBack }) => {
 
         // Vérifier si l'utilisateur est admin
         if (userInfoData.matricule) {
-          const adminResponse = await ModuleService.isUserAdmin(userInfoData.matricule);
+          const adminResponse = await ModuleService.isUserAdmin(
+            userInfoData.matricule
+          );
           setIsAdmin(adminResponse.isAdmin === true);
         }
       } catch (err) {
@@ -155,12 +157,19 @@ const ProjectPhasesScreen = ({ refProjet = "", onBack }) => {
   };
 
   const handleDeletePhase = async (phase) => {
-    if (!window.confirm(`Êtes-vous sûr de vouloir supprimer la phase "${phase.libelle_phase}" de ce projet ?`)) {
+    if (
+      !window.confirm(
+        `Êtes-vous sûr de vouloir supprimer la phase "${phase.libelle_phase}" de ce projet ?`
+      )
+    ) {
       return;
     }
 
     try {
-      const response = await ProjetService.deleteProjectPhase(refProjet, phase.id_phase);
+      const response = await ProjetService.deleteProjectPhase(
+        refProjet,
+        phase.id_phase
+      );
       if (response.message) {
         await fetchData();
       } else {
@@ -207,7 +216,11 @@ const ProjectPhasesScreen = ({ refProjet = "", onBack }) => {
         setShowModal(false);
         await fetchData();
       } else {
-        setError(`Erreur lors de la ${modalType === "add" ? "création" : "modification"} de la phase`);
+        setError(
+          `Erreur lors de la ${
+            modalType === "add" ? "création" : "modification"
+          } de la phase`
+        );
       }
     } catch (err) {
       setError(err.message);
@@ -222,7 +235,9 @@ const ProjectPhasesScreen = ({ refProjet = "", onBack }) => {
         date_fin_reelle: finReelleFormData.date_fin_reelle,
       };
 
-      const response = await ProjetService.updateProjectFinReelle(finReelleData);
+      const response = await ProjetService.updateProjectFinReelle(
+        finReelleData
+      );
       if (response) {
         setShowFinReelleModal(false);
         await fetchData();
@@ -290,10 +305,14 @@ const ProjectPhasesScreen = ({ refProjet = "", onBack }) => {
 
   const isPhaseCompleted = (phase) => {
     const projectPhaseData = getProjectPhaseData(phase);
-    return projectPhaseData?.date_fin_reelle !== null && projectPhaseData?.date_fin_reelle !== undefined;
+    return (
+      projectPhaseData?.date_fin_reelle !== null &&
+      projectPhaseData?.date_fin_reelle !== undefined
+    );
   };
 
-  if (loading) return <div className="dark-modal-loading">Chargement des phases...</div>;
+  if (loading)
+    return <div className="dark-modal-loading">Chargement des phases...</div>;
   if (error) return <div className="dark-modal-error">{error}</div>;
 
   return (
@@ -320,7 +339,12 @@ const ProjectPhasesScreen = ({ refProjet = "", onBack }) => {
           const users = phaseUsers[phase.id_phase] || [];
 
           return (
-            <div key={phase.id_phase} className={`phase-card ${status} ${isPhaseCompleted(phase) ? 'completed' : ''}`}>
+            <div
+              key={phase.id_phase}
+              className={`phase-card ${status} ${
+                isPhaseCompleted(phase) ? "completed" : ""
+              }`}
+            >
               <div className="phase-card-header">
                 <div className="phase-info">
                   <h3 className="phase-libelle">{phase.libelle_phase}</h3>
@@ -356,11 +380,21 @@ const ProjectPhasesScreen = ({ refProjet = "", onBack }) => {
                           <FontAwesomeIcon icon={faEdit} />
                         </button>
                         <button
-                          className={`manage-users-btn ${isPhaseCompleted(phase) ? 'completed-phase' : ''}`}
+                          className={`manage-users-btn ${
+                            isPhaseCompleted(phase) ? "completed-phase" : ""
+                          }`}
                           onClick={() => handleSetFinReelle(phase)}
-                          title={isPhaseCompleted(phase) ? "Modifier la date fin réelle" : "Marquer comme terminée"}
+                          title={
+                            isPhaseCompleted(phase)
+                              ? "Modifier la date fin réelle"
+                              : "Marquer comme terminée"
+                          }
                         >
-                          <FontAwesomeIcon icon={isPhaseCompleted(phase) ? faCheck : faCalendarAlt} />
+                          <FontAwesomeIcon
+                            icon={
+                              isPhaseCompleted(phase) ? faCheck : faCalendarAlt
+                            }
+                          />
                         </button>
                         <button
                           className="manage-users-btn delete-btn"
@@ -432,9 +466,10 @@ const ProjectPhasesScreen = ({ refProjet = "", onBack }) => {
                         {users.slice(0, 2).map((user) => (
                           <div key={user.matricule} className="user-item">
                             <div className="user-avatar">
-                              {user.prenom.charAt(0)}
-                              {user.nom.charAt(0)}
+                              {(user.prenom?.charAt(0) || "").toUpperCase()}
+                              {(user.nom?.charAt(0) || "").toUpperCase()}
                             </div>
+
                             <div className="user-info">
                               <span className="user-name">
                                 {user.prenom} {user.nom}
@@ -466,70 +501,73 @@ const ProjectPhasesScreen = ({ refProjet = "", onBack }) => {
       </div>
 
       {/* Modal d'ajout/modification de phase */}
-      {showModal && selectedPhase && (modalType === "add" || modalType === "edit") && (
-        <div className="dark-modal-backdrop">
-          <div className="dark-modal-wrapper">
-            <div className="dark-modal-header">
-              <h3 className="dark-modal-title">
-                {modalType === "add" ? "Ajouter" : "Modifier"} la phase: {selectedPhase.libelle_phase}
-              </h3>
-              <button
-                className="dark-modal-close"
-                onClick={() => setShowModal(false)}
-              >
-                <FontAwesomeIcon icon={faTimes} />
-              </button>
-            </div>
-
-            <div className="dark-modal-body">
-              <p className="dark-modal-description">
-                {selectedPhase.description}
-              </p>
-
-              <div className="dark-form-group">
-                <label className="dark-form-label">Date de début:</label>
-                <input
-                  type="date"
-                  value={formData.date_debut}
-                  onChange={(e) =>
-                    setFormData({ ...formData, date_debut: e.target.value })
-                  }
-                  className="dark-form-input"
-                />
+      {showModal &&
+        selectedPhase &&
+        (modalType === "add" || modalType === "edit") && (
+          <div className="dark-modal-backdrop">
+            <div className="dark-modal-wrapper">
+              <div className="dark-modal-header">
+                <h3 className="dark-modal-title">
+                  {modalType === "add" ? "Ajouter" : "Modifier"} la phase:{" "}
+                  {selectedPhase.libelle_phase}
+                </h3>
+                <button
+                  className="dark-modal-close"
+                  onClick={() => setShowModal(false)}
+                >
+                  <FontAwesomeIcon icon={faTimes} />
+                </button>
               </div>
 
-              <div className="dark-form-group">
-                <label className="dark-form-label">Date de fin:</label>
-                <input
-                  type="date"
-                  value={formData.date_fin}
-                  onChange={(e) =>
-                    setFormData({ ...formData, date_fin: e.target.value })
-                  }
-                  className="dark-form-input"
-                />
-              </div>
-            </div>
+              <div className="dark-modal-body">
+                <p className="dark-modal-description">
+                  {selectedPhase.description}
+                </p>
 
-            <div className="dark-modal-footer">
-              <button
-                className="dark-btn-cancel"
-                onClick={() => setShowModal(false)}
-              >
-                Annuler
-              </button>
-              <button
-                className="dark-btn-save"
-                onClick={handleSavePhase}
-                disabled={!formData.date_debut || !formData.date_fin}
-              >
-                <FontAwesomeIcon icon={faCheck} />
-                {modalType === "add" ? "Ajouter" : "Modifier"} la phase
-              </button>
+                <div className="dark-form-group">
+                  <label className="dark-form-label">Date de début:</label>
+                  <input
+                    type="date"
+                    value={formData.date_debut}
+                    onChange={(e) =>
+                      setFormData({ ...formData, date_debut: e.target.value })
+                    }
+                    className="dark-form-input"
+                  />
+                </div>
+
+                <div className="dark-form-group">
+                  <label className="dark-form-label">Date de fin:</label>
+                  <input
+                    type="date"
+                    value={formData.date_fin}
+                    onChange={(e) =>
+                      setFormData({ ...formData, date_fin: e.target.value })
+                    }
+                    className="dark-form-input"
+                  />
+                </div>
+              </div>
+
+              <div className="dark-modal-footer">
+                <button
+                  className="dark-btn-cancel"
+                  onClick={() => setShowModal(false)}
+                >
+                  Annuler
+                </button>
+                <button
+                  className="dark-btn-save"
+                  onClick={handleSavePhase}
+                  disabled={!formData.date_debut || !formData.date_fin}
+                >
+                  <FontAwesomeIcon icon={faCheck} />
+                  {modalType === "add" ? "Ajouter" : "Modifier"} la phase
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
       {/* Modal de gestion des utilisateurs */}
       {showUsersModal && selectedPhase && (
@@ -537,7 +575,8 @@ const ProjectPhasesScreen = ({ refProjet = "", onBack }) => {
           <div className="dark-modal-wrapper users-modal">
             <div className="dark-modal-header">
               <h3 className="dark-modal-title">
-                {isAdmin ? "Gestion" : "Consultation"} de l'équipe - {selectedPhase.libelle_phase}
+                {isAdmin ? "Gestion" : "Consultation"} de l'équipe -{" "}
+                {selectedPhase.libelle_phase}
               </h3>
               <button
                 className="dark-modal-close"
@@ -600,8 +639,10 @@ const ProjectPhasesScreen = ({ refProjet = "", onBack }) => {
                     {(phaseUsers[selectedPhase.id_phase] || []).map((user) => (
                       <div key={user.matricule} className="assigned-user-item">
                         <div className="user-avatar large">
-                          {user.prenom.charAt(0)}
-                          {user.nom.charAt(0)}
+                          <div className="user-avatar">
+                            {(user.prenom?.charAt(0) || "").toUpperCase()}
+                            {(user.nom?.charAt(0) || "").toUpperCase()}
+                          </div>
                         </div>
                         <div className="user-details">
                           <div className="user-name">
@@ -650,7 +691,8 @@ const ProjectPhasesScreen = ({ refProjet = "", onBack }) => {
           <div className="dark-modal-wrapper">
             <div className="dark-modal-header">
               <h3 className="dark-modal-title">
-                {isPhaseCompleted(selectedPhase) ? 'Modifier' : 'Définir'} la date fin réelle - {selectedPhase.libelle_phase}
+                {isPhaseCompleted(selectedPhase) ? "Modifier" : "Définir"} la
+                date fin réelle - {selectedPhase.libelle_phase}
               </h3>
               <button
                 className="dark-modal-close"
@@ -662,10 +704,9 @@ const ProjectPhasesScreen = ({ refProjet = "", onBack }) => {
 
             <div className="dark-modal-body">
               <p className="dark-modal-description">
-                {isPhaseCompleted(selectedPhase) 
+                {isPhaseCompleted(selectedPhase)
                   ? "Modifiez la date de fin réelle de cette phase."
-                  : "Définissez la date de fin réelle pour marquer cette phase comme terminée."
-                }
+                  : "Définissez la date de fin réelle pour marquer cette phase comme terminée."}
               </p>
 
               <div className="dark-form-group">
@@ -701,7 +742,8 @@ const ProjectPhasesScreen = ({ refProjet = "", onBack }) => {
                 disabled={!finReelleFormData.date_fin_reelle}
               >
                 <FontAwesomeIcon icon={faCheck} />
-                {isPhaseCompleted(selectedPhase) ? 'Modifier' : 'Terminer'} la phase
+                {isPhaseCompleted(selectedPhase) ? "Modifier" : "Terminer"} la
+                phase
               </button>
             </div>
           </div>

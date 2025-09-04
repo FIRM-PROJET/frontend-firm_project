@@ -428,12 +428,15 @@
 
 /* Jour actuel */
 .calendar-day.today {
-  background: linear-gradient(135deg, #8786ac, #8786ac);
+  background: var(--gradient-glow);
   box-shadow: 0 0 4px rgba(219, 219, 234, 0.4);
+  height: 100%;
+  width: 100%;
 }
 
 .calendar-day.today .day-number {
-  color: #afaecf;
+  color: #ccc;
+  font-size: 0.7rem;
   font-weight: 800;
 }
 

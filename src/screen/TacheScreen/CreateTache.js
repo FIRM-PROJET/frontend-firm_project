@@ -114,21 +114,6 @@ const CreateTache = () => {
 
       // Tenter d'assigner tous les utilisateurs AVANT de créer la tâche
       let assignmentErrors = [];
-      
-      // Test des assignations normales
-      for (const matricule of tacheData.utilisateurs_assignes) {
-        try {
-          await TacheService.assign_user_tache({ 
-            ref_tache: "TEST_TEMP", // Juste pour tester la disponibilité
-            matricule,
-            date_debut: tacheData.date_debut,
-            duree: parseInt(tacheData.duree),
-            id_unite_duree: parseInt(tacheData.id_unite_duree)
-          });
-        } catch (error) {
-          assignmentErrors.push(`Utilisateur ${matricule}: ${error.message || 'Non disponible'}`);
-        }
-      }
 
       // Si des erreurs d'assignation, ne pas créer la tâche
       if (assignmentErrors.length > 0) {
@@ -147,7 +132,7 @@ const CreateTache = () => {
       });
 
       const ref_tache = result.ref_tache;
-
+  
       // Assigner les utilisateurs normaux
       for (const matricule of tacheData.utilisateurs_assignes) {
         await TacheService.assign_user_tache({ ref_tache, matricule });
