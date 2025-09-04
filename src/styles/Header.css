@@ -1,4 +1,6 @@
-/* Header Container - INCHANGÉ */
+/* =======================
+   Header Container
+======================= */
 .container-header {
   background: #181835;
   border-bottom: 1px solid #282850;
@@ -14,13 +16,11 @@
   align-items: center;
   gap: 30px;
   height: 50px;
-  max-width: 1200px;
-  margin: 0 auto;
-    margin-left: 150px;
+  margin: 0 auto;}
 
-}
-
-/* Notification Icons - INCHANGÉ */
+/* =======================
+   Notification Icons
+======================= */
 .navbar-item1 {
   position: relative;
   display: flex;
@@ -42,10 +42,10 @@
 
 .alert-container:hover i,
 .notification-container:hover i {
-color: #7b78d3 ;
+  color: #7b78d3;
 }
 
-/* Notification Dots - INCHANGÉ */
+/* Notification Dots */
 .notification-dot {
   position: absolute;
   top: -2px;
@@ -64,7 +64,9 @@ color: #7b78d3 ;
   background: #ccc;
 }
 
-/* Profile Container - MODIFIÉ pour le cursor pointer */
+/* =======================
+   Profile Header Preview
+======================= */
 .header-profile-container {
   position: relative;
   cursor: pointer;
@@ -75,7 +77,6 @@ color: #7b78d3 ;
   align-items: center;
   gap: 12px;
   transition: all 0.3s ease;
-  cursor: pointer;
 }
 
 .header-profile-preview:hover {
@@ -128,7 +129,9 @@ color: #7b78d3 ;
   line-height: 1.2;
 }
 
-/* NOUVEAU: Profile Sidebar (comme le notification screen) */
+/* =======================
+   Profile Sidebar
+======================= */
 .profile-screen-overlay {
   position: fixed;
   top: 0;
@@ -162,7 +165,6 @@ color: #7b78d3 ;
   padding: 20px 25px;
   border-bottom: 1px solid #282850;
   background-color: #1a1a3a;
-  flex-shrink: 0;
 }
 
 .profile-screen-title {
@@ -188,12 +190,12 @@ color: #7b78d3 ;
   font-size: 20px;
   cursor: pointer;
   padding: 8px;
-  transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 36px;
   height: 36px;
+  transition: all 0.2s ease;
 }
 
 .profile-screen-close:hover {
@@ -205,10 +207,10 @@ color: #7b78d3 ;
 .profile-screen-content {
   flex: 1;
   overflow-y: auto;
-  padding: 0;
   background-color: #181835;
 }
 
+/* Scrollbar */
 .profile-screen-content::-webkit-scrollbar {
   width: 6px;
 }
@@ -226,7 +228,7 @@ color: #7b78d3 ;
   background: #4b5563;
 }
 
-/* Profile Info Section dans le sidebar */
+/* Profile Info Section */
 .profile-info-section {
   padding: 30px 25px;
   border-bottom: 1px solid #282850;
@@ -275,14 +277,12 @@ color: #7b78d3 ;
   font-size: 24px;
   font-weight: 700;
   margin: 0;
-  line-height: 1.2;
 }
 
 .profile-email {
   color: #8b8bb3;
   font-size: 16px;
   margin: 0;
-  line-height: 1.2;
 }
 
 .profile-poste {
@@ -294,7 +294,7 @@ color: #7b78d3 ;
   opacity: 0.8;
 }
 
-/* Calendar Section dans le sidebar */
+/* Calendar Section */
 .profile-calendar-section {
   padding: 25px;
   border-bottom: 1px solid #282850;
@@ -304,7 +304,7 @@ color: #7b78d3 ;
   color: #6b69af;
   font-size: 16px;
   font-weight: 700;
-  margin: 0 0 25px 0;
+  margin-bottom: 25px;
   text-align: center;
   display: flex;
   align-items: center;
@@ -355,11 +355,10 @@ color: #7b78d3 ;
   font-size: 10px;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
 .profile-calendar-day.today .profile-day-name {
-  color: #ffffff;
+  color: #fff;
 }
 
 .profile-day-number {
@@ -369,10 +368,10 @@ color: #7b78d3 ;
 }
 
 .profile-calendar-day.today .profile-day-number {
-  color: #ffffff;
+  color: #fff;
 }
 
-/* Menu Actions Section */
+/* Actions Section */
 .profile-actions-section {
   padding: 25px;
   display: flex;
@@ -399,7 +398,7 @@ color: #7b78d3 ;
 
 .profile-password-button {
   background: linear-gradient(135deg, #514f84, #686ae1);
-  color: #ffffff;
+  color: #fff;
   border: 1px solid transparent;
   box-shadow: 0 4px 12px rgba(81, 79, 132, 0.3);
 }
@@ -430,103 +429,36 @@ color: #7b78d3 ;
 
 /* Animations */
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @keyframes slideInFromRight {
-  from {
-    transform: translateX(100%);
-  }
-  to {
-    transform: translateX(0);
-  }
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
 }
-
-/* ANCIEN Profile Dropdown - SUPPRIMÉ pour éviter les conflits */
-/* Toutes les classes .header-profile-dropdown sont supprimées */
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .container-header {
-    padding: 8px 16px;
-  }
-
-  .profile-screen-container {
-    width: 100%;
-    max-width: 100%;
-  }
-
-  .profile-screen-header {
-    padding: 18px 20px;
-  }
-
-  .profile-screen-title {
-    font-size: 18px;
-  }
-
-  .profile-info-section {
-    padding: 25px 20px;
-  }
-
-  .profile-calendar-section {
-    padding: 20px;
-  }
-
-  .profile-calendar-week {
-    gap: 6px;
-    max-width: 300px;
-  }
-
-  .profile-calendar-day {
-    padding: 10px 3px;
-    min-height: 45px;
-  }
-
-  .profile-day-name {
-    font-size: 9px;
-  }
-
-  .profile-day-number {
-    font-size: 12px;
-  }
-
-  .profile-actions-section {
-    padding: 20px;
-  }
-
-  .profile-action-button {
-    padding: 14px 18px;
-  }
+  .container-header { padding: 8px 16px; }
+  .profile-screen-container { width: 100%; max-width: 100%; }
+  .profile-screen-header { padding: 18px 20px; }
+  .profile-screen-title { font-size: 18px; }
+  .profile-info-section { padding: 25px 20px; }
+  .profile-calendar-section { padding: 20px; }
+  .profile-calendar-week { max-width: 300px; gap: 6px; }
+  .profile-calendar-day { padding: 10px 3px; min-height: 45px; }
+  .profile-day-name { font-size: 9px; }
+  .profile-day-number { font-size: 12px; }
+  .profile-actions-section { padding: 20px; }
+  .profile-action-button { padding: 14px 18px; }
 }
 
 @media (max-width: 480px) {
-  .header-profile-preview {
-    gap: 8px;
-  }
-
-  .header-profile-avatar-preview {
-    width: 28px;
-    height: 28px;
-  }
-
-  .header-profile-name-preview {
-    font-size: 13px;
-  }
-
-  .header-profile-poste-preview {
-    font-size: 11px;
-  }
-
-  .profile-screen-container {
-    width: 100vw;
-  }
-
-  .profile-calendar-week {
-    max-width: 280px;
-  }
+  .header-profile-preview { gap: 8px; }
+  .header-profile-avatar-preview { width: 28px; height: 28px; }
+  .header-profile-name-preview { font-size: 13px; }
+  .header-profile-poste-preview { font-size: 11px; }
+  .profile-screen-container { width: 100vw; }
+  .profile-calendar-week { max-width: 280px; }
 }

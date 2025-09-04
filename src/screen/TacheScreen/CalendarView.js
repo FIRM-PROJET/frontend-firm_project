@@ -483,7 +483,7 @@ const CalendarView = ({ taches, allTaches, onTacheClick, userInfo }) => {
           {viewMode === "personal"
             ? `Vue personnelle${
                 userInfo?.matricule
-                  ? ` - ${userInfo.name} (${userInfo.matricule})`
+                  ? ` - ${userInfo.name}`
                   : ""
               }`
             : "Vue générale - Toutes les tâches"}

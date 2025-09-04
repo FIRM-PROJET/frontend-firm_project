@@ -17,6 +17,7 @@ export const ProjetService = {
     return await response.json();
   },
 
+  
   // ==================== PHASES ====================
   getAllPhases: async () => {
     const response = await fetch(`${API_URL}/phases`);
@@ -74,6 +75,15 @@ export const ProjetService = {
 
   updateProjectPhase: async (phaseData) => {
     const response = await fetch(`${API_URL}/phase`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(phaseData),
+    });
+    return await response.json();
+  },
+
+  updateProjectFinReelle: async (phaseData) => {
+    const response = await fetch(`${API_URL}/phase/fin_reelle`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(phaseData),

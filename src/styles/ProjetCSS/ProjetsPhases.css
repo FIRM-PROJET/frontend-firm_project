@@ -716,3 +716,278 @@
     min-width: auto;
   }
 }
+
+/* ==========================================
+   CSS SUPPLÉMENTAIRE POUR LA DATE FIN RÉELLE
+   ========================================== */
+
+/* Phases terminées - Style général */
+.phase-card.completed {
+  background: rgba(75, 75, 75, 0.3);
+  border-color: rgba(108, 117, 125, 0.4);
+  opacity: 0.85;
+}
+
+.phase-card.completed .phase-libelle {
+  color: #6c757d;
+  text-decoration: line-through;
+}
+
+.phase-card.completed .phase-description {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.phase-card.completed::before {
+  background: linear-gradient(
+    45deg,
+    rgba(108, 117, 125, 0.15),
+    rgba(108, 117, 125, 0.08)
+  );
+}
+
+.phase-card.completed:hover {
+  transform: translateY(-4px); /* Moins d'élévation pour les phases terminées */
+  border-color: rgba(108, 117, 125, 0.5);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2), 0 0 15px rgba(108, 117, 125, 0.15);
+}
+
+/* Badge de phase terminée */
+.phase-card.completed .phase-card-header::after {
+  content: "TERMINÉE";
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 0 5px 0 5px;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 6px rgba(40, 167, 69, 0.3);
+}
+
+.phase-card-header {
+  position: relative;
+}
+
+/* Actions des phases - nouvelle grille pour 4 boutons */
+.phase-card.assigned .phase-actions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 8px;
+  padding: 5px;
+}
+
+/* Bouton de fin réelle */
+.manage-users-btn.completed-phase {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  animation: pulse-green 2s infinite;
+}
+
+.manage-users-btn.completed-phase:hover {
+  background: linear-gradient(135deg, #218838 0%, #1abc9c 100%);
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(40, 167, 69, 0.4);
+}
+
+@keyframes pulse-green {
+  0%, 100% {
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+  }
+  50% {
+    box-shadow: 0 6px 16px rgba(40, 167, 69, 0.5);
+  }
+}
+
+/* Bouton de suppression avec couleur distinctive */
+.manage-users-btn.delete-btn {
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+}
+
+.manage-users-btn.delete-btn:hover {
+  background: linear-gradient(135deg, #c82333 0%, #bd2130 100%);
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(220, 53, 69, 0.4);
+}
+
+/* Styles pour les dates fin réelle */
+.date-fin-reelle {
+  background: rgba(40, 167, 69, 0.1);
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(40, 167, 69, 0.2);
+  margin-top: 8px;
+}
+
+.date-fin-reelle .date-icon.completed {
+  color: #28a745;
+  animation: checkmark-glow 2s infinite;
+}
+
+.date-fin-reelle .date-label {
+  color: #28a745;
+  font-weight: 600;
+}
+
+.date-fin-reelle .date-value.completed {
+  color: #20c997;
+  font-weight: 600;
+}
+
+@keyframes checkmark-glow {
+  0%, 100% {
+    text-shadow: 0 0 5px rgba(40, 167, 69, 0.5);
+  }
+  50% {
+    text-shadow: 0 0 10px rgba(40, 167, 69, 0.8);
+  }
+}
+
+/* Modal de fin réelle */
+.completion-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: rgba(40, 167, 69, 0.1);
+  border: 1px solid rgba(40, 167, 69, 0.2);
+  border-radius: 6px;
+  color: #28a745;
+  font-size: 14px;
+  font-weight: 500;
+  margin-top: 16px;
+}
+
+.completion-info svg {
+  color: #28a745;
+  font-size: 16px;
+}
+
+/* Modifications pour les phases terminées dans la liste des utilisateurs */
+.phase-card.completed .users-title {
+  color: #6c757d;
+}
+
+.phase-card.completed .user-avatar {
+  background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+  opacity: 0.8;
+}
+
+.phase-card.completed .user-name {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.phase-card.completed .user-role {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Indicateur de progression visuel */
+.phase-progress-indicator {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 0 0 5px 5px;
+  overflow: hidden;
+}
+
+.phase-progress-indicator::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: linear-gradient(90deg, #28a745 0%, #20c997 100%);
+  transition: width 0.5s ease;
+}
+
+.phase-card.completed .phase-progress-indicator::after {
+  width: 100%;
+}
+
+.phase-card:not(.completed) .phase-progress-indicator::after {
+  width: 0%;
+}
+
+/* Ajouter l'indicateur de progression aux cartes */
+.phase-card {
+  position: relative;
+  overflow: visible; /* Permettre au badge de dépasser */
+}
+
+.phase-card::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 0 0 5px 5px;
+}
+
+.phase-card.completed::after {
+  background: linear-gradient(90deg, #28a745 0%, #20c997 100%);
+}
+
+/* Responsive - ajustements pour mobile */
+@media (max-width: 768px) {
+  .phase-card.assigned .phase-actions {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 6px;
+  }
+
+  .manage-users-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 14px;
+  }
+
+  .phase-card.completed .phase-card-header::after {
+    font-size: 8px;
+    padding: 2px 6px;
+    top: -1px;
+    right: -1px;
+  }
+
+  .completion-info {
+    flex-direction: column;
+    text-align: center;
+    gap: 8px;
+  }
+}
+
+/* Animation d'entrée pour les nouvelles phases terminées */
+@keyframes phase-completed {
+  0% {
+    transform: scale(1);
+    background: rgba(255, 255, 255, 0.05);
+  }
+  50% {
+    transform: scale(1.02);
+    background: rgba(40, 167, 69, 0.15);
+  }
+  100% {
+    transform: scale(1);
+    background: rgba(75, 75, 75, 0.3);
+  }
+}
+
+.phase-card.completed.newly-completed {
+  animation: phase-completed 1.5s ease-out;
+}
+
+/* Effet de survol spécial pour les phases terminées */
+.phase-card.completed:hover .phase-libelle {
+  color: #20c997;
+  text-decoration: none;
+}
+
+.phase-card.completed:hover .phase-description {
+  color: rgba(255, 255, 255, 0.7);
+}

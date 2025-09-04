@@ -28,6 +28,7 @@ const ProjectPhasesScreen = ({ refProjet = "", onBack }) => {
   const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [showUsersModal, setShowUsersModal] = useState(false);
+  const [showFinReelleModal, setShowFinReelleModal] = useState(false);
   const [selectedPhase, setSelectedPhase] = useState(null);
   const [modalType, setModalType] = useState("add");
   const [userInfo, setUserInfo] = useState({});
@@ -38,6 +39,9 @@ const ProjectPhasesScreen = ({ refProjet = "", onBack }) => {
   });
   const [userFormData, setUserFormData] = useState({
     matricule: "",
+  });
+  const [finReelleFormData, setFinReelleFormData] = useState({
+    date_fin_reelle: "",
   });
 
   useEffect(() => {
@@ -174,6 +178,15 @@ const ProjectPhasesScreen = ({ refProjet = "", onBack }) => {
     setShowUsersModal(true);
   };
 
+  const handleSetFinReelle = (phase) => {
+    setSelectedPhase(phase);
+    const projectPhaseData = getProjectPhaseData(phase);
+    setFinReelleFormData({
+      date_fin_reelle: projectPhaseData?.date_fin_reelle || "",
+    });
+    setShowFinReelleModal(true);
+  };
+
   const handleSavePhase = async () => {
     try {
       const phaseData = {
@@ -195,6 +208,26 @@ const ProjectPhasesScreen = ({ refProjet = "", onBack }) => {
         await fetchData();
       } else {
         setError(`Erreur lors de la ${modalType === "add" ? "création" : "modification"} de la phase`);
+      }
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const handleSaveFinReelle = async () => {
+    try {
+      const finReelleData = {
+        ref_projet: refProjet,
+        id_phase: selectedPhase.id_phase,
+        date_fin_reelle: finReelleFormData.date_fin_reelle,
+      };
+
+      const response = await ProjetService.updateProjectFinReelle(finReelleData);
+      if (response) {
+        setShowFinReelleModal(false);
+        await fetchData();
+      } else {
+        setError("Erreur lors de la mise à jour de la date fin réelle");
       }
     } catch (err) {
       setError(err.message);
@@ -255,6 +288,11 @@ const ProjectPhasesScreen = ({ refProjet = "", onBack }) => {
     return projectPhases.find((pp) => pp.id_phase === phase.id_phase);
   };
 
+  const isPhaseCompleted = (phase) => {
+    const projectPhaseData = getProjectPhaseData(phase);
+    return projectPhaseData?.date_fin_reelle !== null && projectPhaseData?.date_fin_reelle !== undefined;
+  };
+
   if (loading) return <div className="dark-modal-loading">Chargement des phases...</div>;
   if (error) return <div className="dark-modal-error">{error}</div>;
 
@@ -282,7 +320,7 @@ const ProjectPhasesScreen = ({ refProjet = "", onBack }) => {
           const users = phaseUsers[phase.id_phase] || [];
 
           return (
-            <div key={phase.id_phase} className={`phase-card ${status}`}>
+            <div key={phase.id_phase} className={`phase-card ${status} ${isPhaseCompleted(phase) ? 'completed' : ''}`}>
               <div className="phase-card-header">
                 <div className="phase-info">
                   <h3 className="phase-libelle">{phase.libelle_phase}</h3>
@@ -318,7 +356,14 @@ const ProjectPhasesScreen = ({ refProjet = "", onBack }) => {
                           <FontAwesomeIcon icon={faEdit} />
                         </button>
                         <button
-                          className="manage-users-btn"
+                          className={`manage-users-btn ${isPhaseCompleted(phase) ? 'completed-phase' : ''}`}
+                          onClick={() => handleSetFinReelle(phase)}
+                          title={isPhaseCompleted(phase) ? "Modifier la date fin réelle" : "Marquer comme terminée"}
+                        >
+                          <FontAwesomeIcon icon={isPhaseCompleted(phase) ? faCheck : faCalendarAlt} />
+                        </button>
+                        <button
+                          className="manage-users-btn delete-btn"
                           onClick={() => handleDeletePhase(phase)}
                           title="Supprimer la phase du projet"
                         >
@@ -348,11 +393,23 @@ const ProjectPhasesScreen = ({ refProjet = "", onBack }) => {
                         icon={faCalendarAlt}
                         className="date-icon"
                       />
-                      <span className="date-label">Fin:</span>
+                      <span className="date-label">Fin prévue:</span>
                       <span className="date-value">
                         {formatDate(projectPhaseData.date_fin)}
                       </span>
                     </div>
+                    {projectPhaseData.date_fin_reelle && (
+                      <div className="date-item date-fin-reelle">
+                        <FontAwesomeIcon
+                          icon={faCheck}
+                          className="date-icon completed"
+                        />
+                        <span className="date-label">Fin réelle:</span>
+                        <span className="date-value completed">
+                          {formatDate(projectPhaseData.date_fin_reelle)}
+                        </span>
+                      </div>
+                    )}
                   </div>
 
                   <div className="phase-users">
@@ -581,6 +638,70 @@ const ProjectPhasesScreen = ({ refProjet = "", onBack }) => {
                 onClick={() => setShowUsersModal(false)}
               >
                 Fermer
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de date fin réelle */}
+      {showFinReelleModal && selectedPhase && (
+        <div className="dark-modal-backdrop">
+          <div className="dark-modal-wrapper">
+            <div className="dark-modal-header">
+              <h3 className="dark-modal-title">
+                {isPhaseCompleted(selectedPhase) ? 'Modifier' : 'Définir'} la date fin réelle - {selectedPhase.libelle_phase}
+              </h3>
+              <button
+                className="dark-modal-close"
+                onClick={() => setShowFinReelleModal(false)}
+              >
+                <FontAwesomeIcon icon={faTimes} />
+              </button>
+            </div>
+
+            <div className="dark-modal-body">
+              <p className="dark-modal-description">
+                {isPhaseCompleted(selectedPhase) 
+                  ? "Modifiez la date de fin réelle de cette phase."
+                  : "Définissez la date de fin réelle pour marquer cette phase comme terminée."
+                }
+              </p>
+
+              <div className="dark-form-group">
+                <label className="dark-form-label">Date de fin réelle:</label>
+                <input
+                  type="date"
+                  value={finReelleFormData.date_fin_reelle}
+                  onChange={(e) =>
+                    setFinReelleFormData({ date_fin_reelle: e.target.value })
+                  }
+                  className="dark-form-input"
+                />
+              </div>
+
+              {finReelleFormData.date_fin_reelle && (
+                <div className="completion-info">
+                  <FontAwesomeIcon icon={faCheck} />
+                  <span>Cette phase sera marquée comme terminée</span>
+                </div>
+              )}
+            </div>
+
+            <div className="dark-modal-footer">
+              <button
+                className="dark-btn-cancel"
+                onClick={() => setShowFinReelleModal(false)}
+              >
+                Annuler
+              </button>
+              <button
+                className="dark-btn-save"
+                onClick={handleSaveFinReelle}
+                disabled={!finReelleFormData.date_fin_reelle}
+              >
+                <FontAwesomeIcon icon={faCheck} />
+                {isPhaseCompleted(selectedPhase) ? 'Modifier' : 'Terminer'} la phase
               </button>
             </div>
           </div>

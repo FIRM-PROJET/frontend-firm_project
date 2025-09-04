@@ -469,4 +469,19 @@ export const DevisService = {
   getImageUrl: (filename) => {
     return `${API_URL}/projets/view-image/${filename}`;
   },
+  delete_projet: async (id_project) => {
+    try {
+      const response = await fetch(`${API_URL}/devis/projets/${id_project}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) {
+        throw new Error("Impossible de charger les fichiers du projet");
+      }
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Error fetching project files:", error);
+      throw error;
+    }
+  },
 };
