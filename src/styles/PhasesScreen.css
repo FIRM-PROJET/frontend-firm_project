@@ -107,7 +107,6 @@
 .progress-bar-bg {
   background: #1a1a2e;
   border-radius: 2px;
-  overflow: hidden;
   flex: 1;
 }
 
@@ -398,7 +397,6 @@
   border-collapse: collapse;
   background: #1a1a2e;
   border-radius: 5px;
-  overflow: hidden;
 }
 
 .planning-table th {

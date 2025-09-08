@@ -22,7 +22,6 @@
 .dashboard-container {
   min-height: 100vh;
   height: 100vh;
-  overflow: hidden;
   background: var(--primary-dark);
   color: var(--text-light);
   padding: 10px;
@@ -89,7 +88,6 @@
   display: flex;
   flex-direction: column;
   gap: 15px;
-  overflow: hidden;
 }
 
 /* Première ligne : Activité + Répartition + Petit calendrier */
@@ -115,7 +113,6 @@
   padding: 15px;
   box-shadow: var(--shadow-3d);
   position: relative;
-  overflow: hidden;
 }
 
 .card::before {
@@ -332,7 +329,6 @@
   gap: 1px;
   flex: 1;
   height: 140px;
-  overflow: hidden;
 }
 
 /* Case d'un jour pour petit calendrier */
@@ -346,7 +342,6 @@
   background: rgba(81, 79, 132, 0.1);
   box-sizing: border-box;
   font-size: 0.8rem;
-  overflow: hidden;
   position: relative;
   aspect-ratio: 1;
   transition: all 0.3s ease;
@@ -533,7 +528,6 @@
   color: var(--text-light);
   line-height: 1.2;
   margin: 0;
-  overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -694,7 +688,6 @@
   font-weight: 500;
   color: var(--text-light);
   flex: 1;
-  overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -729,7 +722,6 @@
   height: 6px;
   background: rgba(40, 40, 80, 0.5);
   border-radius: 3px;
-  overflow: hidden;
 }
 
 .progress-fill-enhanced {
