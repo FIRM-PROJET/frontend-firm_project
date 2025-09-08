@@ -125,7 +125,9 @@ export const TacheService = {
   },
   get_user_notification: async (matricule) => {
     try {
-      const response = await fetch(`${API_URL}/tache/notification_user/${matricule}`);
+      const response = await fetch(
+        `${API_URL}/tache/notification_user/${matricule}`
+      );
       if (!response.ok) {
         throw new Error("Failed to fetch all taches");
       }
@@ -185,6 +187,7 @@ export const TacheService = {
   },
 
   // Ajouter un utilisateurs à une tache
+
   assign_user_tache: async (tacheData) => {
     try {
       const response = await fetch(`${API_URL}/tache/assign_user_tache`, {
@@ -194,24 +197,40 @@ export const TacheService = {
           "Content-Type": "application/json",
         },
       });
+
       if (!response.ok) {
-        throw new Error("Failed to create tache");
+        // Récupérer le message du backend si disponible
+        let errorMessage = "Erreur lors de la création de la tâche.";
+        try {
+          const errorData = await response.json();
+          if (errorData.message) {
+            errorMessage = errorData.message;
+          }
+        } catch {
+          errorMessage = `Erreur HTTP ${response.status}`;
+        }
+        throw new Error(errorMessage);
       }
+
       return await response.json();
     } catch (error) {
       console.error("Error creating tache:", error);
-      throw error;
+      throw error; 
     }
   },
+
   assign_user_tache_sans_condition: async (tacheData) => {
     try {
-      const response = await fetch(`${API_URL}/tache/assign_user_tache_sans_condition`, {
-        method: "POST",
-        body: JSON.stringify(tacheData),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        `${API_URL}/tache/assign_user_tache_sans_condition`,
+        {
+          method: "POST",
+          body: JSON.stringify(tacheData),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       if (!response.ok) {
         throw new Error("Failed to create tache");
       }
@@ -258,7 +277,6 @@ export const TacheService = {
     return await response.json();
   },
 
-  
   UpdateSousTacheTermine: async (tacheData) => {
     const response = await fetch(`${API_URL}/tache/statut_termine`, {
       method: "POST",
@@ -313,9 +331,7 @@ export const TacheService = {
   },
   get_task_finished_by_user: async (matricule) => {
     try {
-      const response = await fetch(
-        `${API_URL}/tache/accomplies/${matricule}`
-      );
+      const response = await fetch(`${API_URL}/tache/accomplies/${matricule}`);
       if (!response.ok) {
         throw new Error("Failed to fetch all completed tasks by user");
       }

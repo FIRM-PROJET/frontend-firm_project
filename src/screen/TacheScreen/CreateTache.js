@@ -149,7 +149,7 @@ const CreateTache = () => {
       resetForm();
 
     } catch (error) {
-      const message = error?.response?.data?.message || error?.message || "Erreur lors de la création de la tâche.";
+      const message = error.message || error.message || "Erreur lors de la création de la tâche.";
       setModalMessage(`Erreur: ${message}`);
       setModalType("error");
       setIsModalOpen(true);
