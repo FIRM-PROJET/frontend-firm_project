@@ -65,12 +65,12 @@ const CreateTache = () => {
 
   // Charger les phases quand un projet est sélectionné
   const handleProjectChange = async (refProjet) => {
-    setTacheData((prev) => ({ 
-      ...prev, 
-      ref_projet: refProjet, 
+    setTacheData((prev) => ({
+      ...prev,
+      ref_projet: refProjet,
       id_phase: "",
       utilisateurs_assignes: [],
-      utilisateurs_exceptions: []
+      utilisateurs_exceptions: [],
     }));
 
     if (refProjet) {
@@ -93,63 +93,46 @@ const CreateTache = () => {
     if (!validateStep2()) return;
 
     setSubmitting(true);
+    let ref_tache = null;
+
     try {
-      // Créer la tâche seulement si aucun utilisateur n'est assigné OU si toutes les assignations sont réussies
-      const totalUsersToAssign = tacheData.utilisateurs_assignes.length + tacheData.utilisateurs_exceptions.length;
-      
-      if (totalUsersToAssign === 0) {
-        // Aucun utilisateur à assigner - créer la tâche directement
-        await TacheService.createTache({
-          ...tacheData,
-          duree: parseInt(tacheData.duree),
-          id_unite_duree: parseInt(tacheData.id_unite_duree),
-        });
-
-        setModalMessage("Tâche créée avec succès !");
-        setModalType("success");
-        setIsModalOpen(true);
-        resetForm();
-        return;
-      }
-
-      // Tenter d'assigner tous les utilisateurs AVANT de créer la tâche
-      let assignmentErrors = [];
-
-      // Si des erreurs d'assignation, ne pas créer la tâche
-      if (assignmentErrors.length > 0) {
-        setModalMessage(`Impossible de créer la tâche. Erreurs d'assignation:\n${assignmentErrors.join('\n')}`);
-        setModalType("error");
-        setIsModalOpen(true);
-        setSubmitting(false);
-        return;
-      }
-
-      // Toutes les assignations sont valides - créer la tâche
+      // Étape 1 : Créer la tâche
       const result = await TacheService.createTache({
         ...tacheData,
         duree: parseInt(tacheData.duree),
         id_unite_duree: parseInt(tacheData.id_unite_duree),
       });
+      ref_tache = result.ref_tache;
 
-      const ref_tache = result.ref_tache;
-  
-      // Assigner les utilisateurs normaux
+      // Étape 2 : Assigner les utilisateurs
       for (const matricule of tacheData.utilisateurs_assignes) {
         await TacheService.assign_user_tache({ ref_tache, matricule });
       }
 
-      // Assigner les utilisateurs avec exception
       for (const matricule of tacheData.utilisateurs_exceptions) {
-        await TacheService.assign_user_tache_sans_condition({ ref_tache, matricule });
+        await TacheService.assign_user_tache_sans_condition({
+          ref_tache,
+          matricule,
+        });
       }
 
+      // Si tout est ok
       setModalMessage("Tâche créée et utilisateurs assignés avec succès !");
       setModalType("success");
       setIsModalOpen(true);
       resetForm();
-
     } catch (error) {
-      const message = error.message || error.message || "Erreur lors de la création de la tâche.";
+      // Étape 3 : rollback si assignation échoue
+      if (ref_tache) {
+        try {
+          await TacheService.deleteTache(ref_tache);
+        } catch (rollbackError) {
+          console.error("Erreur rollback :", rollbackError);
+        }
+      }
+
+      const message =
+        error.message || "Erreur lors de la création de la tâche.";
       setModalMessage(`Erreur: ${message}`);
       setModalType("error");
       setIsModalOpen(true);
@@ -175,12 +158,15 @@ const CreateTache = () => {
     setUtilisateurs([]);
   };
 
-  const handlePhaseChange = async (id_phase, refProjet = tacheData.ref_projet) => {
-    setTacheData((prev) => ({ 
-      ...prev, 
+  const handlePhaseChange = async (
+    id_phase,
+    refProjet = tacheData.ref_projet
+  ) => {
+    setTacheData((prev) => ({
+      ...prev,
       id_phase,
       utilisateurs_assignes: [],
-      utilisateurs_exceptions: []
+      utilisateurs_exceptions: [],
     }));
 
     if (refProjet && id_phase) {
@@ -192,7 +178,10 @@ const CreateTache = () => {
         });
         setUtilisateurs(utilisateursData.data);
       } catch (error) {
-        console.error("Erreur lors de la récupération des utilisateurs par phase:", error);
+        console.error(
+          "Erreur lors de la récupération des utilisateurs par phase:",
+          error
+        );
         setUtilisateurs([]);
       } finally {
         setLoading(false);
@@ -214,9 +203,9 @@ const CreateTache = () => {
         ? [...prev.utilisateurs_assignes, matricule]
         : prev.utilisateurs_assignes.filter((m) => m !== matricule),
       // Retirer des exceptions si ajouté aux assignations normales
-      utilisateurs_exceptions: isAssigned 
+      utilisateurs_exceptions: isAssigned
         ? prev.utilisateurs_exceptions.filter((m) => m !== matricule)
-        : prev.utilisateurs_exceptions
+        : prev.utilisateurs_exceptions,
     }));
   };
 
@@ -228,9 +217,9 @@ const CreateTache = () => {
         ? [...prev.utilisateurs_exceptions, matricule]
         : prev.utilisateurs_exceptions.filter((m) => m !== matricule),
       // Retirer des assignations normales si ajouté aux exceptions
-      utilisateurs_assignes: isAssigned 
+      utilisateurs_assignes: isAssigned
         ? prev.utilisateurs_assignes.filter((m) => m !== matricule)
-        : prev.utilisateurs_assignes
+        : prev.utilisateurs_assignes,
     }));
   };
 
@@ -477,18 +466,19 @@ const CreateTache = () => {
                     ))}
                   </div>
                 ) : (
-                  <p className="no-users">
-                    Aucun utilisateur disponible
-                  </p>
+                  <p className="no-users">Aucun utilisateur disponible</p>
                 )}
 
-                {(tacheData.utilisateurs_assignes.length > 0 || tacheData.utilisateurs_exceptions.length > 0) && (
+                {(tacheData.utilisateurs_assignes.length > 0 ||
+                  tacheData.utilisateurs_exceptions.length > 0) && (
                   <div className="assignment-summary">
                     <p>
-                      {tacheData.utilisateurs_assignes.length} utilisateur(s) assigné(s) normalement
+                      {tacheData.utilisateurs_assignes.length} utilisateur(s)
+                      assigné(s) normalement
                     </p>
                     <p>
-                      {tacheData.utilisateurs_exceptions.length} utilisateur(s) assigné(s) avec exception
+                      {tacheData.utilisateurs_exceptions.length} utilisateur(s)
+                      assigné(s) avec exception
                     </p>
                   </div>
                 )}
@@ -542,9 +532,14 @@ const CreateTache = () => {
                   <div className="summary-item">
                     <span className="label">Utilisateurs assignés:</span>
                     <span className="value">
-                      {(tacheData.utilisateurs_assignes.length + tacheData.utilisateurs_exceptions.length) === 0
+                      {tacheData.utilisateurs_assignes.length +
+                        tacheData.utilisateurs_exceptions.length ===
+                      0
                         ? "Aucun"
-                        : `${tacheData.utilisateurs_assignes.length + tacheData.utilisateurs_exceptions.length} utilisateur(s)`}
+                        : `${
+                            tacheData.utilisateurs_assignes.length +
+                            tacheData.utilisateurs_exceptions.length
+                          } utilisateur(s)`}
                     </span>
                   </div>
                 </div>

@@ -1,27 +1,24 @@
 .test {
-    color: #181835;
-    color: #282850;
-    color: #514f84;
-    color: #ccc;
-  color:#d24643;
+  color: #181835;
+  color: #282850;
+  color: #514f84;
+  color: #ccc;
+  color: #d24643;
 
   color: #f7e395;
   color: #7cc48b;
   color: #a1bcee;
+  background: linear-gradient(120deg, #afa9cf, #5b4cb1);
+  /* finale gradient */
+  background: linear-gradient(45deg, #958be8, #4634ac);
+
   background: linear-gradient(135deg, #10b981, #059669);
-  background: linear-gradient(135deg, #514f84, #686ae1);
-  background: linear-gradient(135deg, #686ae1, #7c3aed);
+  color: #fff;
 
-  
-
-      background:  linear-gradient(45deg, #676681, #5b4cb1);
-
-
-     background: #1e1e41;
+  background: #1e1e41;
   padding: 20px;
   box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.1),
-              inset 0 0 40px  rgba(27, 7, 90, 0.1);
-
+    inset 0 0 40px rgba(27, 7, 90, 0.1);
 }
 .task-status-dot {
   width: 12px;
@@ -30,4 +27,3 @@
   flex-shrink: 0;
   margin-right: 10px;
 }
-

@@ -341,6 +341,18 @@ export const TacheService = {
       throw error;
     }
   },
+  get_task_finished: async () => {
+    try {
+      const response = await fetch(`${API_URL}/tache/taches_accomplies`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch all completed tasks by user");
+      }
+      return await response.json();
+    } catch (error) {
+      console.error("Error fetching all taches:", error);
+      throw error;
+    }
+  },
   get_sub_task_comment: async (ref_sous_tache) => {
     try {
       const response = await fetch(

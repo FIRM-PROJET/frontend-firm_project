@@ -11,9 +11,7 @@ const NewProjectScreen = () => {
     id_type_construction: "",
     total_ht: "",
     total_ttc: "",
-    date_debut: "",
-    date_fin_prevu: "",
-    date_fin_reel: "",
+    date_devis: "",
   });
 
   const [projectDetails, setProjectDetails] = useState({
@@ -201,11 +199,9 @@ const NewProjectScreen = () => {
         id_type_construction: projectData.id_type_construction,
         total_ht: parseFloat(projectData.total_ht) || 0,
         total_ttc: parseFloat(projectData.total_ttc) || 0,
-        date_debut: projectData.date_debut || null,
-        date_fin_prevu: projectData.date_fin_prevu || null,
-        date_fin_reel: projectData.date_fin_reel || null,
+        date_devis: projectData.date_devis || null,
       };
-
+      
       // Création du projet
       const projectResult = await DevisService.createProject(projectPayload);
 
@@ -259,9 +255,7 @@ const NewProjectScreen = () => {
       id_type_construction: "",
       total_ht: "",
       total_ttc: "",
-      date_debut: "",
-      date_fin_prevu: "",
-      date_fin_reel: "",
+      date_devis: "",
     });
     setProjectDetails({
       nombre_etages: "",
@@ -485,40 +479,12 @@ const NewProjectScreen = () => {
                 <div className="form-group">
                   <label className="form-label">
                     <i className="fas fa-calendar-alt"></i>
-                    Date de début
+                    Date du devis
                   </label>
                   <input
                     type="date"
-                    name="date_debut"
-                    value={projectData.date_debut}
-                    onChange={handleProjectChange}
-                    className="form-input"
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label className="form-label">
-                    <i className="fas fa-calendar-check"></i>
-                    Date de fin prévue
-                  </label>
-                  <input
-                    type="date"
-                    name="date_fin_prevu"
-                    value={projectData.date_fin_prevu}
-                    onChange={handleProjectChange}
-                    className="form-input"
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label className="form-label">
-                    <i className="fas fa-calendar-times"></i>
-                    Date de fin réelle
-                  </label>
-                  <input
-                    type="date"
-                    name="date_fin_reel"
-                    value={projectData.date_fin_reel}
+                    name="date_devis"
+                    value={projectData.date_devis}
                     onChange={handleProjectChange}
                     className="form-input"
                   />

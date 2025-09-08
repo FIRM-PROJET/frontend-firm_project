@@ -495,10 +495,6 @@
   border-color: #7cc48b;
 }
 
-.status-dot.en-cours {
-  background: #514f84;
-  border-color: #514f84;
-}
 
 .status-dot.retard {
   background: #d24643;

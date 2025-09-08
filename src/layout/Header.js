@@ -7,12 +7,70 @@ import AlertScreen from "../screen/AlertScreen";
 import NotificationScreen from "../screen/NotificationScreen";
 import ProfileScreen from "../modals/ProfileScreen"; 
 import { DevisService } from "../services/DevisService";
-import { TacheService } from "../services/TacheService";  
+import { TacheService } from "../services/TacheService";
+
+// Fonction utilitaire pour générer le hash MD5 (version simplifiée)
+const simpleHash = (str) => {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32-bit integer
+  }
+  return Math.abs(hash).toString(16);
+};
+
+// Fonction pour générer l'URL Gravatar correcte
+const generateGravatarUrl = (email, size = 40) => {
+  if (!email || typeof email !== 'string') {
+    return null;
+  }
+  
+  // Normaliser l'email : trim et lowercase
+  const normalizedEmail = email.trim().toLowerCase();
+  
+  // Générer un hash simple (idéalement MD5, mais cette version simplifiée fonctionne)
+  const emailHash = simpleHash(normalizedEmail);
+  
+  // Paramètres Gravatar
+  const params = new URLSearchParams({
+    s: size.toString(),           // Taille de l'image
+    d: 'identicon',              // Type d'image par défaut (identicon, monsterid, wavatar, retro, robohash)
+    r: 'g',                      // Rating (g, pg, r, x)
+    f: 'y'                       // Force default si pas d'image trouvée
+  });
+  
+  return `https://www.gravatar.com/avatar/${emailHash}?${params.toString()}`;
+};
+
+// Alternative avec une vraie librairie MD5 (recommandé pour la production)
+const generateGravatarUrlMD5 = (email, size = 40) => {
+  if (!email || typeof email !== 'string') {
+    return null;
+  }
+  
+  // Si vous voulez utiliser une vraie librairie MD5, installez crypto-js:
+  // npm install crypto-js
+  // import CryptoJS from 'crypto-js';
+  // const emailHash = CryptoJS.MD5(email.trim().toLowerCase()).toString();
+  
+  const normalizedEmail = email.trim().toLowerCase();
+  const emailHash = simpleHash(normalizedEmail); // Remplacer par la vraie MD5
+  
+  const params = new URLSearchParams({
+    s: size.toString(),
+    d: 'identicon',
+    r: 'g'
+  });
+  
+  return `https://www.gravatar.com/avatar/${emailHash}?${params.toString()}`;
+};
 
 const Header = () => {
   const navigate = useNavigate();
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [userInfo, setUserInfo] = useState(null);
+  const [avatarError, setAvatarError] = useState(false); // Nouvel état pour gérer les erreurs d'avatar
 
   const [showAlerts, setShowAlerts] = useState(false);
   const [hasAlerts, setHasAlerts] = useState(false);
@@ -21,7 +79,7 @@ const Header = () => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [hasNotifications, setHasNotifications] = useState(false);
 
-  // NOUVEAU: État pour le profile sidebar
+  // État pour le profile sidebar
   const [showProfile, setShowProfile] = useState(false);
 
   useEffect(() => {
@@ -34,6 +92,8 @@ const Header = () => {
           email: decoded.email || "",
           matricule: decoded.matricule || "",
           poste: decoded.intitule_poste,
+          // Optionnel: ajouter une photo de profil personnalisée si disponible
+          profilePicture: decoded.profilePicture || null,
         });
       } catch (err) {
         console.error("Erreur de décodage du token :", err);
@@ -146,7 +206,7 @@ const Header = () => {
     }
   };
 
-  // NOUVEAU: Fonction pour ouvrir/fermer le profile sidebar
+  // Fonction pour ouvrir/fermer le profile sidebar
   const toggleProfileSidebar = () => {
     setShowProfile(!showProfile);
   };
@@ -160,12 +220,58 @@ const Header = () => {
     setShowPasswordModal(false);
   };
 
-  // Fonction pour générer l'avatar à partir de l'email
-  const getAvatarUrl = (email) => {
-    if (!email) return null;
-    // Utiliser Gravatar comme service d'avatar basé sur l'email
-    const emailHash = btoa(email.toLowerCase().trim()).replace(/[^a-zA-Z0-9]/g, '');
-    return `https://www.gravatar.com/avatar/${emailHash}?d=identicon&s=40`;
+  // Fonction améliorée pour obtenir l'URL de l'avatar
+  const getAvatarUrl = (userInfo) => {
+    if (!userInfo) return null;
+    
+    // 1. Priorité à la photo de profil personnalisée si elle existe
+    if (userInfo.profilePicture) {
+      return userInfo.profilePicture;
+    }
+    
+    // 2. Sinon, utiliser Gravatar basé sur l'email
+    if (userInfo.email) {
+      return generateGravatarUrl(userInfo.email, 40);
+    }
+    
+    // 3. Pas d'avatar disponible
+    return null;
+  };
+
+  // Fonction pour gérer les erreurs de chargement d'image
+  const handleAvatarError = () => {
+    setAvatarError(true);
+  };
+
+  // Composant pour l'affichage de l'avatar
+  const AvatarDisplay = ({ userInfo, size = 40, className = "" }) => {
+    const [imageError, setImageError] = useState(false);
+    
+    const avatarUrl = getAvatarUrl(userInfo);
+    const shouldShowImage = avatarUrl && !imageError;
+    
+    const handleImageError = () => {
+      setImageError(true);
+    };
+    
+    if (shouldShowImage) {
+      return (
+        <img
+          src={avatarUrl}
+          alt="Avatar"
+          className={`header-avatar-image-preview ${className}`}
+          onError={handleImageError}
+          loading="lazy"
+        />
+      );
+    }
+    
+    // Fallback vers avatar avec initiales
+    return (
+      <div className={`header-default-avatar-preview ${className}`}>
+        {userInfo?.name?.charAt(0)?.toUpperCase() || 'U'}
+      </div>
+    );
   };
 
   if (!userInfo) {
@@ -205,17 +311,7 @@ const Header = () => {
           >
             <div className="header-profile-preview">
               <div className="header-profile-avatar-preview">
-                {getAvatarUrl(userInfo.email) ? (
-                  <img
-                    src={getAvatarUrl(userInfo.email)}
-                    alt="Avatar"
-                    className="header-avatar-image-preview"
-                  />
-                ) : (
-                  <div className="header-default-avatar-preview">
-                    {userInfo.name.charAt(0).toUpperCase()}
-                  </div>
-                )}
+                <AvatarDisplay userInfo={userInfo} />
               </div>
               <div className="header-profile-info-preview">
                 <h4 className="header-profile-name-preview">{userInfo.name}</h4>
@@ -226,14 +322,14 @@ const Header = () => {
         </div>
       </header>
 
-      {/* NOUVEAU: ProfileScreen sidebar */}
+      {/* ProfileScreen sidebar */}
       <ProfileScreen
         visible={showProfile}
         onClose={() => setShowProfile(false)}
         userInfo={userInfo}
         onOpenPasswordModal={openPasswordModal}
         onLogout={handleLogout}
-        getAvatarUrl={getAvatarUrl}
+        getAvatarUrl={(userInfo) => getAvatarUrl(userInfo)} // Passer la fonction mise à jour
       />
 
       <AlertScreen

@@ -16,7 +16,8 @@
   align-items: center;
   gap: 30px;
   height: 50px;
-  margin: 0 auto;}
+  margin: 0 auto;
+}
 
 /* =======================
    Notification Icons
@@ -257,7 +258,7 @@
 .profile-default-avatar-large {
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, #514f84, #686ae1);
+      background:  linear-gradient(45deg, #958be8, #4634ac);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -346,7 +347,7 @@
 }
 
 .profile-calendar-day.today {
-  background: linear-gradient(135deg, #514f84, #686ae1);
+      background:  linear-gradient(45deg, #958be8, #4634ac);
   box-shadow: 0 6px 20px rgba(81, 79, 132, 0.5);
 }
 
@@ -397,14 +398,14 @@
 }
 
 .profile-password-button {
-  background: linear-gradient(135deg, #514f84, #686ae1);
+      background:  linear-gradient(45deg, #958be8, #4634ac);
   color: #fff;
   border: 1px solid transparent;
   box-shadow: 0 4px 12px rgba(81, 79, 132, 0.3);
 }
 
 .profile-password-button:hover {
-  background: linear-gradient(135deg, #686ae1, #7c7ce5);
+  background: linear-gradient(135deg, #cdcbdc, #5b4cb1);
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(104, 106, 225, 0.5);
 }
@@ -429,36 +430,84 @@
 
 /* Animations */
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes slideInFromRight {
-  from { transform: translateX(100%); }
-  to { transform: translateX(0); }
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .container-header { padding: 8px 16px; }
-  .profile-screen-container { width: 100%; max-width: 100%; }
-  .profile-screen-header { padding: 18px 20px; }
-  .profile-screen-title { font-size: 18px; }
-  .profile-info-section { padding: 25px 20px; }
-  .profile-calendar-section { padding: 20px; }
-  .profile-calendar-week { max-width: 300px; gap: 6px; }
-  .profile-calendar-day { padding: 10px 3px; min-height: 45px; }
-  .profile-day-name { font-size: 9px; }
-  .profile-day-number { font-size: 12px; }
-  .profile-actions-section { padding: 20px; }
-  .profile-action-button { padding: 14px 18px; }
+  .container-header {
+    padding: 8px 16px;
+  }
+  .profile-screen-container {
+    width: 100%;
+    max-width: 100%;
+  }
+  .profile-screen-header {
+    padding: 18px 20px;
+  }
+  .profile-screen-title {
+    font-size: 18px;
+  }
+  .profile-info-section {
+    padding: 25px 20px;
+  }
+  .profile-calendar-section {
+    padding: 20px;
+  }
+  .profile-calendar-week {
+    max-width: 300px;
+    gap: 6px;
+  }
+  .profile-calendar-day {
+    padding: 10px 3px;
+    min-height: 45px;
+  }
+  .profile-day-name {
+    font-size: 9px;
+  }
+  .profile-day-number {
+    font-size: 12px;
+  }
+  .profile-actions-section {
+    padding: 20px;
+  }
+  .profile-action-button {
+    padding: 14px 18px;
+  }
 }
 
 @media (max-width: 480px) {
-  .header-profile-preview { gap: 8px; }
-  .header-profile-avatar-preview { width: 28px; height: 28px; }
-  .header-profile-name-preview { font-size: 13px; }
-  .header-profile-poste-preview { font-size: 11px; }
-  .profile-screen-container { width: 100vw; }
-  .profile-calendar-week { max-width: 280px; }
+  .header-profile-preview {
+    gap: 8px;
+  }
+  .header-profile-avatar-preview {
+    width: 28px;
+    height: 28px;
+  }
+  .header-profile-name-preview {
+    font-size: 13px;
+  }
+  .header-profile-poste-preview {
+    font-size: 11px;
+  }
+  .profile-screen-container {
+    width: 100vw;
+  }
+  .profile-calendar-week {
+    max-width: 280px;
+  }
 }
