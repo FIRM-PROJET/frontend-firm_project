@@ -258,7 +258,7 @@
 .profile-default-avatar-large {
   width: 100%;
   height: 100%;
-      background:  linear-gradient(45deg, #958be8, #4634ac);
+  background: linear-gradient(45deg, #958be8, #4634ac);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -281,18 +281,17 @@
 }
 
 .profile-email {
-  color: #8b8bb3;
+  color: #afa9cf;
   font-size: 16px;
   margin: 0;
 }
 
 .profile-poste {
-  color: #ccc;
+  color: white;
   font-size: 14px;
   font-weight: 500;
   margin: 0;
   letter-spacing: 1px;
-  opacity: 0.8;
 }
 
 /* Calendar Section */
@@ -302,7 +301,7 @@
 }
 
 .profile-calendar-title {
-  color: #6b69af;
+  color: #afa9cf;
   font-size: 16px;
   font-weight: 700;
   margin-bottom: 25px;
@@ -347,7 +346,7 @@
 }
 
 .profile-calendar-day.today {
-      background:  linear-gradient(45deg, #958be8, #4634ac);
+  background: linear-gradient(45deg, #958be8, #4634ac);
   box-shadow: 0 6px 20px rgba(81, 79, 132, 0.5);
 }
 
@@ -398,16 +397,16 @@
 }
 
 .profile-password-button {
-      background:  linear-gradient(45deg, #958be8, #4634ac);
+  background: linear-gradient(45deg, #958be8, #4634ac);
   color: #fff;
   border: 1px solid transparent;
   box-shadow: 0 4px 12px rgba(81, 79, 132, 0.3);
 }
 
 .profile-password-button:hover {
-  background: linear-gradient(135deg, #cdcbdc, #5b4cb1);
+  background: transparent;
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(104, 106, 225, 0.5);
+  box-shadow: 0 6px 20px rgba(91, 93, 203, 0.632);
 }
 
 .profile-logout-button {
@@ -417,8 +416,8 @@
 }
 
 .profile-logout-button:hover {
-  background: linear-gradient(135deg, #c94543, #dc2626);
-  color: white;
+  /* background: #c9514f; */
+  color: #c9514f;
   border-color: transparent;
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);

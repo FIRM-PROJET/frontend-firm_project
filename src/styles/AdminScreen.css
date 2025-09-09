@@ -4,7 +4,6 @@
   width: 100%;
   font-family: "Bw Modelica", sans-serif;
   margin: 0;
-  background: linear-gradient(135deg, #0f0f2e 0%, #1a1a3a 100%);
   min-height: 100vh;
   color: #ffffff;
 }
@@ -28,11 +27,12 @@
 
 /* Actions rapides */
 .quick-actions {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(20px);
+  background: #1e1e41;
+  padding: 20px;
+  box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.1),
+    inset 0 0 40px rgba(27, 7, 90, 0.1);  backdrop-filter: blur(20px);
   padding: 2rem;
   border-radius: 5px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .section-title {
@@ -46,7 +46,7 @@
 }
 
 .section-title i {
-  color: #7153b9;
+  color: #e1e0eb;
   font-size: 1.3rem;
 }
 
@@ -94,9 +94,9 @@
 
 .action-card:hover {
   transform: translateY(-8px) scale(1.02);
-  background: rgba(139, 95, 191, 0.2);
-  border-color: #7153b9;
-  box-shadow: 0 20px 40px rgba(139, 95, 191, 0.3);
+  background: rgba(69, 30, 176, 0.134);
+  border-color: transparent;
+  box-shadow: 0 20px 40px #948be843;
 }
 
 .action-icon {
@@ -107,9 +107,8 @@
   align-items: center;
   justify-content: center;
   margin-bottom: 1rem;
-
   background: linear-gradient(45deg, #958be8, #4634ac);
-  box-shadow: 0 8px 20px rgba(139, 95, 191, 0.4);
+  box-shadow: 0 8px 20px rgba(102, 18, 199, 0.4);
 }
 
 .action-icon i {
@@ -133,8 +132,10 @@
 
 /* Récapitulatif des statistiques */
 .stats-summary {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(20px);
+  background: #1e1e41;
+  padding: 20px;
+  box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.1),
+    inset 0 0 40px rgba(27, 7, 90, 0.1);  backdrop-filter: blur(20px);
   padding: 2rem;
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 5px;
@@ -163,36 +164,17 @@
   border-color: rgba(113, 95, 191, 0.5);
 }
 
-.stat-icon {
-  width: 50px;
-  height: 50px;
-  border-radius: 3px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(
-    135deg,
-    rgba(101, 72, 156, 0.3),
-    rgba(113, 83, 185, 0.3)
-  );
-  border: 2px solid rgba(139, 95, 191, 0.5);
-}
+
 
 .stat-icon i {
-  font-size: 1.2rem;
-  color: #7153b9;
+  font-size: 1.4rem;
+  color: #fff;
 }
 
 .stat-info {
   flex: 1;
 }
 
-.stat-number {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #ffffff;
-  line-height: 1;
-}
 
 .stat-label {
   font-size: 0.9rem;
@@ -211,8 +193,10 @@
 
 /* Container du graphique */
 .chart-container {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(20px);
+ background: #1e1e41;
+  padding: 20px;
+  box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.1),
+    inset 0 0 40px rgba(27, 7, 90, 0.1);  backdrop-filter: blur(20px);
   border-radius: 5px;
   padding: 2rem;
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -244,8 +228,10 @@
 
 /* Top performers */
 .top-performers {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(20px);
+   background: #1e1e41;
+  padding: 20px;
+  box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.1),
+    inset 0 0 40px rgba(27, 7, 90, 0.1);
   padding: 2rem;
   border: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
@@ -261,12 +247,12 @@
 }
 
 .toggle-btn {
-  background: rgba(139, 95, 191, 0.2);
-  border: 1px solid #7153b9;
-  border-radius: 3px;
+  background: linear-gradient(45deg, #958be8, #4634ac);
+  border-radius: 5px;
+  border: none;
   color: #ffffff;
   padding: 0.75rem 1.25rem;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -276,9 +262,8 @@
 }
 
 .toggle-btn:hover {
-  background: rgba(139, 95, 191, 0.4);
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(139, 95, 191, 0.3);
+  box-shadow: 0 8px 20px rgba(65, 33, 147, 0.795);
 }
 
 .performers-list {
@@ -608,8 +593,8 @@
   }
 
   .stat-icon {
-    width: 40px;
-    height: 40px;
+    width: 50px;
+    height: 50px;
   }
 
   .stat-number {
@@ -723,12 +708,12 @@
   }
 
   .stat-icon {
-    width: 35px;
-    height: 35px;
+    width: 45px;
+    height: 45px;
   }
 
   .stat-icon i {
-    font-size: 1rem;
+    font-size: 3rem;
   }
 
   .stat-number {

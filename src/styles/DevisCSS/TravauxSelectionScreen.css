@@ -4,6 +4,48 @@
   font-family: "Bw Modelica", sans-serif;
   box-sizing: border-box;
 }
+/* Styles pour les travaux avec montant zéro */
+.travaux-item-zero {
+  opacity: 0.6;
+  background-color: #1e1e3a !important;
+}
+
+.travaux-item-zero label {
+  color: #7a7a9a !important;
+}
+
+.travaux-item-zero .travaux-number {
+  color: #666 !important;
+}
+
+.travaux-item-zero:hover {
+  background-color: #252545 !important;
+  opacity: 0.8;
+}
+
+/* Indicateur pour les travaux sans valeur */
+.zero-amount-indicator {
+  font-size: 11px;
+  color: #888 !important;
+  font-style: italic;
+  margin-left: 8px;
+  font-weight: 400;
+}
+
+/* Checkbox pour les travaux sans valeur */
+.travaux-item-zero input[type="checkbox"] {
+  border-color: #666;
+}
+
+.travaux-item-zero input[type="checkbox"]:checked {
+  background-color: #666;
+  border-color: #666;
+}
+
+.travaux-item-zero input[type="checkbox"]:hover {
+  border-color: #888;
+  box-shadow: 0 0 0 2px rgba(136, 136, 136, 0.2);
+}
 
 .travaux-container {
   padding: 10px;

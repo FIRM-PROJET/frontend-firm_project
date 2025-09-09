@@ -610,8 +610,8 @@ const HomeScreen = () => {
                         x2="100%"
                         y2="100%"
                       >
-                        <stop offset="0%" stopColor="#afaecf" />
-                        <stop offset="100%" stopColor="#5b4cb1" />
+                        <stop offset="0%" stopColor="#958be8" />
+                        <stop offset="100%" stopColor="#4634ac" />
                       </linearGradient>
 
                       {/* Gradient vert pour Accomplies */}

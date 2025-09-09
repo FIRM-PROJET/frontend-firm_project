@@ -52,11 +52,9 @@ const ProjectDetailsModal = ({ project, details, onClose }) => {
     const fetchFiles = async () => {
       if (project && project.id_projet) {
         try {
-          console.log("Fetching files for project:", project.id_projet);
           const projectFiles = await DevisService.get_projects_devis_name(
             project.id_projet
           );
-          console.log("Received files:", projectFiles);
           setFiles(projectFiles);
         } catch (error) {
           console.error("Erreur lors de la récupération des fichiers:", error);

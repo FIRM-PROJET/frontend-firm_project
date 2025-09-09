@@ -5,10 +5,13 @@
   color: #ccc;
   color: #d24643;
 
+  color: #afa9cf;
+
   color: #f7e395;
   color: #7cc48b;
   color: #a1bcee;
-  background: linear-gradient(120deg, #afa9cf, #5b4cb1);
+  /* Titre gradient */
+  --gradient-primary: linear-gradient(135deg, #e1e0eb, #5b4cb1);
   /* finale gradient */
   background: linear-gradient(45deg, #958be8, #4634ac);
 

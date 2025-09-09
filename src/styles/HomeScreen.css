@@ -103,7 +103,6 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 15px;
-  height: 47%;
 }
 
 /* Cartes génériques */
@@ -423,7 +422,7 @@
 
 /* Jour actuel */
 .calendar-day.today {
-  background: var(--gradient-glow);
+  background: linear-gradient(45deg, #958be8, #4634ac);
   box-shadow: 0 0 4px rgba(219, 219, 234, 0.4);
   height: 100%;
   width: 100%;
@@ -622,8 +621,8 @@
   display: flex;
   justify-content: space-around;
   align-items: center;
-  margin-top: 12px;
-  padding-top: 12px;
+  margin-top: -100px;
+  padding-top: 30px;
   border-top: 1px solid var(--tertiary-dark);
 }
 
@@ -693,7 +692,7 @@
 }
 
 .percentage-badge {
-  background: var(--gradient-primary);
+  background: linear-gradient(45deg, #958be8, #4634ac);
   color: white;
   padding: 4px 8px;
   border-radius: 12px;
@@ -726,7 +725,7 @@
 
 .progress-fill-enhanced {
   height: 100%;
-  background: var(--gradient-primary);
+  background: linear-gradient(45deg, #958be8, #4634ac);
   border-radius: 3px;
   transition: width 0.8s ease;
   box-shadow: 0 0 6px rgba(175, 174, 207, 0.4);
