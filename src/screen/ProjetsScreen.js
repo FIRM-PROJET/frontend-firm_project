@@ -112,19 +112,7 @@ const ProjetsScreen = () => {
               }
             }
 
-            // Dates de fallback si pas de phases avec dates
-            if (!dateDebut || !dateFin) {
-              dateDebut = new Date(
-                2024,
-                Math.floor(Math.random() * 6),
-                Math.floor(Math.random() * 28) + 1
-              );
-              dateFin = new Date(
-                2024 + Math.floor(Math.random() * 2),
-                Math.floor(Math.random() * 6) + 6,
-                Math.floor(Math.random() * 28) + 1
-              );
-            }
+            // Pas de dates de fallback - on laisse null si pas de phases avec dates
 
             projetPhasesData.push({
               ref_projet: projet.ref_projet,
@@ -216,6 +204,14 @@ const ProjetsScreen = () => {
     return projet ? projet.phases.length : 0;
   };
 
+  // Fonction pour formater l'affichage des dates
+  const formatDateDisplay = (date) => {
+    if (!date) {
+      return "Pas de dates - aucune phase insérée";
+    }
+    return date.toLocaleDateString("fr-FR");
+  };
+
   // Rendu du contenu selon l'onglet actif
   const renderContent = () => {
     switch (activeTab) {
@@ -260,9 +256,7 @@ const ProjetsScreen = () => {
                           <div className="projet-card-meta">
                             <div className="projet-date-fin">
                               <FontAwesomeIcon icon={faCalendarAlt} />
-                              {dateFin
-                                ? dateFin.toLocaleDateString("fr-FR")
-                                : "Non défini"}
+                              {formatDateDisplay(dateFin)}
                             </div>
                           </div>
                         </div>
@@ -410,6 +404,7 @@ const ProjetsScreen = () => {
                 <div className="calendrier-compact-container">
                   <div className="calendrier-timeline">
                     {projetPhases
+                      .filter(projet => projet.date_fin) // Filtrer seulement les projets avec dates
                       .sort(
                         (a, b) => new Date(a.date_fin) - new Date(b.date_fin)
                       )
@@ -462,7 +457,7 @@ const ProjetsScreen = () => {
                                 <span className="timeline-jours">
                                   {joursRestants > 0
                                     ? `${joursRestants}j restants`
-                                    : "Aucune phase entrée"}
+                                    : "Échéance passée"}
                                 </span>
                               </div>
                               <div className="timeline-progress-mini">
@@ -484,6 +479,14 @@ const ProjetsScreen = () => {
                           </div>
                         );
                       })}
+                    {/* Message si aucun projet avec dates */}
+                    {projetPhases.filter(projet => projet.date_fin).length === 0 && (
+                      <div className="no-dates-message">
+                        <FontAwesomeIcon icon={faCalendarAlt} />
+                        <p>Aucun projet avec des dates définies</p>
+                        <small>Ajoutez des phases avec des dates pour voir le calendrier</small>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -535,9 +538,7 @@ const ProjetsScreen = () => {
                             </div>
                             <div className="date-fin-compact">
                               <FontAwesomeIcon icon={faCalendarAlt} />
-                              {dateFin
-                                ? dateFin.toLocaleDateString("fr-FR")
-                                : "Non défini"}
+                              {formatDateDisplay(dateFin)}
                             </div>
                           </div>
                           <div
@@ -614,7 +615,7 @@ const ProjetsScreen = () => {
                             className="date-icon"
                           />
                           <span className="date-value-compact">
-                            {projet.date_debut?.toLocaleDateString("fr-FR")}
+                            {formatDateDisplay(projet.date_debut)}
                           </span>
                         </div>
                         <div className="date-item-compact">
@@ -623,7 +624,7 @@ const ProjetsScreen = () => {
                             className="date-icon"
                           />
                           <span className="date-value-compact">
-                            {projet.date_fin?.toLocaleDateString("fr-FR")}
+                            {formatDateDisplay(projet.date_fin)}
                           </span>
                         </div>
                       </div>
@@ -696,7 +697,7 @@ const ProjetsScreen = () => {
                           </td>
                           <td>
                             <div className="tableau-date">
-                              {projet.date_fin?.toLocaleDateString("fr-FR")}
+                              {formatDateDisplay(projet.date_fin)}
                             </div>
                           </td>
                         </tr>

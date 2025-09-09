@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
+import CryptoJS from 'crypto-js';
 import ModalUpdatePassword from "../modals/ModalUpdatePassword";
 import "../styles/Header.css";
 import AlertScreen from "../screen/AlertScreen";
@@ -9,19 +10,8 @@ import ProfileScreen from "../modals/ProfileScreen";
 import { DevisService } from "../services/DevisService";
 import { TacheService } from "../services/TacheService";
 
-// Fonction utilitaire pour générer le hash MD5 (version simplifiée)
-const simpleHash = (str) => {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
-    hash = hash & hash; // Convert to 32-bit integer
-  }
-  return Math.abs(hash).toString(16);
-};
-
-// Fonction pour générer l'URL Gravatar correcte
-const generateGravatarUrl = (email, size = 40) => {
+// Fonction pour générer l'URL Gravatar avec MD5 réel et gestion du cache
+const generateGravatarUrl = (email, size = 40, forceRefresh = false) => {
   if (!email || typeof email !== 'string') {
     return null;
   }
@@ -29,39 +19,20 @@ const generateGravatarUrl = (email, size = 40) => {
   // Normaliser l'email : trim et lowercase
   const normalizedEmail = email.trim().toLowerCase();
   
-  // Générer un hash simple (idéalement MD5, mais cette version simplifiée fonctionne)
-  const emailHash = simpleHash(normalizedEmail);
+  // Générer le hash MD5 réel
+  const emailHash = CryptoJS.MD5(normalizedEmail).toString();
   
   // Paramètres Gravatar
   const params = new URLSearchParams({
     s: size.toString(),           // Taille de l'image
-    d: 'identicon',              // Type d'image par défaut (identicon, monsterid, wavatar, retro, robohash)
+    d: 'identicon',              // Type d'image par défaut
     r: 'g',                      // Rating (g, pg, r, x)
-    f: 'y'                       // Force default si pas d'image trouvée
   });
   
-  return `https://www.gravatar.com/avatar/${emailHash}?${params.toString()}`;
-};
-
-// Alternative avec une vraie librairie MD5 (recommandé pour la production)
-const generateGravatarUrlMD5 = (email, size = 40) => {
-  if (!email || typeof email !== 'string') {
-    return null;
+  // Ajouter un timestamp pour forcer le rafraîchissement du cache si nécessaire
+  if (forceRefresh) {
+    params.set('t', Date.now().toString());
   }
-  
-  // Si vous voulez utiliser une vraie librairie MD5, installez crypto-js:
-  // npm install crypto-js
-  // import CryptoJS from 'crypto-js';
-  // const emailHash = CryptoJS.MD5(email.trim().toLowerCase()).toString();
-  
-  const normalizedEmail = email.trim().toLowerCase();
-  const emailHash = simpleHash(normalizedEmail); // Remplacer par la vraie MD5
-  
-  const params = new URLSearchParams({
-    s: size.toString(),
-    d: 'identicon',
-    r: 'g'
-  });
   
   return `https://www.gravatar.com/avatar/${emailHash}?${params.toString()}`;
 };
@@ -70,7 +41,8 @@ const Header = () => {
   const navigate = useNavigate();
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [userInfo, setUserInfo] = useState(null);
-  const [avatarError, setAvatarError] = useState(false); // Nouvel état pour gérer les erreurs d'avatar
+  const [avatarError, setAvatarError] = useState(false);
+  const [avatarRefreshKey, setAvatarRefreshKey] = useState(0); // Clé pour forcer le refresh
 
   const [showAlerts, setShowAlerts] = useState(false);
   const [hasAlerts, setHasAlerts] = useState(false);
@@ -95,6 +67,15 @@ const Header = () => {
           // Optionnel: ajouter une photo de profil personnalisée si disponible
           profilePicture: decoded.profilePicture || null,
         });
+
+        // Debug : Vérifiez l'email et l'URL Gravatar générée
+        const email = decoded.email;
+        if (email) {
+          const gravatarUrl = generateGravatarUrl(email, 40);
+          // console.log("Email utilisateur:", email);
+          // console.log("Hash MD5:", CryptoJS.MD5(email.trim().toLowerCase()).toString());
+          // console.log("URL Gravatar générée:", gravatarUrl);
+        }
       } catch (err) {
         console.error("Erreur de décodage du token :", err);
       }
@@ -220,8 +201,23 @@ const Header = () => {
     setShowPasswordModal(false);
   };
 
+  // Fonction pour forcer le rafraîchissement de l'avatar
+  const refreshAvatar = () => {
+    setAvatarRefreshKey(prev => prev + 1);
+    // Optionnel: aussi vider le cache des images du navigateur
+    if ('caches' in window) {
+      caches.keys().then(names => {
+        names.forEach(name => {
+          if (name.includes('gravatar')) {
+            caches.delete(name);
+          }
+        });
+      });
+    }
+  };
+
   // Fonction améliorée pour obtenir l'URL de l'avatar
-  const getAvatarUrl = (userInfo) => {
+  const getAvatarUrl = (userInfo, forceRefresh = false) => {
     if (!userInfo) return null;
     
     // 1. Priorité à la photo de profil personnalisée si elle existe
@@ -231,44 +227,74 @@ const Header = () => {
     
     // 2. Sinon, utiliser Gravatar basé sur l'email
     if (userInfo.email) {
-      return generateGravatarUrl(userInfo.email, 40);
+      return generateGravatarUrl(userInfo.email, 35, forceRefresh || avatarRefreshKey > 0);
     }
     
     // 3. Pas d'avatar disponible
     return null;
   };
 
-  // Fonction pour gérer les erreurs de chargement d'image
-  const handleAvatarError = () => {
-    setAvatarError(true);
-  };
-
   // Composant pour l'affichage de l'avatar
-  const AvatarDisplay = ({ userInfo, size = 40, className = "" }) => {
+  const AvatarDisplay = ({ userInfo, size = 33, className = "" }) => {
     const [imageError, setImageError] = useState(false);
+    const [imageKey, setImageKey] = useState(0);
     
-    const avatarUrl = getAvatarUrl(userInfo);
+    // Reset l'erreur quand avatarRefreshKey change
+    useEffect(() => {
+      setImageError(false);
+      setImageKey(prev => prev + 1);
+    }, [avatarRefreshKey]);
+    
+    const avatarUrl = getAvatarUrl(userInfo, avatarRefreshKey > 0);
     const shouldShowImage = avatarUrl && !imageError;
     
     const handleImageError = () => {
+      console.error("Erreur de chargement de l'avatar:", avatarUrl);
       setImageError(true);
+    };
+    
+    const handleImageLoad = () => {
+      // console.log("Avatar chargé avec succès:", avatarUrl);
+      setImageError(false);
     };
     
     if (shouldShowImage) {
       return (
         <img
+          key={`avatar-${imageKey}-${avatarRefreshKey}`} // Clé unique pour forcer le rechargement
           src={avatarUrl}
           alt="Avatar"
           className={`header-avatar-image-preview ${className}`}
           onError={handleImageError}
+          onLoad={handleImageLoad}
           loading="lazy"
+          style={{ 
+            width: `${size}px`, 
+            height: `${size}px`, 
+            borderRadius: '50%',
+            objectFit: 'cover'
+          }}
         />
       );
     }
     
     // Fallback vers avatar avec initiales
     return (
-      <div className={`header-default-avatar-preview ${className}`}>
+      <div 
+        className={`header-default-avatar-preview ${className}`}
+        style={{ 
+          width: `${size}px`, 
+          height: `${size}px`, 
+          borderRadius: '50%',
+          backgroundColor: '#007bff',
+          color: 'white',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: `${size * 0.4}px`,
+          fontWeight: 'bold'
+        }}
+      >
         {userInfo?.name?.charAt(0)?.toUpperCase() || 'U'}
       </div>
     );
@@ -329,7 +355,8 @@ const Header = () => {
         userInfo={userInfo}
         onOpenPasswordModal={openPasswordModal}
         onLogout={handleLogout}
-        getAvatarUrl={(userInfo) => getAvatarUrl(userInfo)} // Passer la fonction mise à jour
+        getAvatarUrl={(userInfo) => getAvatarUrl(userInfo, avatarRefreshKey > 0)} // Passer la fonction avec refresh
+        onRefreshAvatar={refreshAvatar} // Nouvelle fonction pour forcer le refresh
       />
 
       <AlertScreen

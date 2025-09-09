@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import CryptoJS from 'crypto-js'; // npm install crypto-js
 import '../styles/Header.css'; // Utilise le même fichier CSS
 
 const ProfileScreen = ({ 
@@ -6,10 +7,23 @@ const ProfileScreen = ({
   onClose, 
   userInfo, 
   onOpenPasswordModal, 
-  onLogout, 
-  getAvatarUrl 
+  onLogout 
 }) => {
   
+  // Fonction pour générer l'URL Gravatar à partir de l'email
+  const getGravatarUrl = (email, size = 200) => {
+    if (!email) return null;
+    
+    // Nettoyer et hasher l'email
+    const cleanEmail = email.trim().toLowerCase();
+    const hash = CryptoJS.MD5(cleanEmail).toString();
+    
+    // Construire l'URL Gravatar avec des paramètres par défaut
+    const gravatarUrl = `https://www.gravatar.com/avatar/${hash}?s=${size}&d=identicon&r=g`;
+    
+    return gravatarUrl;
+  };
+
   // Fermer avec la touche Escape
   useEffect(() => {
     const handleEscapeKey = (event) => {
@@ -73,6 +87,7 @@ const ProfileScreen = ({
   if (!visible) return null;
 
   const weekDays = getWeekDays();
+  const gravatarUrl = getGravatarUrl(userInfo.email);
 
   return (
     <div className="profile-screen-overlay" onClick={handleOverlayClick}>
@@ -83,17 +98,26 @@ const ProfileScreen = ({
           {/* Section informations profil */}
           <div className="profile-info-section">
             <div className="profile-avatar-large">
-              {userInfo.avatar || getAvatarUrl(userInfo.email) ? (
+              {userInfo.avatar || gravatarUrl ? (
                 <img
-                  src={userInfo.avatar || getAvatarUrl(userInfo.email)}
+                  src={userInfo.avatar || gravatarUrl}
                   alt="Avatar"
                   className="profile-avatar-image-large"
+                  onError={(e) => {
+                    // Fallback en cas d'erreur de chargement
+                    e.target.style.display = 'none';
+                    e.target.nextSibling.style.display = 'flex';
+                  }}
                 />
-              ) : (
-                <div className="profile-default-avatar-large">
-                  {userInfo.name.charAt(0).toUpperCase()}
-                </div>
-              )}
+              ) : null}
+              
+              {/* Avatar par défaut (affiché si pas d'image ou en cas d'erreur) */}
+              <div 
+                className="profile-default-avatar-large"
+                style={{ display: (userInfo.avatar || gravatarUrl) ? 'none' : 'flex' }}
+              >
+                {userInfo.name.charAt(0).toUpperCase()}
+              </div>
             </div>
             
             <div className="profile-details">
