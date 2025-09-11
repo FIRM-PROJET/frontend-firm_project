@@ -21,6 +21,9 @@ const PhasesScreen = () => {
   const [showProjectPhases, setShowProjectPhases] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
 
+  // Nouvel état pour masquer/afficher les phases dans la liste
+  const [collapsedProjects, setCollapsedProjects] = useState({});
+
   useEffect(() => {
     loadAllData();
     fetchAllPhases(); 
@@ -127,6 +130,14 @@ const PhasesScreen = () => {
   const handleBackFromProjectPhases = () => {
     setShowProjectPhases(false);
     setSelectedProject(null);
+  };
+
+  // Fonction pour basculer l'état collapsed d'un projet
+  const toggleProjectCollapse = (refProjet) => {
+    setCollapsedProjects(prev => ({
+      ...prev,
+      [refProjet]: !prev[refProjet]
+    }));
   };
 
   // Composant barre de progression
@@ -331,7 +342,7 @@ const PhasesScreen = () => {
     );
   };
 
-  // Composant Liste des phases
+  // Composant Liste des phases avec bouton masquer/afficher
   const PhasesListe = () => {
     // Grouper les phases par projet
     const phasesParProjet = phases.reduce((acc, phase) => {
@@ -365,54 +376,65 @@ const PhasesScreen = () => {
           {Object.values(phasesParProjet).map((groupe, projetIndex) => (
             <div key={groupe.projet.ref_projet} className="projet-groupe">
               <div className="projet-groupe-header">
-                <h4 
-                  className="projet-groupe-nom"
-                  onClick={() => handleProjectCellClick(groupe.projet.ref_projet)}
-                >
-                  {groupe.projet.nom_projet}
-                  <i className="bi bi-arrow-right-circle"></i>
+                <h4 className="projet-groupe-nom">
+                  <span 
+                    className="projet-nom-text"
+                    onClick={() => handleProjectCellClick(groupe.projet.ref_projet)}
+                  >
+                    {groupe.projet.nom_projet}
+                    <i className="bi bi-arrow-right-circle"></i>
+                  </span>
+                  <button 
+                    className="toggle-phases-btn"
+                    onClick={() => toggleProjectCollapse(groupe.projet.ref_projet)}
+                  >
+                    <i className={`bi ${collapsedProjects[groupe.projet.ref_projet] ? 'bi-eye-slash' : 'bi-eye'}`}></i>
+                    <span>{collapsedProjects[groupe.projet.ref_projet] ? 'Afficher' : 'Masquer'}</span>
+                  </button>
                 </h4>
               </div>
-              <div className="phases-groupe-liste">
-                {groupe.phases.map((phase, index) => (
-                  <div 
-                    key={`${phase.ref_projet}-${phase.id_phase}-${index}`} 
-                    className={`phase-liste-item ${phase.terminee ? 'terminee' : ''} ${phase.enRetard ? 'retard' : ''}`}
-                    onClick={() => handlePhaseClick(phase.ref_projet, phase.id_phase)}
-                  >
-                    <div className="phase-liste-info">
-                      <div className="phase-liste-header">
-                        <span className="phase-nom">{phase.libelle_phase}</span>
+              {!collapsedProjects[groupe.projet.ref_projet] && (
+                <div className="phases-groupe-liste">
+                  {groupe.phases.map((phase, index) => (
+                    <div 
+                      key={`${phase.ref_projet}-${phase.id_phase}-${index}`} 
+                      className={`phase-liste-item ${phase.terminee ? 'terminee' : ''} ${phase.enRetard ? 'retard' : ''}`}
+                      onClick={() => handlePhaseClick(phase.ref_projet, phase.id_phase)}
+                    >
+                      <div className="phase-liste-info">
+                        <div className="phase-liste-header">
+                          <span className="phase-nom">{phase.libelle_phase}</span>
+                        </div>
+                        <div className="phase-liste-dates">
+                          <span>Du {new Date(phase.date_debut).toLocaleDateString("fr-FR")}</span>
+                          <span>au {new Date(phase.date_fin || phase.date_fin_prevu).toLocaleDateString("fr-FR")}</span>
+                          {phase.date_fin_reelle && (
+                            <span className="date-reelle">
+                              (Terminé le {new Date(phase.date_fin_reelle).toLocaleDateString("fr-FR")})
+                            </span>
+                          )}
+                        </div>
                       </div>
-                      <div className="phase-liste-dates">
-                        <span>Du {new Date(phase.date_debut).toLocaleDateString("fr-FR")}</span>
-                        <span>au {new Date(phase.date_fin || phase.date_fin_prevu).toLocaleDateString("fr-FR")}</span>
-                        {phase.date_fin_reelle && (
-                          <span className="date-reelle">
-                            (Terminé le {new Date(phase.date_fin_reelle).toLocaleDateString("fr-FR")})
-                          </span>
+                      <div className="phase-liste-progress">
+                        <ProgressBar
+                          percentage={parseFloat(phase.avancement?.avancement_pourcent || 0)}
+                          showLabel={true}
+                        />
+                        <span className="taches-info">
+                          {phase.avancement?.taches_terminees || 0}/{phase.avancement?.total_taches || 0} tâches
+                        </span>
+                      </div>
+                      <div className="phase-liste-status">
+                        {phase.terminee && <span className="status-badge terminee">Terminée</span>}
+                        {phase.enRetard && <span className="status-badge retard">En retard</span>}
+                        {!phase.terminee && !phase.enRetard && isPhaseEnCours(phase) && (
+                          <span className="status-badge en-cours">En cours</span>
                         )}
                       </div>
                     </div>
-                    <div className="phase-liste-progress">
-                      <ProgressBar
-                        percentage={parseFloat(phase.avancement?.avancement_pourcent || 0)}
-                        showLabel={true}
-                      />
-                      <span className="taches-info">
-                        {phase.avancement?.taches_terminees || 0}/{phase.avancement?.total_taches || 0} tâches
-                      </span>
-                    </div>
-                    <div className="phase-liste-status">
-                      {phase.terminee && <span className="status-badge terminee">Terminée</span>}
-                      {phase.enRetard && <span className="status-badge retard">En retard</span>}
-                      {!phase.terminee && !phase.enRetard && isPhaseEnCours(phase) && (
-                        <span className="status-badge en-cours">En cours</span>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -420,109 +442,101 @@ const PhasesScreen = () => {
     );
   };
 
-  // Composant Planning original avec navigation
+  // Composant Planning modifié pour utiliser toutes les phases disponibles
   const PhasesPlanning = () => {
-  const projetsUniques = [...new Map(phases.map(phase => [
-    phase.ref_projet, 
-    {
-      ref_projet: phase.ref_projet,
-      nom_projet: phase.nom_projet
-    }
-  ])).values()];
+    const projetsUniques = [...new Map(phases.map(phase => [
+      phase.ref_projet, 
+      {
+        ref_projet: phase.ref_projet,
+        nom_projet: phase.nom_projet
+      }
+    ])).values()];
 
-  const allPhases = [...new Map(phases.map(phase => [
-    phase.id_phase, 
-    {
-      id_phase: phase.id_phase,
-      libelle_phase: phase.libelle_phase
-    }
-  ])).values()];
-
-  return (
-    <div className="planning-container">
-      <div className="planning-header">
-        <h3>Planning des projets par phase</h3>
-      </div>
-      <div className="planning-table-container">
-        <table className="planning-table">
-          <thead>
-            <tr>
-              <th>Projet</th>
-              {allPhases.map((phase) => (
-                <th key={phase.id_phase}>{phase.libelle_phase}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {projetsUniques.map((projet) => (
-              <tr key={projet.ref_projet} className="planning-row">
-                <td className="projet-cell-header">{projet.nom_projet}</td>
-                {allPhases.map((phase) => {
-                  const projetPhase = phases.find(
-                    (p) =>
-                      String(p.ref_projet).trim() === String(projet.ref_projet).trim() &&
-                      String(p.id_phase).trim() === String(phase.id_phase).trim()
-                  );
-
-                  if (projetPhase) {
-                    const avancementPhase = getAvancementPhase(projetPhase.ref_projet, projetPhase.id_phase);
-                    const terminee = isPhaseTerminee(projetPhase);
-                    const enRetard = isPhaseEnRetard(projetPhase);
-                    const enCours = isPhaseEnCours(projetPhase);
-
-                    return (
-                      <td
-                        key={phase.id_phase}
-                        className="phase-cell"
-                        onClick={() => handleProjectCellClick(projetPhase.ref_projet)}
-                      >
-                        <div
-                          className={`phase-status ${
-                            terminee
-                              ? "terminee"
-                              : enRetard
-                              ? "retard"
-                              : enCours
-                              ? "en-cours"
-                              : "planifiee"
-                          }`}
-                        >
-                          <div className="phase-indicator">
-                            {enRetard && <i className="bi bi-exclamation-triangle-fill alert-icon"></i>}
-                            <div
-                              className={`status-dot ${
-                                enRetard
-                                  ? "retard"
-                                  : terminee
-                                  ? "terminee"
-                                  : enCours
-                                  ? "en-cours"
-                                  : "planifiee"
-                              }`}
-                            ></div>
-                          </div>
-                          <span className="progress-text">
-                            {parseFloat(avancementPhase.avancement_pourcent).toFixed(0)}%
-                          </span>
-                        </div>
-                      </td>
-                    );
-                  } else {
-                    return (
-                      <td key={phase.id_phase} className="phase-cell">
-                        <span className="phase-absent">-</span>
-                      </td>
-                    );
-                  }
-                })}
+    return (
+      <div className="planning-container">
+        <div className="planning-header">
+          <h3>Tableau des projets par phase</h3>
+        </div>
+        <div className="planning-table-container">
+          <table className="planning-table">
+            <thead>
+              <tr>
+                <th>Projet</th>
+                {allAvailablePhases.map((phase) => (
+                  <th key={phase.id_phase}>{phase.libelle_phase}</th>
+                ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {projetsUniques.map((projet) => (
+                <tr key={projet.ref_projet} className="planning-row">
+                  <td className="projet-cell-header">{projet.nom_projet}</td>
+                  {allAvailablePhases.map((phase) => {
+                    const projetPhase = phases.find(
+                      (p) =>
+                        String(p.ref_projet).trim() === String(projet.ref_projet).trim() &&
+                        String(p.id_phase).trim() === String(phase.id_phase).trim()
+                    );
+
+                    if (projetPhase) {
+                      const avancementPhase = getAvancementPhase(projetPhase.ref_projet, projetPhase.id_phase);
+                      const terminee = isPhaseTerminee(projetPhase);
+                      const enRetard = isPhaseEnRetard(projetPhase);
+                      const enCours = isPhaseEnCours(projetPhase);
+
+                      return (
+                        <td
+                          key={phase.id_phase}
+                          className="phase-cell"
+                          onClick={() => handleProjectCellClick(projetPhase.ref_projet)}
+                        >
+                          <div
+                            className={`phase-status ${
+                              terminee
+                                ? "terminee"
+                                : enRetard
+                                ? "retard"
+                                : enCours
+                                ? "en-cours"
+                                : "planifiee"
+                            }`}
+                          >
+                            <div className="phase-indicator">
+                              {enRetard && <i className="bi bi-exclamation-triangle-fill alert-icon"></i>}
+                              <div
+                                className={`status-dot ${
+                                  enRetard
+                                    ? "retard"
+                                    : terminee
+                                    ? "terminee"
+                                    : enCours
+                                    ? "en-cours"
+                                    : "planifiee"
+                                }`}
+                              ></div>
+                            </div>
+                            <span className="progress-text">
+                              {parseFloat(avancementPhase.avancement_pourcent).toFixed(0)}%
+                            </span>
+                          </div>
+                        </td>
+                      );
+                    } else {
+                      return (
+                        <td key={phase.id_phase} className="phase-cell">
+                          <span className="phase-absent">-</span>
+                        </td>
+                      );
+                    }
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
-  );
-};
+    );
+  };
 
   if (loading) {
     return (
@@ -611,7 +625,7 @@ const PhasesScreen = () => {
           onClick={() => setActiveTab("Planning")}
         >
           <i className="bi bi-calendar-range-fill"></i>
-          <span>Planning</span>
+          <span>Tableau</span>
         </button>
       </div>
 

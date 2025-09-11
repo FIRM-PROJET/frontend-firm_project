@@ -297,7 +297,7 @@ const ProjectSelectionScreen = () => {
   }
 
   return (
-    <div className="container">
+    <div className="container2">
       <div className="header">
         <button className="back-button3" onClick={() => navigate(-1)}>
           <i className="bi bi-caret-left-fill"></i> Retour

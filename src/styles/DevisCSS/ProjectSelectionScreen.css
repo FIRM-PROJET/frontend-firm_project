@@ -45,7 +45,7 @@
   }
 
   /* Container principal */
-  .container {
+  .container2 {
     max-width: 1200px;
     margin: 0 auto;
     padding: 16px;
@@ -53,15 +53,6 @@
     background: transparent;
   } 
 
-  .header::before {
-    content: '';
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, var(--primary-color), var(--accent-color), var(--primary-light));
-    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
-  }
 
   .back-button {
     display: inline-flex;

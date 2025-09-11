@@ -53,13 +53,6 @@
   color: #ccc;
 }
 
-.module-subtitle {
-  margin: 0;
-  font-weight: 200;
-  display: flex;
-  gap: 10px;
-}
-
 .btn-ajouter-tache {
   background: linear-gradient(45deg, #676681, #5b4cb1);
   color: white;

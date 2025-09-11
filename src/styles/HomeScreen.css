@@ -123,7 +123,7 @@
   height: 2px;
 }
 
-.card-title {
+.card-title1 {
   margin: 0 0 12px 0;
   font-size: 0.9rem;
   font-weight: 600;
@@ -422,7 +422,7 @@
 
 /* Jour actuel */
 .calendar-day.today {
-  background: linear-gradient(45deg, #958be8, #4634ac);
+  background: #514f84;
   box-shadow: 0 0 4px rgba(219, 219, 234, 0.4);
   height: 100%;
   width: 100%;
@@ -692,7 +692,7 @@
 }
 
 .percentage-badge {
-  background: linear-gradient(45deg, #958be8, #4634ac);
+  background: #514f84;
   color: white;
   padding: 4px 8px;
   border-radius: 12px;

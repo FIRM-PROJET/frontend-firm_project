@@ -513,7 +513,7 @@ const HomeScreen = () => {
         <div className="dashboard-row-first">
           {/* Graphique d'activité avec border gradient */}
           <div className="card activity-chart">
-            <h3 className="card-title">Activité hebdomadaire</h3>
+            <h3 className="card-title1">Activité hebdomadaire</h3>
             <div className="chart-container-small">
               <ResponsiveContainer width="100%" height={160}>
                 <LineChart
@@ -596,7 +596,7 @@ const HomeScreen = () => {
 
           {/* Diagramme donut 3D avec description à droite */}
           <div className="card donut-chart-3d">
-            <h3 className="card-title">Répartition des tâches</h3>
+            <h3 className="card-title1">Répartition des tâches</h3>
             <div className="donut-3d-container-small">
               <div className="donut-chart-section-small">
                 <ResponsiveContainer width="100%" height={160}>
@@ -731,7 +731,7 @@ const HomeScreen = () => {
         <div className="dashboard-row-second">
           {/* Avancement des projets amélioré */}
           <div className="card project-progress-enhanced">
-            <h3 className="card-title">
+            <h3 className="card-title1">
               <i className="bi bi-bar-chart-fill"></i>
               Avancement des projets
             </h3>
@@ -768,7 +768,7 @@ const HomeScreen = () => {
 
           {/* TÂCHES AUJOURD'HUI - remplace le gros calendrier */}
           <div className="card today-tasks">
-            <h3 className="card-title">
+            <h3 className="card-title1">
               <i className="bi bi-calendar2-week-fill"></i> Tâches aujourd'hui
             </h3>
             <div className="today-tasks-container">
