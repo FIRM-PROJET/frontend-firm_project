@@ -351,11 +351,6 @@
   border: none;
 }
 
-.calendar-day.has-tasks {
-  border: 1px solid rgba(175, 174, 207, 0.3);
-  background: rgba(91, 76, 177, 0.1);
-}
-
 .calendar-day.has-tasks:hover {
   background: rgba(91, 76, 177, 0.2);
   border-color: rgba(175, 174, 207, 0.5);

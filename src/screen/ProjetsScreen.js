@@ -172,10 +172,10 @@ const ProjetsScreen = () => {
 
   // Obtenir la couleur selon l'avancement
   const getAvancementColor = (avancement) => {
-    if (avancement >= 80) return "#7cc48b";
-    if (avancement >= 50) return "#f7e395";
-    if (avancement >= 30) return "#f7e395";
-    return "#ff6b6b";
+    if (avancement >= 80) return "#514f84";
+    if (avancement >= 50) return "#ccc";
+    if (avancement >= 30) return "#ccc";
+    return "#514f84";
   };
 
   // Obtenir le statut du projet
@@ -272,9 +272,7 @@ const ProjetsScreen = () => {
                               className="projet-card-progress-fill"
                               style={{
                                 width: `${avancement}%`,
-                                background: `linear-gradient(90deg, ${getAvancementColor(
-                                  avancement
-                                )}, ${getAvancementColor(avancement)}dd)`,
+                                background: getAvancementColor(avancement),
                               }}
                             ></div>
                           </div>
@@ -328,7 +326,7 @@ const ProjetsScreen = () => {
                     <div className="stat-mini-item">
                       <div
                         className="stat-mini-icon"
-                        style={{ color: "#7cc48b" }}
+                        style={{ color: "#514f84" }}
                       >
                         <FontAwesomeIcon icon={faCheckCircle} />
                       </div>
@@ -342,7 +340,7 @@ const ProjetsScreen = () => {
                     <div className="stat-mini-item">
                       <div
                         className="stat-mini-icon"
-                        style={{ color: "#f7e395" }}
+                        style={{ color: "#ccc" }}
                       >
                         <FontAwesomeIcon icon={faPlayCircle} />
                       </div>
@@ -356,7 +354,7 @@ const ProjetsScreen = () => {
                     <div className="stat-mini-item">
                       <div
                         className="stat-mini-icon"
-                        style={{ color: "#ff6b6b" }}
+                        style={{ color: "#514f84" }}
                       >
                         <FontAwesomeIcon icon={faExclamationTriangle} />
                       </div>
@@ -370,7 +368,7 @@ const ProjetsScreen = () => {
                     <div className="stat-mini-item">
                       <div
                         className="stat-mini-icon"
-                        style={{ color: "#afaecf" }}
+                        style={{ color: "#ccc" }}
                       >
                         <FontAwesomeIcon icon={faBuilding} />
                       </div>
@@ -431,9 +429,7 @@ const ProjetsScreen = () => {
                               <div
                                 className="date-circle"
                                 style={{
-                                  background: `linear-gradient(135deg, ${getAvancementColor(
-                                    pourcentage
-                                  )}, ${getAvancementColor(pourcentage)}aa)`,
+                                  background: getAvancementColor(pourcentage),
                                 }}
                               >
                                 <span className="date-day">
@@ -466,8 +462,7 @@ const ProjetsScreen = () => {
                                     className="timeline-progress-fill"
                                     style={{
                                       width: `${pourcentage}%`,
-                                      background:
-                                        getAvancementColor(pourcentage),
+                                      background: getAvancementColor(pourcentage),
                                     }}
                                   ></div>
                                 </div>

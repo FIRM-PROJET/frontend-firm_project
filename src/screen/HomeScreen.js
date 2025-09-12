@@ -65,10 +65,36 @@ const HomeScreen = () => {
         }
       }
       setLoading(false);
+      
+      // Debug pour vérifier les données du calendrier
+      if (process.env.NODE_ENV === 'development') {
+        setTimeout(debugCalendar, 1000);
+      }
     };
 
     initializeDashboard();
   }, []);
+
+  // Fonction de debug pour le calendrier
+  const debugCalendar = () => {
+    console.log("=== DEBUG CALENDRIER ===");
+    console.log("Tâches utilisateur:", userTasks.length);
+    
+    // Tester pour aujourd'hui
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tasksToday = getTasksForDate(today);
+    console.log("Tâches aujourd'hui:", tasksToday);
+    
+    // Tester les dates des tâches
+    userTasks.slice(0, 5).forEach(task => {
+      console.log(`Tâche: ${task.nom_tache}`);
+      console.log(`Date début: ${task.date_debut}`);
+      console.log(`Date fin prévue: ${task.date_fin_prevue || task.date_fin_prevu}`);
+      console.log(`Statut: ${task.statut}`);
+      console.log("---");
+    });
+  };
 
   const loadDashboardData = async (matricule) => {
     try {
@@ -98,7 +124,7 @@ const HomeScreen = () => {
         const currentDate = new Date();
         const tachesEnRetard = tasks.filter((t) => {
           if (t.statut === "Terminé") return false;
-          const dateFin = new Date(t.date_fin_prevue);
+          const dateFin = new Date(t.date_fin_prevue || t.date_fin_prevu);
           return dateFin < currentDate;
         }).length;
 
@@ -200,7 +226,9 @@ const HomeScreen = () => {
         taches: tasksCompletedOnDay,
       };
     });
-  }; // Fonction corrigée pour obtenir les tâches d'aujourd'hui (local date)
+  };
+
+  // Fonction corrigée pour obtenir les tâches d'aujourd'hui (local date)
   const getTodayTasks = () => {
     if (!userTasks || userTasks.length === 0) {
       return [];
@@ -258,14 +286,6 @@ const HomeScreen = () => {
           dateDebut.getTime() <= today.getTime() &&
           dateFinPrevu.getTime() >= today.getTime();
 
-        // // Debug lisible en locale
-        // console.log(
-        //   `[${
-        //     task.nom_tache
-        //   }] Début=${dateDebut.toLocaleDateString()} Fin=${dateFinPrevu.toLocaleDateString()} Today=${today.toLocaleDateString()} ->`,
-        //   estDansPeriode
-        // );
-
         return estDansPeriode;
       } catch (err) {
         console.error("Erreur filtrage tâche:", task.nom_tache, err);
@@ -273,7 +293,6 @@ const HomeScreen = () => {
       }
     });
 
-    // console.log("Tâches prévues pour aujourd'hui:", tachesAujourdhui);
     return tachesAujourdhui;
   };
 
@@ -318,12 +337,6 @@ const HomeScreen = () => {
         value: stats.tachesNonDemarrees,
         color: "url(#gradientNonDemarrees)",
         textColor: "#514f84",
-      },
-      {
-        name: "En retard",
-        value: stats.tachesEnRetard,
-        color: "#e74c3c",
-        textColor: "#e74c3c",
       },
     ].filter((item) => item.value > 0);
   };
@@ -398,8 +411,8 @@ const HomeScreen = () => {
 
       try {
         const dateDebut = new Date(task.date_debut);
-        const dateFinPrevu = task.date_fin_prevue
-          ? new Date(task.date_fin_prevue)
+        const dateFinPrevu = task.date_fin_prevue || task.date_fin_prevu
+          ? new Date(task.date_fin_prevue || task.date_fin_prevu)
           : dateDebut;
 
         if (isNaN(dateDebut.getTime()) || isNaN(dateFinPrevu.getTime()))
@@ -439,7 +452,7 @@ const HomeScreen = () => {
       days.push(<div key={`empty-${i}`} className="calendar-day empty"></div>);
     }
 
-    // Jours du mois
+    // Jours du mois - VERSION CORRIGÉE
     for (let day = 1; day <= daysInMonth; day++) {
       const date = new Date(
         currentDate.getFullYear(),
@@ -453,7 +466,7 @@ const HomeScreen = () => {
 
       days.push(
         <div
-          key={day}
+          key={`day-${day}`}
           className={`calendar-day ${isToday ? "today" : ""} ${
             tasksForDay.length > 0 ? "has-tasks" : ""
           }`}
@@ -465,13 +478,18 @@ const HomeScreen = () => {
             <div className="task-dots">
               {tasksForDay.slice(0, 3).map((task, index) => (
                 <div
-                  key={index}
+                  key={`task-${task.id || index}-${day}`}
                   className={`task-dot ${getStatusClass(task.statut)}`}
                   title={task.nom_tache}
                 />
               ))}
               {tasksForDay.length > 3 && (
-                <div className="task-dot-more">+{tasksForDay.length - 3}</div>
+                <div 
+                  className="task-dot-more" 
+                  title={`${tasksForDay.length - 3} autres tâches`}
+                >
+                  +{tasksForDay.length - 3}
+                </div>
               )}
             </div>
           )}
@@ -802,7 +820,7 @@ const HomeScreen = () => {
                       </div>
                       <div className="task-deadline">
                         <span className="deadline-text">
-                          Échéance : {formatEcheanceDate(task.date_fin_prevu)}
+                          Échéance : {formatEcheanceDate(task.date_fin_prevu || task.date_fin_prevue)}
                         </span>
                       </div>
                     </div>
