@@ -15,7 +15,7 @@
 
 /* Modal Content */
 .modal-content {
-  background: white;
+  background: #282850;
   border-radius: 12px;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   max-width: 500px;
@@ -37,13 +37,13 @@
 }
 
 /* Modal Header */
-.modal-header {
+.modal-header1 {
   display: flex;
   justify-content: space-between;
+  background-color: #181835;
   align-items: center;
   padding: 24px 24px 0 24px;
-  border-bottom: 1px solid #e5e7eb;
-  margin-bottom: 24px;
+  margin-bottom: 30px;
 }
 
 .modal-title {
@@ -77,8 +77,10 @@
 }
 
 .modal-close:hover {
-  background: #f3f4f6;
-  color: #374151;
+  background: #d24643;
+  color: #ccc;
+  height: 30px;
+  width: 30px ;
 }
 
 /* Modal Form */
@@ -90,18 +92,18 @@
   margin-bottom: 20px;
 }
 
-.modal-form .form-label {
+.modal-form .form-label1 {
   display: flex;
   align-items: center;
   gap: 8px;
   font-weight: 500;
-  color: #374151;
+  color: #ccc;
   margin-bottom: 6px;
   font-size: 0.875rem;
 }
 
-.modal-form .form-label i {
-  color: #6b7280;
+.modal-form .form-label1 i {
+  color: #ccc;
   font-size: 0.875rem;
 }
 
@@ -183,23 +185,18 @@
   cursor: not-allowed;
 }
 
-.btn-secondary {
-  background: #f9fafb;
-  color: #374151;
+.btn-cancel {
+  background: #474757;
+  color: #ccc;
   border: 1px solid #d1d5db;
 }
 
-.btn-secondary:hover:not(:disabled) {
-  background: #f3f4f6;
-  border-color: #9ca3af;
-}
-
-.btn-primary {
-  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
+.btn-create {
+  background: linear-gradient(45deg, #958be8, #4634ac);
   color: white;
 }
 
-.btn-primary:hover:not(:disabled) {
+.btn-create:hover:not(:disabled) {
   background: var(--primary-color);
   border-color: var(--primary-dark);
 }

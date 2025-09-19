@@ -12,6 +12,7 @@ const NewProjectScreen = () => {
     total_ht: "",
     total_ttc: "",
     date_devis: "",
+    localisation: "",
   });
 
   const [projectDetails, setProjectDetails] = useState({
@@ -41,7 +42,7 @@ const NewProjectScreen = () => {
   const [devisFile, setDevisFile] = useState(null);
   const [imageFiles, setImageFiles] = useState([]);
   const [uploadedDevis, setUploadedDevis] = useState(null);
-  const [uploadImages,setUploadedImages] = useState([]);
+  const [uploadImages, setUploadedImages] = useState([]);
   const [createdProjectId, setCreatedProjectId] = useState(null);
 
   const [showClientModal, setShowClientModal] = useState(false);
@@ -50,6 +51,19 @@ const NewProjectScreen = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
+  // Liste statique des régions de Madagascar
+const regionsMadagascar = [
+  "Antananarivo",
+  "Toamasina",
+  "Antsirabe",
+  "Fianarantsoa",
+  "Mahajanga",
+  "Toliara",
+  "Antsiranana",
+  "Autres"
+];
+
 
   useEffect(() => {
     const loadData = async () => {
@@ -134,6 +148,15 @@ const NewProjectScreen = () => {
     }));
   };
 
+  // Gestionnaire pour la sélection de région
+  const handleRegionChange = (e) => {
+    const selectedRegion = e.target.value;
+    setProjectData((prev) => ({
+      ...prev,
+      localisation: selectedRegion,
+    }));
+  };
+
   const handleDevisUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -200,8 +223,9 @@ const NewProjectScreen = () => {
         total_ht: parseFloat(projectData.total_ht) || 0,
         total_ttc: parseFloat(projectData.total_ttc) || 0,
         date_devis: projectData.date_devis || null,
+        localisation: projectData.localisation || "",
       };
-      
+
       // Création du projet
       const projectResult = await DevisService.createProject(projectPayload);
 
@@ -256,6 +280,7 @@ const NewProjectScreen = () => {
       total_ht: "",
       total_ttc: "",
       date_devis: "",
+      localisation: "",
     });
     setProjectDetails({
       nombre_etages: "",
@@ -286,7 +311,8 @@ const NewProjectScreen = () => {
         return (
           projectData.nom_projet.trim() !== "" &&
           projectData.id_client !== "" &&
-          projectData.id_type_construction !== ""
+          projectData.id_type_construction !== "" &&
+          projectData.localisation.trim() !== ""
         );
       case 2:
         return (
@@ -373,15 +399,17 @@ const NewProjectScreen = () => {
                     value={projectData.nom_projet}
                     onChange={handleProjectChange}
                     required
-                    className="form-input"
+                    className="form-input1"
                     placeholder="Entrez le nom du projet"
                   />
                 </div>
 
                 <div className="form-group">
-                  <label className="form-label">
-                    <i className="fas fa-user"></i>
-                    Client *
+                  <div className="label-with-button">
+                    <label className="form-label">
+                      <i className="fas fa-user"></i>
+                      Client *
+                    </label>
                     <button
                       type="button"
                       className="add-icon-button"
@@ -390,7 +418,8 @@ const NewProjectScreen = () => {
                     >
                       <i className="fas fa-plus"></i>
                     </button>
-                  </label>
+                  </div>
+
                   <select
                     name="id_client"
                     value={projectData.id_client}
@@ -428,6 +457,27 @@ const NewProjectScreen = () => {
                   </select>
                 </div>
 
+                <div className="form-group">
+                  <label className="form-label">
+                    <i className="fas fa-map-marker-alt"></i>
+                    Région *
+                  </label>
+                  <select
+                    name="region"
+                    value={projectData.localisation}
+                    onChange={handleRegionChange}
+                    required
+                    className="form-select"
+                  >
+                    <option value="">Sélectionner une région</option>
+                    {regionsMadagascar.map((region, index) => (
+                      <option key={index} value={region}>
+                        {region}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
                 <div className="form-group form-grid-full">
                   <label className="form-label">
                     <i className="fas fa-align-left"></i>
@@ -452,7 +502,7 @@ const NewProjectScreen = () => {
                     name="total_ht"
                     value={projectData.total_ht}
                     onChange={handleProjectChange}
-                    className="form-input"
+                    className="form-input1"
                     placeholder="Montant HT"
                     min="0"
                     step="0.01"
@@ -469,7 +519,7 @@ const NewProjectScreen = () => {
                     name="total_ttc"
                     value={projectData.total_ttc}
                     onChange={handleProjectChange}
-                    className="form-input"
+                    className="form-input1"
                     placeholder="Montant TTC"
                     min="0"
                     step="0.01"
@@ -486,7 +536,7 @@ const NewProjectScreen = () => {
                     name="date_devis"
                     value={projectData.date_devis}
                     onChange={handleProjectChange}
-                    className="form-input"
+                    className="form-input1"
                   />
                 </div>
               </div>
@@ -505,7 +555,7 @@ const NewProjectScreen = () => {
                     name="nombre_etages"
                     value={projectDetails.nombre_etages}
                     onChange={handleDetailsChange}
-                    className="form-input"
+                    className="form-input1"
                     placeholder="Nombre d'étages"
                     min="1"
                     required
@@ -522,7 +572,7 @@ const NewProjectScreen = () => {
                     name="surface_totale"
                     value={projectDetails.surface_totale}
                     onChange={handleDetailsChange}
-                    className="form-input"
+                    className="form-input1"
                     placeholder="Surface en m²"
                     min="0"
                     step="0.01"
@@ -562,14 +612,13 @@ const NewProjectScreen = () => {
                         <label className="form-label surface-label">
                           <i className="fas fa-home"></i>
                           Surface SHAB (m²) *
-                          <span className="surface-info">Surface Habitable</span>
                         </label>
                         <input
                           type="number"
                           name="surfaceSHAB"
                           value={projectDetails.surfaceSHAB}
                           onChange={handleDetailsChange}
-                          className="form-input"
+                          className="form-input1"
                           placeholder="Surface SHAB"
                           min="0"
                           step="0.01"
@@ -581,14 +630,13 @@ const NewProjectScreen = () => {
                         <label className="form-label surface-label">
                           <i className="fas fa-expand"></i>
                           Surface SHON (m²) *
-                          <span className="surface-info">Surface Hors Œuvre Nette</span>
                         </label>
                         <input
                           type="number"
                           name="surfaceSHON"
                           value={projectDetails.surfaceSHON}
                           onChange={handleDetailsChange}
-                          className="form-input"
+                          className="form-input1"
                           placeholder="Surface SHON"
                           min="0"
                           step="0.01"
@@ -600,14 +648,13 @@ const NewProjectScreen = () => {
                         <label className="form-label surface-label">
                           <i className="fas fa-vector-square"></i>
                           Surface SHOB (m²) *
-                          <span className="surface-info">Surface Hors Œuvre Brute</span>
                         </label>
                         <input
                           type="number"
                           name="surfaceSHOB"
                           value={projectDetails.surfaceSHOB}
                           onChange={handleDetailsChange}
-                          className="form-input"
+                          className="form-input1"
                           placeholder="Surface SHOB"
                           min="0"
                           step="0.01"

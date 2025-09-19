@@ -7,6 +7,7 @@ import {
   faBuilding,
   faMoneyBillWave,
   faCalendarAlt,
+  faLocationDot,
   faUser,
   faFileInvoice,
   faClock,
@@ -166,44 +167,8 @@ const ListeProjetsPage = () => {
             {filteredAndSorted.length} projet(s) trouvé(s)
           </div>
         </div>
-
-        <div className="quick-stats">
-          <div className="quick-stat">
-            <span className="stat-number">{projets.length}</span>
-            <span className="stat-label">Total</span>
-          </div>
-        </div>
       </div>
 
-      <div className="filters-and-sort">
-        <div className="filter-buttons">
-          <button
-            className={`filter-btn ${activeFilter === "all" ? "active" : ""}`}
-            onClick={() => handleFilterChange("all")}
-          >
-            <FontAwesomeIcon icon={faFilter} />
-            Tous
-          </button>
-          <button
-            className={`filter-btn ${
-              activeFilter === "active" ? "active" : ""
-            }`}
-            onClick={() => handleFilterChange("active")}
-          >
-            <FontAwesomeIcon icon={faClock} />
-            En Cours
-          </button>
-          <button
-            className={`filter-btn ${
-              activeFilter === "completed" ? "active" : ""
-            }`}
-            onClick={() => handleFilterChange("completed")}
-          >
-            <FontAwesomeIcon icon={faCheckCircle} />
-            Terminés
-          </button>
-        </div>
-      </div>
 
       <div className="projects-grid">
         {currentProjects.length > 0 ? (
@@ -253,10 +218,9 @@ const ListeProjetsPage = () => {
                       className="detail-icon"
                     />
                     <div>
-                      <span className="detail-label">Période</span>
+                      <span className="detail-label">Date du devis</span>
                       <span className="detail-value">
-                        {new Date(projet.date_debut).toLocaleDateString()} -{" "}
-                        {new Date(projet.date_fin_prevu).toLocaleDateString()}
+                        {new Date(projet.date_devis).toLocaleDateString()}
                       </span>
                     </div>
                   </div>
@@ -271,6 +235,19 @@ const ListeProjetsPage = () => {
                       <span className="detail-value amount">
                         {parseFloat(projet.total_ttc).toLocaleString("fr-FR")}{" "}
                         Ar
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="detail-item1">
+                    <FontAwesomeIcon
+                      icon={faLocationDot}
+                      className="detail-icon"
+                    />
+                    <div>
+                      <span className="detail-label">Localisation</span>
+                      <span className="detail-value amount">
+                       {projet.localisation}
                       </span>
                     </div>
                   </div>

@@ -110,7 +110,7 @@
 }
 
 .type-description strong {
-  color: #a48aff;
+  color: #bbbbbb;
   font-weight: 600;
 }
 
@@ -165,7 +165,7 @@
   margin: 0 auto 32px auto;
   border-collapse: collapse;
   font-size: 15px;
-  background: linear-gradient(145deg, #333344, #2a2a33);
+  background: #282850;
   color: #f0f0f0;
   border-radius: 5px;
   overflow: hidden;
@@ -180,7 +180,7 @@
 }
 
 .estimation-table td:first-child {
-  background: linear-gradient(145deg, #3d3d4a, #343441);
+  background: #333364;
   font-weight: 700;
   color: #ffffff;
   width: 60%;
@@ -209,7 +209,7 @@
   padding: 24px 32px;
   font-size: 2rem;
   font-weight: 800;
-  background: linear-gradient(145deg, #2a2a33, #1a1a22);
+  background: #333364;
   color: #ffffff;
   text-align: center;
   border-radius: 5px;

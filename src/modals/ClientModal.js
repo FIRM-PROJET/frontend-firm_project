@@ -61,7 +61,7 @@ const ClientModal = ({ isOpen, onClose, onClientCreated }) => {
   return (
     <div className="modal-overlay" onClick={handleClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
+        <div className="modal-header1">
           <h2 className="modal-title">
             <i className="fas fa-user-plus"></i>
             Nouveau Client
@@ -80,7 +80,7 @@ const ClientModal = ({ isOpen, onClose, onClientCreated }) => {
 
         <form onSubmit={handleSubmit} className="modal-form">
           <div className="form-group">
-            <label className="form-label">
+            <label className="form-label1">
               <i className="fas fa-user"></i>
               Nom du client *
             </label>
@@ -97,7 +97,7 @@ const ClientModal = ({ isOpen, onClose, onClientCreated }) => {
           </div>
 
           <div className="form-group">
-            <label className="form-label">
+            <label className="form-label1">
               <i className="fas fa-envelope"></i>
               Email *
             </label>
@@ -114,7 +114,7 @@ const ClientModal = ({ isOpen, onClose, onClientCreated }) => {
           </div>
 
           <div className="form-group">
-            <label className="form-label">
+            <label className="form-label1">
               <i className="fas fa-phone"></i>
               Téléphone *
             </label>
@@ -134,7 +134,7 @@ const ClientModal = ({ isOpen, onClose, onClientCreated }) => {
             <button
               type="button"
               onClick={handleClose}
-              className="btn btn-secondary"
+              className="btn btn-cancel"
               disabled={loading}
             >
               <i className="fas fa-times"></i>
@@ -142,7 +142,7 @@ const ClientModal = ({ isOpen, onClose, onClientCreated }) => {
             </button>
             <button
               type="submit"
-              className="btn btn-primary"
+              className="btn btn-create"
               disabled={loading}
             >
               {loading ? (

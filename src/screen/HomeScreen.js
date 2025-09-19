@@ -76,24 +76,13 @@ const HomeScreen = () => {
   }, []);
 
   // Fonction de debug pour le calendrier
-  const debugCalendar = () => {
-    console.log("=== DEBUG CALENDRIER ===");
-    console.log("Tâches utilisateur:", userTasks.length);
-    
+  const debugCalendar = () => {    
     // Tester pour aujourd'hui
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const tasksToday = getTasksForDate(today);
-    console.log("Tâches aujourd'hui:", tasksToday);
-    
+    const tasksToday = getTasksForDate(today);    
     // Tester les dates des tâches
-    userTasks.slice(0, 5).forEach(task => {
-      console.log(`Tâche: ${task.nom_tache}`);
-      console.log(`Date début: ${task.date_debut}`);
-      console.log(`Date fin prévue: ${task.date_fin_prevue || task.date_fin_prevu}`);
-      console.log(`Statut: ${task.statut}`);
-      console.log("---");
-    });
+    userTasks.slice(0, 5).forEach(task => {    });
   };
 
   const loadDashboardData = async (matricule) => {
