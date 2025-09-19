@@ -30,6 +30,18 @@
   padding: 6px 0;
   font-family: 'Bw Modelica', sans-serif;
 }
+.back-button3 {
+  display: flex;
+  gap: 8px;
+  background: none;
+  border: none;
+  color: #d24643;
+  font-size: 0.9rem;
+  font-weight: 200;
+  cursor: pointer;
+  padding: 6px 0;
+  font-family: 'Bw Modelica', sans-serif;
+}
 
 /* Table styling */
 .user-table {
@@ -73,7 +85,7 @@
   cursor: pointer;
   transition: background 0.2s;
 }
-.btn-delete {
+.btn-delete1 {
   background: linear-gradient(135deg, var(--error-color), #e53e3e);
   color: #fff;
   border: none;
@@ -110,12 +122,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 999;
+  z-index: 2000;
 }
 
 /* Modal content dark mode */
 .modal-content1 {
-  background-color: #2c2c2f;
+  background-color: #181835;
   padding: 1.5rem;
   border-radius: 8px;
   max-width: 480px;

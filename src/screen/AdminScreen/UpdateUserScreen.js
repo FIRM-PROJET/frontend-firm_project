@@ -135,7 +135,7 @@ const UpdateUserScreen = () => {
                   Modifier
                 </button>
                 <button
-                  className="btn-delete"
+                  className="btn-delete1"
                   onClick={() => openDeleteModal(user)}
                 >
                   Supprimer
@@ -207,7 +207,7 @@ const UpdateUserScreen = () => {
               <button className="btn-cancel" onClick={closeDeleteModal}>
                 Annuler
               </button>
-              <button className="btn-save" onClick={handleDelete}>
+              <button className="btn-delete1" onClick={handleDelete}>
                 Supprimer
               </button>
             </div>
