@@ -64,8 +64,8 @@
   background: #181835;
   border-radius: 8px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-  min-width: 400px;
-  max-width: 500px;
+  min-width: 300px;
+  max-width: 300px;
   width: 90%;
   color: #ccc;
   max-height: 90vh;
@@ -321,7 +321,7 @@
 
 .task-details-content {
   background: var(--bg-primary);
-  width: 800px;
+  width: 700px;
   max-width: 95vw;
   height: 100vh;
   overflow: hidden;
@@ -1255,34 +1255,13 @@
   position: fixed;
   bottom: 0;
   right: 0;
-  width: 800px;
+  width: 700px;
   max-width: 95vw;
   background: var(--bg-secondary);
   padding: var(--spacing-lg);
   z-index: 1;
   box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(8px);
-}
-
-.quick-comment-toolbar {
-  display: flex;
-  gap: 4px;
-  margin-bottom: var(--spacing-md);
-  padding: 8px;
-  background: var(--bg-tertiary);
-  border-radius: var(--border-radius);
-  flex-wrap: wrap;
-}
-
-.toolbar-btn {
-  background: none;
-  border: none;
-  padding: 6px;
-  border-radius: 4px;
-  color: var(--text-muted);
-  cursor: pointer;
-  transition: var(--transition);
-  font-size: 14px;
 }
 
 .toolbar-btn:hover,
@@ -1662,22 +1641,420 @@
 }
 
 .tiptap-toolbar button {
-  background: none;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    padding: 6px 8px;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: var(--transition);
+  }
+
+  .tiptap-toolbar button:hover {
+    background: var(--bg-quaternary);
+    color: var(--text-primary);
+  }
+
+  .tiptap-toolbar button.is-active {
+    background: var(--bg-quaternary) !important;
+    color: var(--text-primary) !important;
+    box-shadow: var(--shadow);
+}
+
+
+/* CSS additif pour le modal de temps passé */
+
+/* Modal de temps passé - Overlay */
+.time-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+  backdrop-filter: blur(3px);
+}
+
+/* Modal de temps passé - Container */
+.time-modal {
+  background: #282850;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  width: 90%;
+  max-width: 500px;
+  max-height: 80vh;
+  overflow: hidden;
+  animation: timeModalSlideIn 0.3s ease-out;
+}
+
+@keyframes timeModalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Header du modal de temps */
+.time-modal-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #181835;
+  color: white;
+}
+
+.time-modal-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.time-modal-header h3 i {
+  font-size: 1.375rem;
+  opacity: 0.9;
+}
+
+.time-modal-close {
+  background: rgba(255, 255, 255, 0.2);
   border: none;
-  color: var(--text-muted);
-  padding: 6px 8px;
-  border-radius: var(--border-radius);
+  color: #ccc;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  transition: var(--transition);
+  transition: all 0.2s ease;
+  font-size: 1.1rem;
 }
 
-.tiptap-toolbar button:hover {
-  background: var(--bg-quaternary);
-  color: var(--text-primary);
+.time-modal-close:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
 }
 
-.tiptap-toolbar button.is-active {
-  background: var(--bg-quaternary);
-  color: var(--text-primary);
-  box-shadow: var(--shadow);
+.time-modal-close:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Body du modal de temps */
+.time-modal-body {
+  padding: 2rem;
+}
+
+.time-modal-description {
+  margin: 0 0 1.5rem 0;
+  color: #6b7280;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+/* Container des inputs de temps */
+.time-inputs-container {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: #181835;
+  border-radius: 12px;
+  border: 2px dashed #ccc;
+}
+
+.time-input-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.time-input-group label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #ccc;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.time-input-wrapper {
+  display: flex;
+  align-items: center;
+  background: #282850;
+  border: 2px solid #282850;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: border-color 0.2s ease;
+}
+
+.time-input-wrapper:focus-within {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.time-input {
+  width: 80px;
+  text-align: center;
+  border: none;
+  outline: none;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #ccc;
+  padding: 0.75rem 0.5rem;
+  background: transparent;
+}
+
+.time-input::-webkit-outer-spin-button,
+.time-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.time-input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.time-btn {
+  background: #514f84;
+  border: none;
+  width: 40px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #ccc;
+  font-size: 1.2rem;
+}
+
+.time-btn:hover:not(:disabled) {
+  background: #e5e7eb;
+  color: #ccc;
+}
+
+.time-btn:active:not(:disabled) {
+  background: #d1d5db;
+  transform: scale(0.95);
+}
+
+.time-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.time-btn-decrease {
+  border-right: 1px solid #e5e7eb;
+}
+
+.time-btn-increase {
+  border-left: 1px solid #e5e7eb;
+}
+
+.time-separator {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #ccc;
+  align-self: center;
+  margin: 0 0.5rem;
+}
+
+/* Boutons rapides de temps */
+.time-quick-buttons {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.time-quick-btn {
+  background: #514f84;
+  border: none;
+  color: #ccc;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 60px;
+}
+
+.time-quick-btn:hover:not(:disabled) {
+  background: #282850;
+  border-color: #cbd5e1;
+  color: #334155;
+  transform: translateY(-1px);
+}
+
+.time-quick-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.time-quick-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Warning pour temps invalide */
+.time-warning {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: #fef3cd;
+  border: 1px solid #f59e0b;
+  border-radius: 6px;
+  color: #92400e;
+  font-size: 0.875rem;
+  margin-top: 1rem;
+}
+
+.time-warning i {
+  color: #f59e0b;
+  font-size: 1rem;
+}
+
+/* Actions du modal de temps */
+.time-modal-actions {
+  padding: 1.5rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  background: #181835;
+}
+
+.btn-cancel-time,
+.btn-confirm-time {
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: none;
+  min-width: 120px;
+  justify-content: center;
+}
+
+.btn-cancel-time {
+  background: #6b7280;
+  color: #ccc;
+  border: none;
+}
+
+.btn-confirm-time {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+}
+
+.btn-confirm-time:hover:not(:disabled) {
+  background: linear-gradient(135deg, #10b981, #059669);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
+}
+
+.btn-confirm-time:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-cancel-time:disabled,
+.btn-confirm-time:disabled {
+  opacity: 0.6;
+}
+
+/* Animation de rotation pour les icônes de chargement */
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Responsive pour mobile */
+@media (max-width: 640px) {
+  .time-modal {
+    width: 95%;
+    margin: 1rem;
+  }
+  
+  .time-modal-body {
+    padding: 1.5rem;
+  }
+  
+  .time-inputs-container {
+    flex-direction: column;
+    gap: 1.5rem;
+    align-items: center;
+  }
+  
+  .time-separator {
+    transform: rotate(90deg);
+    margin: 0;
+  }
+  
+  .time-quick-buttons {
+    gap: 0.5rem;
+  }
+  
+  .time-quick-btn {
+    min-width: 50px;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
+  }
+  
+  .time-modal-actions {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .btn-cancel-time,
+  .btn-confirm-time {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Animation d'entrée pour les éléments du modal */
+.time-modal-body > * {
+  animation: fadeInUp 0.4s ease-out forwards;
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.time-modal-body > *:nth-child(1) { animation-delay: 0.1s; }
+.time-modal-body > *:nth-child(2) { animation-delay: 0.2s; }
+.time-modal-body > *:nth-child(3) { animation-delay: 0.3s; }
+.time-modal-body > *:nth-child(4) { animation-delay: 0.4s; }
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

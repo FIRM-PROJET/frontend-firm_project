@@ -51,6 +51,13 @@ const TacheModal = ({ tache, isOpen, onClose, onStatusUpdate }) => {
 
   const [isSubTasksCollapsed, setIsSubTasksCollapsed] = useState(false);
 
+  // États pour le modal de temps passé
+  const [showTimeModal, setShowTimeModal] = useState(false);
+  const [timeHours, setTimeHours] = useState(0);
+  const [timeMinutes, setTimeMinutes] = useState(0);
+  const [isSubmittingTime, setIsSubmittingTime] = useState(false);
+  const [pendingStatus, setPendingStatus] = useState(null);
+
   // États simplifiés pour les commentaires - uniquement pour la tâche principale
   const [taskComments, setTaskComments] = useState([]);
   const [isLoadingComments, setIsLoadingComments] = useState(false);
@@ -259,12 +266,12 @@ const TacheModal = ({ tache, isOpen, onClose, onStatusUpdate }) => {
 
   // Ajouter dans useEffect pour charger les fichiers
   useEffect(() => {
-  if (isOpen && tache) {
-    loadSubTasks();
-    loadComments(); // Toujours charger les commentaires
-    loadTaskFiles(); // Toujours charger les fichiers pour avoir le count
-  }
-}, [isOpen, tache]);
+    if (isOpen && tache) {
+      loadSubTasks();
+      loadComments(); // Toujours charger les commentaires
+      loadTaskFiles(); // Toujours charger les fichiers pour avoir le count
+    }
+  }, [isOpen, tache]);
 
   // Modification de la toolbar pour le bouton lien
 
@@ -554,6 +561,15 @@ const TacheModal = ({ tache, isOpen, onClose, onStatusUpdate }) => {
 
   // Fonction pour mettre à jour le statut
   const updateTaskStatus = async (newStatus) => {
+    // Si le statut est "Terminé", ouvrir le modal de temps
+    if (newStatus === "Terminé") {
+      setPendingStatus(newStatus);
+      setShowTimeModal(true);
+      setShowStatusDropdown(false);
+      return;
+    }
+
+    // Pour les autres statuts, continuer normalement
     setIsUpdatingStatus(true);
     setShowStatusDropdown(false);
 
@@ -572,17 +588,7 @@ const TacheModal = ({ tache, isOpen, onClose, onStatusUpdate }) => {
         };
       }
 
-      let response;
-
-      if (newStatus === "Terminé") {
-        if (tache.ref_sous_tache) {
-          console.log(updateData);
-          response = await TacheService.UpdateSousTacheTermine(updateData);
-        } else {
-          console.log(updateData);
-          response = await TacheService.UpdateTacheTermine(updateData);
-        }
-      } else if (newStatus === "En cours") {
+      if (newStatus === "En cours") {
         if (tache.ref_sous_tache) {
           await TacheService.UpdateSousTacheEnCours(updateData);
         } else {
@@ -606,6 +612,74 @@ const TacheModal = ({ tache, isOpen, onClose, onStatusUpdate }) => {
     }
   };
 
+  const confirmCompleteWithTime = async () => {
+    setIsSubmittingTime(true);
+
+    try {
+      // Préparer les données pour le changement de statut
+      let updateData;
+      if (tache.ref_sous_tache) {
+        updateData = {
+          ref_tache: null,
+          ref_sous_tache: tache.ref_sous_tache,
+        };
+      } else {
+        updateData = {
+          ref_tache: tache.ref_tache,
+          ref_sous_tache: null,
+        };
+      }
+
+      // Mettre à jour le statut à "Terminé"
+      if (tache.ref_sous_tache) {
+        await TacheService.UpdateSousTacheTermine(updateData);
+      } else {
+        await TacheService.UpdateTacheTermine(updateData);
+      }
+
+      // Ajouter le temps passé
+      const timeData = {
+        ref_tache: tache.ref_sous_tache || tache.ref_tache,
+        heures: parseInt(timeHours) || 0,
+        minutes: parseInt(timeMinutes) || 0,
+      };
+
+      await TacheService.add_tache_time(timeData);
+
+      setModalMessage("Tâche terminée et temps enregistré avec succès !");
+      setModalType("success");
+      setIsModalOpen(true);
+
+      // Réinitialiser les valeurs
+      setTimeHours(0);
+      setTimeMinutes(0);
+      setShowTimeModal(false);
+      setPendingStatus(null);
+
+      // Recharger les données
+      await refreshTaskData();
+    } catch (error) {
+      console.error("Erreur lors de la finalisation:", error);
+      setModalMessage("Erreur lors de la finalisation de la tâche");
+      setModalType("error");
+      setIsModalOpen(true);
+    } finally {
+      setIsSubmittingTime(false);
+    }
+  };
+
+  const cancelTimeModal = () => {
+    setShowTimeModal(false);
+    setPendingStatus(null);
+    setTimeHours(0);
+    setTimeMinutes(0);
+  };
+
+  const isTimeValid = () => {
+    const hours = parseInt(timeHours) || 0;
+    const minutes = parseInt(timeMinutes) || 0;
+    return hours > 0 || minutes > 0;
+  };
   const handleFileUpload = (event) => {
     const files = Array.from(event.target.files);
     const newAttachments = files.map((file) => ({
@@ -1306,7 +1380,9 @@ const TacheModal = ({ tache, isOpen, onClose, onStatusUpdate }) => {
                                           className="task-attachment-action-btn"
                                           title="Télécharger"
                                           onClick={() =>
-                                            handleDownloadFile(file.chemin_fichier)
+                                            handleDownloadFile(
+                                              file.chemin_fichier
+                                            )
                                           }
                                         >
                                           <i className="bi bi-download"></i>
@@ -1353,7 +1429,9 @@ const TacheModal = ({ tache, isOpen, onClose, onStatusUpdate }) => {
                                           className="task-attachment-action-btn"
                                           title="Télécharger"
                                           onClick={() =>
-                                            handleDownloadFile(file.chemin_fichier)
+                                            handleDownloadFile(
+                                              file.chemin_fichier
+                                            )
                                           }
                                         >
                                           <i className="bi bi-download"></i>
@@ -1400,7 +1478,9 @@ const TacheModal = ({ tache, isOpen, onClose, onStatusUpdate }) => {
                                           className="task-attachment-action-btn"
                                           title="Télécharger"
                                           onClick={() =>
-                                            handleDownloadFile(file.chemin_fichier)
+                                            handleDownloadFile(
+                                              file.chemin_fichier
+                                            )
                                           }
                                         >
                                           <i className="bi bi-download"></i>
@@ -1447,7 +1527,9 @@ const TacheModal = ({ tache, isOpen, onClose, onStatusUpdate }) => {
                                           className="task-attachment-action-btn"
                                           title="Télécharger"
                                           onClick={() =>
-                                            handleDownloadFile(file.chemin_fichier)
+                                            handleDownloadFile(
+                                              file.chemin_fichier
+                                            )
                                           }
                                         >
                                           <i className="bi bi-download"></i>
@@ -1498,7 +1580,9 @@ const TacheModal = ({ tache, isOpen, onClose, onStatusUpdate }) => {
                                           className="task-attachment-action-btn"
                                           title="Télécharger"
                                           onClick={() =>
-                                            handleDownloadFile(file.chemin_fichier)
+                                            handleDownloadFile(
+                                              file.chemin_fichier
+                                            )
                                           }
                                         >
                                           <i className="bi bi-download"></i>
@@ -1593,7 +1677,8 @@ const TacheModal = ({ tache, isOpen, onClose, onStatusUpdate }) => {
             >
               <div className="confirmation-header">
                 <h3>
-                  <i className="bi bi-question-circle-fill"></i>Confirmer l'assignation
+                  <i className="bi bi-question-circle-fill"></i>Confirmer
+                  l'assignation
                 </h3>
               </div>
               <div className="confirmation-body">
@@ -1676,16 +1761,182 @@ const TacheModal = ({ tache, isOpen, onClose, onStatusUpdate }) => {
             subTasks={subTasks}
           />
         )}
-      </div>
 
-      {/* Modal pour afficher les messages */}
-      {isModalOpen && (
-        <MessageModal
-          message={modalMessage}
-          type={modalType}
-          onClose={() => setIsModalOpen(false)}
-        />
-      )}
+        {/* Modal de temps passé */}
+        {showTimeModal && (
+          <div className="time-modal-overlay" onClick={cancelTimeModal}>
+            <div className="time-modal" onClick={(e) => e.stopPropagation()}>
+              <div className="time-modal-header">
+                <h3>
+                  <i className="bi bi-clock-fill"></i>
+                  Temps passé sur la tâche
+                </h3>
+                <button
+                  className="time-modal-close"
+                  onClick={cancelTimeModal}
+                  disabled={isSubmittingTime}
+                >
+                  <i className="bi bi-x-lg"></i>
+                </button>
+              </div>
+              
+              <div className="time-modal-body">
+                <p className="time-modal-description">
+                  Veuillez indiquer le temps total passé sur cette tâche avant de la marquer comme terminée.
+                </p>
+                
+                <div className="time-inputs-container">
+                  <div className="time-input-group">
+                    <label htmlFor="time-hours">Heures</label>
+                    <div className="time-input-wrapper">
+                      <button
+                        type="button"
+                        className="time-btn time-btn-decrease"
+                        onClick={() => setTimeHours(Math.max(0, (parseInt(timeHours) || 0) - 1))}
+                        disabled={isSubmittingTime}
+                      >
+                        <i className="bi bi-dash"></i>
+                      </button>
+                      <input
+                        id="time-hours"
+                        type="number"
+                        min="0"
+                        max="999"
+                        value={timeHours}
+                        onChange={(e) => setTimeHours(Math.max(0, parseInt(e.target.value) || 0))}
+                        className="time-input"
+                        disabled={isSubmittingTime}
+                      />
+                      <button
+                        type="button"
+                        className="time-btn time-btn-increase"
+                        onClick={() => setTimeHours((parseInt(timeHours) || 0) + 1)}
+                        disabled={isSubmittingTime}
+                      >
+                        <i className="bi bi-plus"></i>
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <div className="time-separator">:</div>
+                  
+                  <div className="time-input-group">
+                    <label htmlFor="time-minutes">Minutes</label>
+                    <div className="time-input-wrapper">
+                      <button
+                        type="button"
+                        className="time-btn time-btn-decrease"
+                        onClick={() => setTimeMinutes(Math.max(0, (parseInt(timeMinutes) || 0) - 15))}
+                        disabled={isSubmittingTime}
+                      >
+                        <i className="bi bi-dash"></i>
+                      </button>
+                      <input
+                        id="time-minutes"
+                        type="number"
+                        min="0"
+                        max="59"
+                        step="15"
+                        value={timeMinutes}
+                        onChange={(e) => setTimeMinutes(Math.max(0, Math.min(59, parseInt(e.target.value) || 0)))}
+                        className="time-input"
+                        disabled={isSubmittingTime}
+                      />
+                      <button
+                        type="button"
+                        className="time-btn time-btn-increase"
+                        onClick={() => setTimeMinutes(Math.min(59, (parseInt(timeMinutes) || 0) + 15))}
+                        disabled={isSubmittingTime}
+                      >
+                        <i className="bi bi-plus"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="time-quick-buttons">
+                  <button
+                    type="button"
+                    className="time-quick-btn"
+                    onClick={() => { setTimeHours(0); setTimeMinutes(30); }}
+                    disabled={isSubmittingTime}
+                  >
+                    30 min
+                  </button>
+                  <button
+                    type="button"
+                    className="time-quick-btn"
+                    onClick={() => { setTimeHours(1); setTimeMinutes(0); }}
+                    disabled={isSubmittingTime}
+                  >
+                    1h
+                  </button>
+                  <button
+                    type="button"
+                    className="time-quick-btn"
+                    onClick={() => { setTimeHours(2); setTimeMinutes(0); }}
+                    disabled={isSubmittingTime}
+                  >
+                    2h
+                  </button>
+                  <button
+                    type="button"
+                    className="time-quick-btn"
+                    onClick={() => { setTimeHours(4); setTimeMinutes(0); }}
+                    disabled={isSubmittingTime}
+                  >
+                    4h
+                  </button>
+                </div>
+                
+                {!isTimeValid() && (
+                  <div className="time-warning">
+                    <i className="bi bi-exclamation-triangle-fill"></i>
+                    Veuillez indiquer au moins 1 minute de travail.
+                  </div>
+                )}
+              </div>
+              
+              <div className="time-modal-actions">
+                <button
+                  className="btn-cancel-time"
+                  onClick={cancelTimeModal}
+                  disabled={isSubmittingTime}
+                >
+                  <i className="bi bi-x-lg"></i>
+                  Annuler
+                </button>
+                <button
+                  className="btn-confirm-time"
+                  onClick={confirmCompleteWithTime}
+                  disabled={!isTimeValid() || isSubmittingTime}
+                >
+                  {isSubmittingTime ? (
+                    <>
+                      <i className="bi bi-arrow-clockwise spin"></i>
+                      Finalisation...
+                    </>
+                  ) : (
+                    <>
+                      <i className="bi bi-check-lg"></i>
+                      Terminer la tâche
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Modal pour afficher les messages */}
+        {isModalOpen && (
+          <MessageModal
+            message={modalMessage}
+            type={modalType}
+            onClose={() => setIsModalOpen(false)}
+          />
+        )}
+      </div>
     </div>
   );
 };

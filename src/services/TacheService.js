@@ -437,4 +437,24 @@ export const TacheService = {
       throw error;
     }
   },
+   add_tache_time: async (tache_time_data) => {
+    try {
+      const response = await fetch(`${API_URL}/tache/temps_tache`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(tache_time_data),
+      });
+
+      if (!response.ok) {
+        await response.json().catch(() => ({})); 
+        throw new Error("Failed to add tache time");
+      }
+      return await response.json();
+    } catch (error) {
+      console.error("Error adding tache time:", error);
+      throw error;
+    }
+  },
 };
