@@ -476,4 +476,38 @@ export const TacheService = {
       throw error;
     }
   },
+  
+  // Récupère toutes les tâches pour une perso
+  get_non_verifie_task_user: async (matricule) => {
+    try {
+      const response = await fetch(`${API_URL}/tache/non_verifiees/${matricule}`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch all verified taches");
+      }
+      return await response.json();
+    } catch (error) {
+      console.error("Error fetching all verifie taches:", error);
+      throw error;
+    }
+  },
+   set_tache_verified: async (listes_tache) => {
+    try {
+      const response = await fetch(`${API_URL}/tache/auto_verified`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(listes_tache),
+      });
+
+      if (!response.ok) {
+        await response.json().catch(() => ({})); 
+      }
+      return await response.json();
+    } catch (error) {
+      console.error("Error setting tache:", error);
+      throw error;
+    }
+  },
+
 };
