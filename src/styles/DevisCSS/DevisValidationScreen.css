@@ -120,13 +120,13 @@
 
 .validation-table th {
    border: 1.2px solid #282850;
-  background: #202031;
+  background: #181835;
   color: #ccc;
   font-weight: 700;
 }
 
 .tr-spec th {
-  background: #202031;
+  background: #181835;
   color: #ccc;
   font-weight: 700;
 }
@@ -223,7 +223,7 @@
 }
 
 .result-table tfoot tr {
-  background: #202031;
+  background: #181835;
   font-weight: 700;
   font-size: 15px;
   color: #ccc;
@@ -356,7 +356,7 @@
 
 .total-general-row {
   color: #ccc !important;
-  background: #202031 !important;
+  background: #181835 !important;
   font-weight: 600 !important;
   font-size: 20px !important;
   border-top: 2px solid #282850 !important;
@@ -377,7 +377,7 @@
 }
 
 .status-good {
-  background: #202031;
+  background: #181835;
   color: #ccc;
   border: 1px solid #514f84;
 }

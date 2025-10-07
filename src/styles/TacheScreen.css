@@ -273,11 +273,6 @@
   background: #2d2d55;
 }
 
-.kanban-card.overdue {
-  border-left: 3px solid #ff6b6b;
-  background: rgba(255, 107, 107, 0.1);
-}
-
 /* TITRE SIMPLIFIÉ SUR UNE LIGNE */
 .kanban-card-title-simple {
   font-size: 12px;

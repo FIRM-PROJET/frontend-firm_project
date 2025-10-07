@@ -261,7 +261,7 @@ const TravauxSelectionScreen = () => {
         <i className="bi bi-caret-left-fill"></i> Retour
       </button>
       
-      <h2 className="title1">Etape 3 : Sélection des Travaux</h2>
+      <h2 className="title10">Etape 3 : Sélection des Travaux</h2>
 
       <div className="select-all-container">
         <button className="select-all-button" onClick={handleSelectAll}>

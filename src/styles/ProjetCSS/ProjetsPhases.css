@@ -388,7 +388,7 @@
 }
 
 .dark-modal-wrapper {
-  background: #3d3d42;
+  background: #181835;
   font-family: "Bw Modelica", sans-serif;
   width: 100%;
   max-width: 900px;
@@ -448,7 +448,7 @@
 .dark-modal-body {
   padding: 24px;
   width: 600px;
-  background: #3d3d42;
+  background: #181835;
   color: #ccc;
   max-height: 500px;
   overflow-y: auto;
@@ -479,7 +479,7 @@
   border: 1px solid #514f84;
   border-radius: 5px;
   font-size: 14px;
-  background: #4f4f55;
+  background: #181835;
   color: #eee;
   transition: all 0.3s ease;
   font-family: "Bw Modelica", sans-serif;
@@ -501,7 +501,7 @@
   gap: 12px;
   padding: 20px 24px;
   border-top: 1px solid #4f4f55;
-  background: #3d3d42;
+  background: #181835;
   border-radius: 0 0 5px 5px;
 }
 

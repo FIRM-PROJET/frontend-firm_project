@@ -161,7 +161,7 @@
   padding: 14px 16px;
   border: 2px solid #514f84;
   border-radius: 12px;
-  background-color: #1a1a2e;
+  background-color: #181835;
   color: #ccc;
   font-size: 14px;
   border-radius: 2px;
@@ -222,7 +222,7 @@
 
 /* Surface Section */
 .surface-section {
-  background-color: #1a1a2e;
+  background-color: #181835;
   border-radius: 10px;
   padding: 25px;
   border: 1px solid #514f84;
@@ -268,7 +268,7 @@
 }
 
 .upload-area {
-  background-color: #1a1a2e;
+  background-color: #181835;
   border: 2px dashed #514f84;
   border-radius: 5px;
   padding: 40px 20px;
@@ -530,7 +530,7 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #1a1a2e;
+  background: #181835;
 }
 
 ::-webkit-scrollbar-thumb {

@@ -60,7 +60,7 @@ const ClientModal = ({ isOpen, onClose, onClientCreated }) => {
 
   return (
     <div className="modal-overlay" onClick={handleClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+      <div className="modal-content1" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header1">
           <h2 className="modal-title">
             <i className="fas fa-user-plus"></i>

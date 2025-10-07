@@ -10,6 +10,7 @@ const PhasesScreen = () => {
   const [phases, setPhases] = useState([]);
   const [projets, setProjets] = useState([]);
   const [avancement, setAvancement] = useState([]);
+  const [heuresPhases, setHeuresPhases] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState("Aperçu");
@@ -27,6 +28,7 @@ const PhasesScreen = () => {
   useEffect(() => {
     loadAllData();
     fetchAllPhases(); 
+    loadHeuresPhases();
   }, []);
 
   const loadAllData = async () => {
@@ -49,6 +51,16 @@ const PhasesScreen = () => {
       setError(error.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadHeuresPhases = async () => {
+    try {
+      const heuresData = await TacheService.get_total_heures_phases();
+      const heuresArray = heuresData.data || heuresData || [];
+      setHeuresPhases(heuresArray);
+    } catch (error) {
+      console.error('Erreur lors du chargement des heures des phases:', error);
     }
   };
 
@@ -85,6 +97,20 @@ const PhasesScreen = () => {
         avancement_pourcent: "0.00",
       }
     );
+  };
+
+  const getHeuresPhase = (refProjet, idPhase) => {
+    if (!heuresPhases || heuresPhases.length === 0) {
+      return "0.00";
+    }
+    
+    const heuresPhase = heuresPhases.find((h) => {
+      const refMatch = String(h.ref_projet).trim() === String(refProjet).trim();
+      const phaseMatch = String(h.id_phase).trim() === String(idPhase).trim();
+      return refMatch && phaseMatch;
+    });
+
+    return heuresPhase ? parseFloat(heuresPhase.total_heures).toFixed(2) : "0.00";
   };
 
   const isPhaseEnCours = (phase) => {
@@ -144,10 +170,10 @@ const PhasesScreen = () => {
   const ProgressBar = ({ percentage, showLabel = true, size = "normal" }) => {
     const getProgressColor = (percent) => {
       if (percent === 0) return "#ccc";
-      if (percent < 25) return "#d24643";
-      if (percent < 50) return "#f7e395";
-      if (percent < 75) return "#514f84";
-      return "#7cc48b";
+      if (percent < 25) return "#ff6b6b";
+      if (percent < 50) return "#ffd93d";
+      if (percent < 75) return "#6bcf7f";
+      return "#4ecdc4";
     };
 
     const barHeight = size === "small" ? "4px" : size === "large" ? "8px" : "6px";
@@ -181,6 +207,7 @@ const PhasesScreen = () => {
       .map((phase) => ({
         ...phase,
         avancement: getAvancementPhase(phase.ref_projet, phase.id_phase),
+        heures: getHeuresPhase(phase.ref_projet, phase.id_phase),
       }));
 
     return (
@@ -198,6 +225,10 @@ const PhasesScreen = () => {
                 <div className="phase-info">
                   <div className="project-name">{phase.nom_projet}</div>
                   <div className="phase-name">{phase.libelle_phase}</div>
+                  <div className="phase-heures">
+                    <i className="bi bi-clock-fill"></i>
+                    {phase.heures}h
+                  </div>
                 </div>
                 <div className="phase-progress">
                   <ProgressBar
@@ -289,6 +320,7 @@ const PhasesScreen = () => {
       .map((phase) => ({
         ...phase,
         avancement: getAvancementPhase(phase.ref_projet, phase.id_phase),
+        heures: getHeuresPhase(phase.ref_projet, phase.id_phase),
       }));
 
     const displayedPhases = showAllRetards ? phasesEnRetard : phasesEnRetard.slice(0, 3);
@@ -306,11 +338,18 @@ const PhasesScreen = () => {
             <>
               {displayedPhases.map((phase, index) => (
                 <div key={`${phase.ref_projet}-${phase.id_phase}-${index}`} className="phase-item retard">
+                  <div className="phase-alert">
+                    <i className="bi bi-exclamation-triangle-fill alert-icon"></i>
+                  </div>
                   <div className="phase-info">
                     <div className="project-name">{phase.nom_projet}</div>
                     <div className="phase-name">{phase.libelle_phase}</div>
                     <div className="retard-info">
                       Échéance: {new Date(phase.date_fin || phase.date_fin_prevu).toLocaleDateString("fr-FR")}
+                    </div>
+                    <div className="phase-heures">
+                      <i className="bi bi-clock-fill"></i>
+                      {phase.heures}h
                     </div>
                   </div>
                   <div className="phase-progress">
@@ -360,6 +399,7 @@ const PhasesScreen = () => {
       acc[key].phases.push({
         ...phase,
         avancement: getAvancementPhase(phase.ref_projet, phase.id_phase),
+        heures: getHeuresPhase(phase.ref_projet, phase.id_phase),
         terminee: isPhaseTerminee(phase),
         enRetard: isPhaseEnRetard(phase),
       });
@@ -401,9 +441,18 @@ const PhasesScreen = () => {
                       className={`phase-liste-item ${phase.terminee ? 'terminee' : ''} ${phase.enRetard ? 'retard' : ''}`}
                       onClick={() => handlePhaseClick(phase.ref_projet, phase.id_phase)}
                     >
+                      {phase.enRetard && (
+                        <div className="phase-alert">
+                          <i className="bi bi-exclamation-triangle-fill alert-icon"></i>
+                        </div>
+                      )}
                       <div className="phase-liste-info">
                         <div className="phase-liste-header">
                           <span className="phase-nom">{phase.libelle_phase}</span>
+                          <div className="phase-heures">
+                            <i className="bi bi-clock-fill"></i>
+                            {phase.heures}h
+                          </div>
                         </div>
                         <div className="phase-liste-dates">
                           <span>Du {new Date(phase.date_debut).toLocaleDateString("fr-FR")}</span>
@@ -480,6 +529,7 @@ const PhasesScreen = () => {
 
                     if (projetPhase) {
                       const avancementPhase = getAvancementPhase(projetPhase.ref_projet, projetPhase.id_phase);
+                      const heuresPhase = getHeuresPhase(projetPhase.ref_projet, projetPhase.id_phase);
                       const terminee = isPhaseTerminee(projetPhase);
                       const enRetard = isPhaseEnRetard(projetPhase);
                       const enCours = isPhaseEnCours(projetPhase);
@@ -501,8 +551,12 @@ const PhasesScreen = () => {
                                 : "planifiee"
                             }`}
                           >
+                            {enRetard && (
+                              <div className="phase-alert">
+                                <i className="bi bi-exclamation-triangle-fill alert-icon"></i>
+                              </div>
+                            )}
                             <div className="phase-indicator">
-                              {enRetard && <i className="bi bi-exclamation-triangle-fill alert-icon"></i>}
                               <div
                                 className={`status-dot ${
                                   enRetard
@@ -515,9 +569,14 @@ const PhasesScreen = () => {
                                 }`}
                               ></div>
                             </div>
-                            <span className="progress-text">
-                              {parseFloat(avancementPhase.avancement_pourcent).toFixed(0)}%
-                            </span>
+                            <div className="phase-details">
+                              <span className="progress-text">
+                                {parseFloat(avancementPhase.avancement_pourcent).toFixed(0)}%
+                              </span>
+                              <span className="heures-text">
+                                {heuresPhase}h
+                              </span>
+                            </div>
                           </div>
                         </td>
                       );

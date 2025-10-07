@@ -297,12 +297,12 @@ const ProjectSelectionScreen = () => {
   }
 
   return (
-    <div className="container2">
+    <div className="container dark">
       <div className="header">
         <button className="back-button3" onClick={() => navigate(-1)}>
           <i className="bi bi-caret-left-fill"></i> Retour
         </button>
-        <h2 className="title1">
+        <h2 className="title10">
           Etape 2 : Choix du projets référents -{" "}
           {location.state?.typeInfo?.nom_type_construction}
         </h2>
@@ -478,9 +478,9 @@ const ProjectSelectionScreen = () => {
         </div>
       )}
 
-      <div className="projects-list">
+      <div className="projects-list1">
         {filteredProjects.map((project) => (
-          <div key={project.id_projet} className="project-card">
+          <div key={project.id_projet} className="project-card1">
             <div className="project-checkbox">
               <input
                 type="checkbox"

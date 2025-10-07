@@ -40,7 +40,6 @@
 .modal-header1 {
   display: flex;
   justify-content: space-between;
-  background-color: #181835;
   align-items: center;
   padding: 24px 24px 0 24px;
   margin-bottom: 30px;
@@ -85,6 +84,7 @@
 
 /* Modal Form */
 .modal-form {
+  background: #181835;
   padding: 0 24px 24px 24px;
 }
 

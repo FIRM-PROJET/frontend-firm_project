@@ -1,48 +1,47 @@
-import React, { useEffect, useState } from 'react';
-import CryptoJS from 'crypto-js'; // npm install crypto-js
-import '../styles/Header.css'; // Utilise le même fichier CSS
+import React, { useEffect, useState } from "react";
+import CryptoJS from "crypto-js"; // npm install crypto-js
+import "../styles/Header.css"; // Utilise le même fichier CSS
 
-const ProfileScreen = ({ 
-  visible, 
-  onClose, 
-  userInfo, 
-  onOpenPasswordModal, 
-  onLogout 
+const ProfileScreen = ({
+  visible,
+  onClose,
+  userInfo,
+  onOpenPasswordModal,
+  onLogout,
 }) => {
-  
   // Fonction pour générer l'URL Gravatar à partir de l'email
   const getGravatarUrl = (email, size = 200) => {
     if (!email) return null;
-    
+
     // Nettoyer et hasher l'email
     const cleanEmail = email.trim().toLowerCase();
     const hash = CryptoJS.MD5(cleanEmail).toString();
-    
+
     // Construire l'URL Gravatar avec des paramètres par défaut
     const gravatarUrl = `https://www.gravatar.com/avatar/${hash}?s=${size}&d=identicon&r=g`;
-    
+
     return gravatarUrl;
   };
 
   // Fermer avec la touche Escape
   useEffect(() => {
     const handleEscapeKey = (event) => {
-      if (event.key === 'Escape' && visible) {
+      if (event.key === "Escape" && visible) {
         onClose();
       }
     };
 
     if (visible) {
-      document.addEventListener('keydown', handleEscapeKey);
+      document.addEventListener("keydown", handleEscapeKey);
       // Empêcher le scroll du body quand le sidebar est ouvert
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     }
 
     return () => {
-      document.removeEventListener('keydown', handleEscapeKey);
-      document.body.style.overflow = 'unset';
+      document.removeEventListener("keydown", handleEscapeKey);
+      document.body.style.overflow = "unset";
     };
   }, [visible, onClose]);
 
@@ -59,8 +58,8 @@ const ProfileScreen = ({
       days.push({
         date: day,
         isToday: day.toDateString() === today.toDateString(),
-        dayName: day.toLocaleDateString('fr-FR', { weekday: 'short' }),
-        dayNumber: day.getDate()
+        dayName: day.toLocaleDateString("fr-FR", { weekday: "short" }),
+        dayNumber: day.getDate(),
       });
     }
     return days;
@@ -92,7 +91,6 @@ const ProfileScreen = ({
   return (
     <div className="profile-screen-overlay" onClick={handleOverlayClick}>
       <div className="profile-screen-container">
-
         {/* Contenu du sidebar */}
         <div className="profile-screen-content">
           {/* Section informations profil */}
@@ -105,21 +103,23 @@ const ProfileScreen = ({
                   className="profile-avatar-image-large"
                   onError={(e) => {
                     // Fallback en cas d'erreur de chargement
-                    e.target.style.display = 'none';
-                    e.target.nextSibling.style.display = 'flex';
+                    e.target.style.display = "none";
+                    e.target.nextSibling.style.display = "flex";
                   }}
                 />
               ) : null}
-              
+
               {/* Avatar par défaut (affiché si pas d'image ou en cas d'erreur) */}
-              <div 
+              <div
                 className="profile-default-avatar-large"
-                style={{ display: (userInfo.avatar || gravatarUrl) ? 'none' : 'flex' }}
+                style={{
+                  display: userInfo.avatar || gravatarUrl ? "none" : "flex",
+                }}
               >
                 {userInfo.name.charAt(0).toUpperCase()}
               </div>
             </div>
-            
+
             <div className="profile-details">
               <h3 className="profile-name">{userInfo.name}</h3>
               <p className="profile-email">{userInfo.email}</p>
@@ -135,13 +135,15 @@ const ProfileScreen = ({
             </h4>
             <div className="profile-calendar-week">
               {weekDays.map((day, index) => (
-                <div 
-                  key={index} 
-                  className={`profile-calendar-day ${day.isToday ? 'today' : ''}`}
-                  title={day.date.toLocaleDateString('fr-FR', { 
-                    weekday: 'long', 
-                    day: 'numeric', 
-                    month: 'long' 
+                <div
+                  key={index}
+                  className={`profile-calendar-day ${
+                    day.isToday ? "today" : ""
+                  }`}
+                  title={day.date.toLocaleDateString("fr-FR", {
+                    weekday: "long",
+                    day: "numeric",
+                    month: "long",
                   })}
                 >
                   <div className="profile-day-name">{day.dayName}</div>
@@ -158,7 +160,7 @@ const ProfileScreen = ({
               onClick={handlePasswordClick}
               type="button"
             >
-              <i className="bi bi-key-fill profile-button-icon"></i>
+
               Changer le mot de passe
             </button>
 
@@ -167,8 +169,7 @@ const ProfileScreen = ({
               onClick={handleLogoutClick}
               type="button"
             >
-              <i className="bi bi-box-arrow-right profile-button-icon"></i>
-              Déconnexion
+      Déconnexion
             </button>
           </div>
         </div>

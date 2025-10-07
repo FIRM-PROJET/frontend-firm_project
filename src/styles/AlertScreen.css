@@ -253,7 +253,6 @@
   font-size: 10px;
   font-weight: 600;
   padding: 4px 8px;
-  border-radius: 12px;
   text-transform: uppercase;
   letter-spacing: 0.3px;
 }
@@ -266,14 +265,10 @@
 
 .alert-status.recent {
   color: #f97316;
-  background-color: rgba(249, 115, 22, 0.15);
-  border: 1px solid rgba(249, 115, 22, 0.3);
 }
 
 .alert-status.critical {
   color: #ef4444;
-  background-color: rgba(239, 68, 68, 0.15);
-  border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
 .alert-missing {

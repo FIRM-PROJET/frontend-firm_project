@@ -428,9 +428,6 @@ const ProjetsScreen = () => {
                             <div className="timeline-date-marker">
                               <div
                                 className="date-circle"
-                                style={{
-                                  background: getAvancementColor(pourcentage),
-                                }}
                               >
                                 <span className="date-day">
                                   {projet.date_fin.getDate()}

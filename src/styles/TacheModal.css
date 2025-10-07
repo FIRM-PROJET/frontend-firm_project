@@ -1918,10 +1918,10 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem;
-  background: #fef3cd;
+  background: transparent;
   border: 1px solid #f59e0b;
   border-radius: 6px;
-  color: #92400e;
+  color: #ccc;
   font-size: 0.875rem;
   margin-top: 1rem;
 }

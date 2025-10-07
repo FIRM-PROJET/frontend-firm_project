@@ -457,4 +457,23 @@ export const TacheService = {
       throw error;
     }
   },
+  get_total_heures_phases: async () => {
+    try {
+      const response = await fetch(`${API_URL}/tache/phases_heures`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        await response.json().catch(() => ({})); 
+        throw new Error("Failed to add tache time");
+      }
+      return await response.json();
+    } catch (error) {
+      console.error("Error adding tache time:", error);
+      throw error;
+    }
+  },
 };

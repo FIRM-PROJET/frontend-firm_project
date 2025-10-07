@@ -107,6 +107,7 @@ const LoginScreen = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
+                   spellcheck="false"
                   className="form-input"
                   placeholder="Entrez votre email"
                 />

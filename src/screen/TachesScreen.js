@@ -433,9 +433,7 @@ const TacheScreen = () => {
                   >
                     <div className="kanban-card-title-simple">
                       {tache.nom_tache}
-                      {isOverdue(tache.date_fin_prevu, tache.statut) && (
-                        <i className="bi bi-exclamation-triangle-fill overdue-icon"></i>
-                      )}
+                      {isOverdue(tache.date_fin_prevu, tache.statut)}
                     </div>
                   </div>
                 ))

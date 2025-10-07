@@ -138,11 +138,6 @@ html, body {
   justify-content: center;
 }
 
-@keyframes titleGlow {
-  0% { text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); }
-  100% { text-shadow: 0 2px 8px rgba(105, 100, 167, 0.4); }
-}
-
 /* Carte de connexion */
 .login-card {
   border-radius: 10px;
@@ -259,7 +254,7 @@ line-height: normal;
   width: 100%;
   padding: 0.5rem 1rem;
   border-radius: 5px;
-  color: var(--text-light);
+  color: #ccc;
   font-size: 0.8rem;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   font-family: 'Bw Modelica';
@@ -268,6 +263,7 @@ line-height: normal;
 
 .form-group .form-input:focus {
   outline: none;
+  color: #ccc;
   box-shadow: 
     0 0 0 2px rgba(105, 100, 167, 0.2),
     0 4px 12px rgba(105, 100, 167, 0.1);
@@ -275,7 +271,7 @@ line-height: normal;
 }
 
 .form-input:focus + .form-label {
-  color: var(--primary);
+  color: #ccc;
 }
 
 .form-input:disabled {
@@ -284,7 +280,7 @@ line-height: normal;
 }
 
 .form-input::placeholder {
-  color: rgba(255, 255, 255, 0.4);
+  color: #ccc;
   transition: opacity 0.3s ease;
 }
 

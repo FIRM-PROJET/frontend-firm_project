@@ -43,7 +43,7 @@ const NewDevisScreen = () => {
         <button className="back-button3" onClick={() => navigate(-1)}>
           <i className="bi bi-caret-left-fill"></i> Retour
         </button>
-        <h2 className="title1">Étape 1 : Choix du type de construction</h2>
+        <h2 className="title10">Étape 1 : Choix du type de construction</h2>
         <p className="subtitle">Choisissez le type de construction que vous souhaitez estimer.</p>
       </div>
 
