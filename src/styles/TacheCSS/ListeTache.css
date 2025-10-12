@@ -670,6 +670,20 @@
   font-weight: 500;
   transition: all 0.3s ease;
 }
+.btn-confirm-verification {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(45deg, #958be8, #4634ac);
+  border: 1px solid rgba(81, 79, 132, 0.3);
+  color: #ffffff;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
 
 .btn-select-all:hover {
   background: rgba(81, 79, 132, 0.3);
@@ -887,4 +901,412 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+/* ============================================
+   SECTION RÉSULTATS DE VÉRIFICATION - Dark Mode
+   ============================================ */
+
+.results-container {
+  background: #181835;
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.results-header {
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #282850;
+}
+
+.results-title {
+  margin: 0 0 8px 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.results-title i {
+  color: #514f84;
+  font-size: 24px;
+}
+
+.results-description {
+  margin: 0;
+  color: #9ca3af;
+  font-size: 13px;
+}
+
+/* Loading et états vides */
+.results-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 16px;
+  gap: 16px;
+  color: #9ca3af;
+}
+
+.results-loading i {
+  font-size: 32px;
+  color: #514f84;
+}
+
+.no-results {
+  text-align: center;
+  padding: 64px 16px;
+  color: #6b7280;
+}
+
+.no-results i {
+  font-size: 64px;
+  margin-bottom: 16px;
+  color: #514f84;
+  opacity: 0.5;
+}
+
+.no-results p {
+  margin: 0;
+  font-size: 14px;
+}
+
+/* Animation spin pour les loaders */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Liste des résultats */
+.results-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Item de résultat */
+.result-item {
+  display: flex;
+  gap: 16px;
+  background: #282850;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  padding: 20px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.result-item:hover {
+  background: #2f2f5e;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* Bordures colorées selon le statut */
+.result-item.approved {
+  border-left: 4px solid #10b981;
+}
+
+.result-item.rejected {
+  border-left: 4px solid #ef4444;
+}
+
+.result-item.approved:hover {
+  border-color: #10b981;
+  background: rgba(16, 185, 129, 0.05);
+}
+
+.result-item.rejected:hover {
+  border-color: #ef4444;
+  background: rgba(239, 68, 68, 0.05);
+}
+
+/* Indicateur de statut */
+.result-status-indicator {
+  display: flex;
+  align-items: flex-start;
+  padding-top: 4px;
+  flex-shrink: 0;
+}
+
+.result-status-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  transition: all 0.3s ease;
+}
+
+.result-status-icon.approved {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+  border: 2px solid #10b981;
+}
+
+.result-status-icon.rejected {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  border: 2px solid #ef4444;
+}
+
+.result-item:hover .result-status-icon.approved {
+  background: rgba(16, 185, 129, 0.25);
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+}
+
+.result-item:hover .result-status-icon.rejected {
+  background: rgba(239, 68, 68, 0.25);
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+}
+
+/* Contenu du résultat */
+.result-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.result-header {
+  margin-bottom: 16px;
+}
+
+.result-title-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.result-task-ref {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.result-task-ref i {
+  color: #514f84;
+  font-size: 14px;
+}
+
+/* Badge de statut */
+.result-status-badge {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.result-status-badge.approved {
+  background: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+  border: 1px solid #10b981;
+}
+
+.result-status-badge.rejected {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  border: 1px solid #ef4444;
+}
+
+.result-status-badge::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* Informations de la tâche */
+.result-task-info {
+  margin-top: 8px;
+}
+
+.result-task-name {
+  margin: 0 0 8px 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #e0e0e0;
+  line-height: 1.4;
+}
+
+.result-task-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.result-task-meta span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.result-task-meta i {
+  color: #514f84;
+  font-size: 12px;
+}
+
+/* Raison du refus */
+.result-reason {
+  margin-top: 16px;
+  padding: 12px 16px;
+  background: rgba(239, 68, 68, 0.1);
+  border-left: 3px solid #ef4444;
+  border-radius: 6px;
+}
+
+.reason-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #ef4444;
+  margin-bottom: 8px;
+}
+
+.reason-label i {
+  font-size: 14px;
+}
+
+.reason-text {
+  margin: 0;
+  font-size: 13px;
+  color: #fca5a5;
+  line-height: 1.5;
+  font-style: italic;
+}
+
+/* Footer du résultat */
+.result-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #181835;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.result-date {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+.result-date i {
+  color: #514f84;
+  font-size: 12px;
+}
+
+.result-view-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(81, 79, 132, 0.2);
+  border: 1px solid rgba(81, 79, 132, 0.3);
+  color: #ffffff;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.result-view-btn:hover {
+  background: rgba(81, 79, 132, 0.3);
+  border-color: #514f84;
+  transform: translateX(2px);
+}
+
+.result-view-btn i {
+  font-size: 13px;
+}
+
+/* Responsive pour les résultats */
+@media (max-width: 768px) {
+  .results-container {
+    padding: 16px;
+  }
+
+  .result-item {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .result-status-indicator {
+    align-self: center;
+  }
+
+  .result-title-section {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .result-task-meta {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .result-footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .result-view-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .results-title {
+    font-size: 18px;
+  }
+
+  .result-status-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+  }
+
+  .result-task-ref {
+    font-size: 14px;
+  }
+
+  .result-status-badge {
+    font-size: 10px;
+    padding: 4px 8px;
+  }
 }

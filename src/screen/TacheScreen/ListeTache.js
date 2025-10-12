@@ -13,20 +13,44 @@ const ListeTache = ({ taches, allTaches, onTacheClick, userInfo }) => {
   const [isLoadingNonVerified, setIsLoadingNonVerified] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
 
+  // États pour les résultats de vérification
+  const [verificationResults, setVerificationResults] = useState([]);
+  const [isLoadingResults, setIsLoadingResults] = useState(false);
+
   // Charger les tâches non vérifiées quand on passe sur l'onglet Vérification
   useEffect(() => {
     if (activeFilter === "Vérification des tâches") {
       loadNonVerifiedTasks();
+    } else if (activeFilter === "Résultats de vérification") {
+      loadVerificationResults();
     }
   }, [activeFilter]);
+
+  // Fonction pour charger les résultats de vérification
+  const loadVerificationResults = async () => {
+    setIsLoadingResults(true);
+    try {
+      const results = await TacheService.get_verifie_task_by_admin(userInfo.matricule);
+      setVerificationResults(results || []);
+    } catch (error) {
+      console.error("Erreur lors du chargement des résultats de vérification:", error);
+      setVerificationResults([]);
+    } finally {
+      setIsLoadingResults(false);
+    }
+  };
 
   // Fonction pour charger les tâches terminées non vérifiées
   const loadNonVerifiedTasks = async () => {
     setIsLoadingNonVerified(true);
     try {
       const tasks = await TacheService.get_non_verifie_task_user(userInfo.matricule);
-      setNonVerifiedTasks(tasks || []);
-      setSelectedTasksToVerify(new Set()); // Réinitialiser la sélection
+      const normalizedTasks = (tasks || []).map(task => ({
+        ...task,
+        statut: task.statut || "Terminé",
+      }));
+      setNonVerifiedTasks(normalizedTasks || []);
+      setSelectedTasksToVerify(new Set());
     } catch (error) {
       console.error("Erreur lors du chargement des tâches non vérifiées:", error);
       setNonVerifiedTasks([]);
@@ -67,10 +91,8 @@ const ListeTache = ({ taches, allTaches, onTacheClick, userInfo }) => {
       const listeTaches = Array.from(selectedTasksToVerify);
       await TacheService.set_tache_verified({ listeTaches });
       
-      // Recharger les tâches non vérifiées
       await loadNonVerifiedTasks();
       
-      // Message de succès (vous pouvez ajouter un modal si besoin)
       alert(`${listeTaches.length} tâche(s) vérifiée(s) avec succès !`);
     } catch (error) {
       console.error("Erreur lors de la vérification des tâches:", error);
@@ -78,6 +100,19 @@ const ListeTache = ({ taches, allTaches, onTacheClick, userInfo }) => {
     } finally {
       setIsVerifying(false);
     }
+  };
+
+  // Fonction pour trouver la tâche complète à partir de la ref
+  const findTaskByRef = (refTache) => {
+    // Chercher d'abord dans mes tâches
+    let task = taches.find(t => t.ref_tache === refTache || t.ref_sous_tache === refTache);
+    
+    // Si pas trouvé, chercher dans toutes les tâches
+    if (!task && allTaches) {
+      task = allTaches.find(t => t.ref_tache === refTache || t.ref_sous_tache === refTache);
+    }
+    
+    return task;
   };
 
   // Filtrer les tâches selon le filtre actif
@@ -114,7 +149,6 @@ const ListeTache = ({ taches, allTaches, onTacheClick, userInfo }) => {
       grouped[projetKey][phaseKey].push(tache);
     });
 
-    // Trier les tâches dans chaque phase
     Object.keys(grouped).forEach(projet => {
       Object.keys(grouped[projet]).forEach(phase => {
         grouped[projet][phase].sort((a, b) => {
@@ -135,6 +169,16 @@ const ListeTache = ({ taches, allTaches, onTacheClick, userInfo }) => {
       day: "2-digit",
       month: "2-digit",
       year: "numeric",
+    });
+  };
+
+  const formatDateTime = (dateString) => {
+    return new Date(dateString).toLocaleString("fr-FR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
@@ -200,16 +244,122 @@ const ListeTache = ({ taches, allTaches, onTacheClick, userInfo }) => {
           >
             Vérification des tâches
           </button>
+          <button
+            className={`view-button ${activeFilter === "Résultats de vérification" ? "active" : ""}`}
+            onClick={() => setActiveFilter("Résultats de vérification")}
+          >
+            Résultats de vérification
+          </button>
         </div>
       </div>
 
       {/* Affichage conditionnel selon le filtre actif */}
-      {activeFilter === "Vérification des tâches" ? (
+      {activeFilter === "Résultats de vérification" ? (
+        <div className="results-container">
+          <div className="results-header">
+            <h2 className="results-title">
+              <i className="bi bi-clipboard-check-fill"></i>
+              Résultats de vérification de vos tâches
+            </h2>
+            <p className="results-description">
+              Consultez les retours de l'administrateur sur vos tâches soumises
+            </p>
+          </div>
+
+          {isLoadingResults ? (
+            <div className="results-loading">
+              <i className="bi bi-arrow-clockwise spin"></i>
+              <span>Chargement des résultats...</span>
+            </div>
+          ) : verificationResults.length === 0 ? (
+            <div className="no-results">
+              <i className="bi bi-inbox"></i>
+              <p>Aucun résultat de vérification disponible</p>
+            </div>
+          ) : (
+            <div className="results-list">
+              {verificationResults.map((result, index) => {
+                const task = findTaskByRef(result.ref_tache);
+                const isApproved = result.is_okay;
+                
+                return (
+                  <div
+                    key={`${result.ref_tache}-${index}`}
+                    className={`result-item ${isApproved ? 'approved' : 'rejected'}`}
+                    onClick={() => task && onTacheClick(task)}
+                  >
+                    <div className="result-status-indicator">
+                      <div className={`result-status-icon ${isApproved ? 'approved' : 'rejected'}`}>
+                        <i className={`bi ${isApproved ? 'bi-check-circle-fill' : 'bi-x-circle-fill'}`}></i>
+                      </div>
+                    </div>
+
+                    <div className="result-content">
+                      <div className="result-header">
+                        <div className="result-title-section">
+                          <h4 className="result-task-ref">
+                            <i className="bi bi-hash"></i>
+                            {result.ref_tache}
+                          </h4>
+                          <span className={`result-status-badge ${isApproved ? 'approved' : 'rejected'}`}>
+                            {isApproved ? 'Approuvée' : 'Refusée'}
+                          </span>
+                        </div>
+                        
+                        {task && (
+                          <div className="result-task-info">
+                            <h5 className="result-task-name">
+                              {task.nom_tache || task.nom_sous_tache}
+                            </h5>
+                            <div className="result-task-meta">
+                              <span>
+                                <i className="bi bi-folder-fill"></i>
+                                {task.nom_projet}
+                              </span>
+                              <span>
+                                <i className="bi bi-diagram-3-fill"></i>
+                                {task.libelle_phase}
+                              </span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {!isApproved && result.raison && (
+                        <div className="result-reason">
+                          <div className="reason-label">
+                            <i className="bi bi-exclamation-triangle-fill"></i>
+                            Raison du refus :
+                          </div>
+                          <p className="reason-text">{result.raison}</p>
+                        </div>
+                      )}
+
+                      <div className="result-footer">
+                        <div className="result-date">
+                          <i className="bi bi-clock-fill"></i>
+                          <span>Vérifié le {formatDateTime(result.date_verification)}</span>
+                        </div>
+                        {task && (
+                          <button className="result-view-btn">
+                            <i className="bi bi-eye-fill"></i>
+                            Voir la tâche
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      ) : activeFilter === "Vérification des tâches" ? (
         <div className="verification-container">
           <div className="verification-header">
             <h2 className="verification-title">
               <i className="bi bi-clipboard-check"></i>
-              Tâches terminées en attente de vérification
+              Tâches terminées en attente d'auto-vérification
             </h2>
             <p className="verification-description">
               Sélectionnez les tâches que vous souhaitez valider comme vérifiées
@@ -340,7 +490,7 @@ const ListeTache = ({ taches, allTaches, onTacheClick, userInfo }) => {
               {selectedTasksToVerify.size > 0 && (
                 <div className="verification-footer">
                   <button
-                    className="btn-verify-tasks"
+                    className="btn-confirm-verification"
                     onClick={handleVerifySelectedTasks}
                     disabled={isVerifying}
                   >

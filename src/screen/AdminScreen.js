@@ -182,6 +182,19 @@ const AdminScreen = () => {
                   <p>Créer un nouveau compte</p>
                 </div>
               </div>
+
+              <div
+                className="action-card tertiary"
+                onClick={() => navigate("/admin/task_verification")}
+              >
+                <div className="action-icon">
+                  <i className="bi bi-person-plus-fill"></i>
+                </div>
+                <div className="action-text">
+                  <h4>Vérification des tâches</h4>
+                  <p>Controler la vérification</p>
+                </div>
+              </div>
             </div>
           </div>
 

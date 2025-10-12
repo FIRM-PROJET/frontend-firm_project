@@ -509,5 +509,77 @@ export const TacheService = {
       throw error;
     }
   },
+  //get tache auto verifié par utilisateur 
+   get_auto_verified_task_user: async (matricule) => {
+    try {
+      const response = await fetch(`${API_URL}/tache/verifiees/${matricule}`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch all verified taches");
+      }
+      return await response.json();
+    } catch (error) {
+      console.error("Error fetching all verifie taches:", error);
+      throw error;
+    }
+  },
+  //insert tache admin verification  
+  post_admin_tache_verified: async (tache_data) => {
+    try {
+      const response = await fetch(`${API_URL}/tache/verifiees`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(tache_data),
+      });
+
+      if (!response.ok) {
+        await response.json().catch(() => ({})); 
+      }
+      return await response.json();
+    } catch (error) {
+      console.error("Error create verified tache:", error);
+      throw error;
+    }
+  },
+   //get tache auto verifié par utilisateur 
+   get_verifie_task_by_admin: async (matricule) => {
+    try {
+      const response = await fetch(`${API_URL}/tache/verifiees/utilisateur/${matricule}`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch all verified taches");
+      }
+      return await response.json();
+    } catch (error) {
+      console.error("Error fetching all verifie taches:", error);
+      throw error;
+    }
+  },
+    //get tache auto verifié par utilisateur 
+   get_stat_per_week: async () => {
+    try {
+      const response = await fetch(`${API_URL}/tache/stats/semaine`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch all stats week");
+      }
+      return await response.json();
+    } catch (error) {
+      throw error;
+    }
+  },
+    //get tache auto verifié par utilisateur 
+   get_stat_per_month: async () => {
+    try {
+      const response = await fetch(`${API_URL}/tache/stats/mois`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch all stats month");
+      }
+      return await response.json();
+    } catch (error) {
+      console.error("Error fetching :", error);
+      throw error;
+    }
+  },
+
 
 };

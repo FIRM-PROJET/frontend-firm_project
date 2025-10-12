@@ -26,6 +26,7 @@ import ListeProjets from "./screen/DevisScreen/ListeProjets";
 import LoadingScreen from "./screen/LoadingScreen";
 import CreateTache from "./screen/TacheScreen/CreateTache";
 import PhasesScreen from "./screen/PhasesScreen";
+import AdminTaskVerification from "./screen/AdminScreen/AdminTaskVerification";
 
 function App() {
   return (
@@ -66,6 +67,7 @@ function App() {
           <Route path="/admin/access" element={<UserAccessScreen />} />
           <Route path="/admin/modify" element={<UpdateUserScreen />} />
           <Route path="/admin/add" element={<AddUserScreen />} />
+          <Route path="/admin/task_verification"element={<AdminTaskVerification />}/>
         </Route>
       </Routes>
     </Router>
