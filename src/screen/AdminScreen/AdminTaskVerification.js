@@ -223,7 +223,7 @@ const AdminTaskVerification = () => {
       <div className="module-header">
         <div className="header-content">
           <div className="text-content">
-            <h1 className="module-title">Gestion des Tâches</h1>
+            <h1 className="module-title">Vérification des tâches</h1>
             <h5 className="module-subtitle">
               Vérifier les tâches auto-validées et consulter les statistiques de performance
             </h5>

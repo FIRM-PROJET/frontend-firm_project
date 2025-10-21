@@ -215,7 +215,7 @@ export const TacheService = {
       return await response.json();
     } catch (error) {
       console.error("Error creating tache:", error);
-      throw error; 
+      throw error;
     }
   },
 
@@ -437,7 +437,7 @@ export const TacheService = {
       throw error;
     }
   },
-   add_tache_time: async (tache_time_data) => {
+  add_tache_time: async (tache_time_data) => {
     try {
       const response = await fetch(`${API_URL}/tache/temps_tache`, {
         method: "POST",
@@ -448,7 +448,7 @@ export const TacheService = {
       });
 
       if (!response.ok) {
-        await response.json().catch(() => ({})); 
+        await response.json().catch(() => ({}));
         throw new Error("Failed to add tache time");
       }
       return await response.json();
@@ -467,7 +467,7 @@ export const TacheService = {
       });
 
       if (!response.ok) {
-        await response.json().catch(() => ({})); 
+        await response.json().catch(() => ({}));
         throw new Error("Failed to add tache time");
       }
       return await response.json();
@@ -476,11 +476,13 @@ export const TacheService = {
       throw error;
     }
   },
-  
+
   // Récupère toutes les tâches pour une perso
   get_non_verifie_task_user: async (matricule) => {
     try {
-      const response = await fetch(`${API_URL}/tache/non_verifiees/${matricule}`);
+      const response = await fetch(
+        `${API_URL}/tache/non_verifiees/${matricule}`
+      );
       if (!response.ok) {
         throw new Error("Failed to fetch all verified taches");
       }
@@ -490,7 +492,7 @@ export const TacheService = {
       throw error;
     }
   },
-   set_tache_verified: async (listes_tache) => {
+  set_tache_verified: async (listes_tache) => {
     try {
       const response = await fetch(`${API_URL}/tache/auto_verified`, {
         method: "PUT",
@@ -501,7 +503,7 @@ export const TacheService = {
       });
 
       if (!response.ok) {
-        await response.json().catch(() => ({})); 
+        await response.json().catch(() => ({}));
       }
       return await response.json();
     } catch (error) {
@@ -509,8 +511,8 @@ export const TacheService = {
       throw error;
     }
   },
-  //get tache auto verifié par utilisateur 
-   get_auto_verified_task_user: async (matricule) => {
+  //get tache auto verifié par utilisateur
+  get_auto_verified_task_user: async (matricule) => {
     try {
       const response = await fetch(`${API_URL}/tache/verifiees/${matricule}`);
       if (!response.ok) {
@@ -522,7 +524,7 @@ export const TacheService = {
       throw error;
     }
   },
-  //insert tache admin verification  
+  //insert tache admin verification
   post_admin_tache_verified: async (tache_data) => {
     try {
       const response = await fetch(`${API_URL}/tache/verifiees`, {
@@ -534,7 +536,7 @@ export const TacheService = {
       });
 
       if (!response.ok) {
-        await response.json().catch(() => ({})); 
+        await response.json().catch(() => ({}));
       }
       return await response.json();
     } catch (error) {
@@ -542,10 +544,12 @@ export const TacheService = {
       throw error;
     }
   },
-   //get tache auto verifié par utilisateur 
-   get_verifie_task_by_admin: async (matricule) => {
+  //get tache auto verifié par utilisateur
+  get_verifie_task_by_admin: async (matricule) => {
     try {
-      const response = await fetch(`${API_URL}/tache/verifiees/utilisateur/${matricule}`);
+      const response = await fetch(
+        `${API_URL}/tache/verifiees/utilisateur/${matricule}`
+      );
       if (!response.ok) {
         throw new Error("Failed to fetch all verified taches");
       }
@@ -555,8 +559,8 @@ export const TacheService = {
       throw error;
     }
   },
-    //get tache auto verifié par utilisateur 
-   get_stat_per_week: async () => {
+  //get tache auto verifié par utilisateur
+  get_stat_per_week: async () => {
     try {
       const response = await fetch(`${API_URL}/tache/stats/semaine`);
       if (!response.ok) {
@@ -567,8 +571,8 @@ export const TacheService = {
       throw error;
     }
   },
-    //get tache auto verifié par utilisateur 
-   get_stat_per_month: async () => {
+  //get tache auto verifié par utilisateur
+  get_stat_per_month: async () => {
     try {
       const response = await fetch(`${API_URL}/tache/stats/mois`);
       if (!response.ok) {
@@ -580,6 +584,18 @@ export const TacheService = {
       throw error;
     }
   },
-
-
+  download_zip_projet: async (ref_projet) => {
+    try {
+      const response = await fetch(
+        `${API_URL}/del/telecharger-zip/${ref_projet}`
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch zip");
+      }
+      return await response.blob();
+    } catch (error) {
+      console.error("Error fetching :", error);
+      throw error;
+    }
+  },
 };

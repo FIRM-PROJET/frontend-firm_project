@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import "../styles/TacheScreen.css";
 import { TacheService } from "../services/TacheService";
+import { ModuleService } from "../services/ModuleService";
 import TacheModal from "../modals/TacheModal";
 import { useNavigate } from "react-router-dom";
 import ListeTache from "./TacheScreen/ListeTache";
 import CalendarView from "./TacheScreen/CalendarView";
+import MessageModal from "../modals/MessageModal";
+import FichiersSection from "./TacheScreen/FichiersSection";
 
-// Fonction pour décoder le JWT (version simplifiée)
 const jwtDecode = (token) => {
   try {
     const base64Url = token.split(".")[1];
@@ -43,9 +45,28 @@ const TacheScreen = () => {
   const [allFiles, setAllFiles] = useState([]);
   const [filesLoading, setFilesLoading] = useState(false);
   const [filesError, setFilesError] = useState(null);
+
+  // États pour la gestion admin
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [showMessageModal, setShowMessageModal] = useState(false);
+  const [messageModal, setMessageModal] = useState({
+    message: "",
+    type: "info",
+  });
+
   const navigate = useNavigate();
 
   const handleAjouterTache = () => {
+    // Vérifier si l'utilisateur est admin
+    if (!isAdmin) {
+      setMessageModal({
+        message:
+          "Accès refusé : Seuls les administrateurs peuvent créer de nouvelles tâches.",
+        type: "error",
+      });
+      setShowMessageModal(true);
+      return;
+    }
     navigate("/tache/new");
   };
 
@@ -53,7 +74,8 @@ const TacheScreen = () => {
     setActiveTab("Liste");
   };
 
-  useEffect(() => {
+  // Fonction pour initialiser l'utilisateur et vérifier s'il est admin
+  const initializeUser = async () => {
     const token = localStorage.getItem("token");
     if (token) {
       try {
@@ -71,6 +93,17 @@ const TacheScreen = () => {
           loadUserTaches(userInfoData.matricule);
           loadAllTaches();
           loadAllFiles();
+
+          // Vérifier si l'utilisateur est admin
+          try {
+            const adminResponse = await ModuleService.isUserAdmin(
+              userInfoData.matricule
+            );
+            setIsAdmin(adminResponse.isAdmin === true);
+          } catch (err) {
+            console.error("Erreur lors de la vérification admin:", err);
+            setIsAdmin(false);
+          }
         }
       } catch (err) {
         console.error("Erreur de décodage du token :", err);
@@ -81,6 +114,10 @@ const TacheScreen = () => {
       setError("Token non trouvé");
       setLoading(false);
     }
+  };
+
+  useEffect(() => {
+    initializeUser();
   }, []);
 
   const loadAllTaches = async () => {
@@ -579,117 +616,13 @@ const TacheScreen = () => {
         );
       case "Fichiers":
         return (
-          <div className="files-view">
-            <div className="files-header">
-              <h2>
-                <i class="bi bi-folder-symlink-fill"></i> Tous les fichiers
-              </h2>
-              <button
-                className="refresh-files-btn"
-                onClick={loadAllFiles}
-                disabled={filesLoading}
-              >
-                <i
-                  className={`bi ${
-                    filesLoading
-                      ? "bi-arrow-repeat rotating"
-                      : "bi-arrow-clockwise"
-                  }`}
-                ></i>
-                Actualiser
-              </button>
-            </div>
-
-            {filesLoading && (
-              <div className="files-loading">
-                <i className="bi bi-hourglass-split loading-spinner"></i>
-                <span>Chargement des fichiers...</span>
-              </div>
-            )}
-
-            {filesError && (
-              <div className="files-error">
-                <i className="bi bi-exclamation-circle-fill error-icon"></i>
-                <span>Erreur: {filesError}</span>
-              </div>
-            )}
-
-            {!filesLoading && !filesError && (
-              <div className="files-content">
-                {allFiles.length > 0 ? (
-                  (() => {
-                    const groupedFiles = groupFilesByType(allFiles);
-                    return Object.keys(groupedFiles).map((type) => (
-                      <div key={type} className="file-type-section">
-                        <div className="file-type-header">
-                          <h3>
-                            {type} ({groupedFiles[type].length})
-                          </h3>
-                        </div>
-                        <div className="files-grid">
-                          {groupedFiles[type].map((file, index) => (
-                            <div key={file.id || index} className="file-item">
-                              <div className="file-icon">
-                                <i
-                                  className={`bi ${getFileIcon(
-                                    file.nom_fichier
-                                  )}`}
-                                ></i>
-                              </div>
-                              <div className="file-info">
-                                <div
-                                  className="file-name"
-                                  title={file.nom_fichier}
-                                >
-                                  {file.nom_fichier}
-                                </div>
-                                <div className="file-details">
-                                  {file.tache_nom && (
-                                    <span className="file-tache">
-                                      {file.tache_nom}
-                                    </span>
-                                  )}
-                                  {file.taille && (
-                                    <span className="file-size">
-                                      {file.taille}
-                                    </span>
-                                  )}
-                                </div>
-                                {file.date_upload && (
-                                  <div className="file-date">
-                                    Ajouté le{" "}
-                                    {new Date(
-                                      file.date_upload
-                                    ).toLocaleDateString("fr-FR")}
-                                  </div>
-                                )}
-                              </div>
-                              <div className="file-actions">
-                                <button
-                                  className="file-action-btn download"
-                                  title="Télécharger"
-                                  onClick={() =>
-                                    handleDownloadFile(file.chemin_fichier)
-                                  }
-                                >
-                                  <i className="bi bi-download"></i>
-                                </button>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    ));
-                  })()
-                ) : (
-                  <div className="no-files">
-                    <i className="bi bi-folder-x"></i>
-                    <p>Aucun fichier trouvé</p>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
+          <FichiersSection
+            allFiles={allFiles}
+            filesLoading={filesLoading}
+            filesError={filesError}
+            loadAllFiles={loadAllFiles}
+            handleDownloadFile={handleDownloadFile}
+          />
         );
       default:
         return null;
@@ -747,7 +680,7 @@ const TacheScreen = () => {
             }
           }}
         >
-          <i class="bi bi-layers-fill"></i> <span>Fichiers</span>
+          <i className="bi bi-layers-fill"></i> <span>Fichiers</span>
         </button>
       </div>
 
@@ -762,6 +695,15 @@ const TacheScreen = () => {
         onStatusChange={() => loadUserTaches(userInfo.matricule)}
         onStatusUpdate={loadAllTaches}
       />
+
+      {/* Message Modal pour les erreurs d'accès */}
+      {showMessageModal && (
+        <MessageModal
+          message={messageModal.message}
+          type={messageModal.type}
+          onClose={() => setShowMessageModal(false)}
+        />
+      )}
     </div>
   );
 };

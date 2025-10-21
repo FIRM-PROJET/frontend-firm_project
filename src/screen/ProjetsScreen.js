@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { ProjetService } from "../services/ProjetService";
 import { TacheService } from "../services/TacheService";
+import { ModuleService } from "../services/ModuleService";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import CreateProjectModal from "../modals/CreateProjectModal";
+import MessageModal from "../modals/MessageModal";
+import { jwtDecode } from "jwt-decode";
 import {
   faBuilding,
   faCheckCircle,
@@ -29,18 +32,59 @@ const ProjetsScreen = () => {
   const [error, setError] = useState(null);
   const [selectedProject, setSelectedProject] = useState(null);
   const [activeTab, setActiveTab] = useState("apercu");
-
-  // État pour la liste d'avancement
   const [avancementProjetData, setAvancementProjetData] = useState([]);
+  
+  // États pour la gestion admin
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [userInfo, setUserInfo] = useState(null);
+  const [showMessageModal, setShowMessageModal] = useState(false);
+  const [messageModal, setMessageModal] = useState({ message: "", type: "info" });
 
   const navigate = useNavigate();
 
   useEffect(() => {
+    initializeUser();
     fetchAllProjets();
     fetchAvancementProjetData();
   }, []);
 
+  // Fonction pour initialiser l'utilisateur et vérifier s'il est admin
+  const initializeUser = async () => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        const userInfoData = {
+          name: decoded.nom || decoded.name || "Utilisateur",
+          email: decoded.email || "",
+          avatar: decoded.avatar || null,
+          matricule: decoded.matricule || "",
+        };
+        setUserInfo(userInfoData);
+
+        // Vérifier si l'utilisateur est admin
+        if (userInfoData.matricule) {
+          const adminResponse = await ModuleService.isUserAdmin(
+            userInfoData.matricule
+          );
+          setIsAdmin(adminResponse.isAdmin === true);
+        }
+      } catch (err) {
+        console.error("Erreur de décodage du token :", err);
+      }
+    }
+  };
+
   const handleNewProject = () => {
+    // Vérifier si l'utilisateur est admin
+    if (!isAdmin) {
+      setMessageModal({
+        message: "Accès refusé : Seuls les administrateurs peuvent créer de nouveaux projets.",
+        type: "error"
+      });
+      setShowMessageModal(true);
+      return;
+    }
     setShowCreateModal(true);
   };
 
@@ -90,7 +134,6 @@ const ProjetsScreen = () => {
           if (phasesProjetResponse.success) {
             const projectPhases = phasesProjetResponse.data || [];
 
-            // Calculer les vraies dates de début et fin basées sur les phases
             let dateDebut = null;
             let dateFin = null;
 
@@ -111,8 +154,6 @@ const ProjetsScreen = () => {
                 );
               }
             }
-
-            // Pas de dates de fallback - on laisse null si pas de phases avec dates
 
             projetPhasesData.push({
               ref_projet: projet.ref_projet,
@@ -144,7 +185,6 @@ const ProjetsScreen = () => {
     setSelectedProject(null);
   };
 
-  // Calculer les statistiques des projets
   const stats = {
     totalProjets: projets.length,
     projetsEnCours: avancementProjetData.filter((p) => {
@@ -161,7 +201,6 @@ const ProjetsScreen = () => {
     }).length,
   };
 
-  // Calculer l'avancement global de tous les projets
   const avancementGlobalMoyen =
     avancementProjetData.length > 0
       ? avancementProjetData.reduce(
@@ -170,7 +209,6 @@ const ProjetsScreen = () => {
         ) / avancementProjetData.length
       : 0;
 
-  // Obtenir la couleur selon l'avancement
   const getAvancementColor = (avancement) => {
     if (avancement >= 80) return "#514f84";
     if (avancement >= 50) return "#ccc";
@@ -178,7 +216,6 @@ const ProjetsScreen = () => {
     return "#514f84";
   };
 
-  // Obtenir le statut du projet
   const getProjetStatus = (avancement) => {
     if (avancement === 100) return "Terminé";
     if (avancement >= 30) return "En cours";
@@ -186,25 +223,21 @@ const ProjetsScreen = () => {
     return "Non démarré";
   };
 
-  // Trouver le nom du projet
   const getProjetNom = (refProjet) => {
     const projet = projetPhases.find((p) => p.ref_projet === refProjet);
     return projet ? projet.nom_projet : refProjet;
   };
 
-  // Obtenir la date de fin max pour un projet
   const getDateFinProjet = (refProjet) => {
     const projet = projetPhases.find((p) => p.ref_projet === refProjet);
     return projet ? projet.date_fin : null;
   };
 
-  // Obtenir le nombre de phases pour un projet
   const getNombrePhasesProjet = (refProjet) => {
     const projet = projetPhases.find((p) => p.ref_projet === refProjet);
     return projet ? projet.phases.length : 0;
   };
 
-  // Fonction pour formater l'affichage des dates
   const formatDateDisplay = (date) => {
     if (!date) {
       return "Pas de dates - aucune phase insérée";
@@ -212,13 +245,11 @@ const ProjetsScreen = () => {
     return date.toLocaleDateString("fr-FR");
   };
 
-  // Rendu du contenu selon l'onglet actif
   const renderContent = () => {
     switch (activeTab) {
       case "apercu":
         return (
           <div className="apercu-dashboard-new">
-            {/* Colonne de gauche: Liste des projets */}
             <div className="projets-liste-section">
               <div className="section-card">
                 <div className="section-card-header">
@@ -250,7 +281,6 @@ const ProjetsScreen = () => {
                           handleProjectClick({ ref_projet: item.ref_projet })
                         }
                       >
-  
                         <div className="projet-card-body">
                           <h4 className="projet-card-nom">{nom}</h4>
                           <div className="projet-card-meta">
@@ -290,7 +320,6 @@ const ProjetsScreen = () => {
               </div>
             </div>
 
-            {/* Colonne centrale: Avancement global 3D */}
             <div className="avancement-global-section">
               <div className="section-card avancement-3d-card">
                 <div className="section-card-header">
@@ -384,7 +413,6 @@ const ProjetsScreen = () => {
               </div>
             </div>
 
-            {/* Colonne de droite: Calendrier compact */}
             <div className="calendrier-compact-section">
               <div className="section-card">
                 <div className="section-card-header">
@@ -402,7 +430,7 @@ const ProjetsScreen = () => {
                 <div className="calendrier-compact-container">
                   <div className="calendrier-timeline">
                     {projetPhases
-                      .filter(projet => projet.date_fin) // Filtrer seulement les projets avec dates
+                      .filter(projet => projet.date_fin)
                       .sort(
                         (a, b) => new Date(a.date_fin) - new Date(b.date_fin)
                       )
@@ -426,9 +454,7 @@ const ProjetsScreen = () => {
                             className="calendrier-timeline-item"
                           >
                             <div className="timeline-date-marker">
-                              <div
-                                className="date-circle"
-                              >
+                              <div className="date-circle">
                                 <span className="date-day">
                                   {projet.date_fin.getDate()}
                                 </span>
@@ -471,7 +497,6 @@ const ProjetsScreen = () => {
                           </div>
                         );
                       })}
-                    {/* Message si aucun projet avec dates */}
                     {projetPhases.filter(projet => projet.date_fin).length === 0 && (
                       <div className="no-dates-message">
                         <FontAwesomeIcon icon={faCalendarAlt} />
@@ -525,7 +550,7 @@ const ProjetsScreen = () => {
                           </div>
                           <div className="projet-meta-compact">
                             <div className="phases-badge-compact">
-                              <i class="fa-solid fa-layer-group"></i>{" "}
+                              <i className="fa-solid fa-layer-group"></i>{" "}
                               {nombrePhases} phases
                             </div>
                             <div className="date-fin-compact">
@@ -675,7 +700,7 @@ const ProjetsScreen = () => {
                           </td>
                           <td>
                             <div className="tableau-phases-info">
-                              <i class="fa-solid fa-layer-group"></i>{" "}
+                              <i className="fa-solid fa-layer-group"></i>{" "}
                               {projet.phases.length} phases
                             </div>
                           </td>
@@ -738,7 +763,6 @@ const ProjetsScreen = () => {
 
   return (
     <div className="container">
-      {/* Header */}
       <div className="module-header">
         <div className="header-content">
           <div className="text-content">
@@ -754,7 +778,6 @@ const ProjetsScreen = () => {
         </div>
       </div>
 
-      {/* Navigation Bar */}
       <div className="nav-bar">
         <button
           className={`nav-item ${activeTab === "apercu" ? "active" : ""}`}
@@ -786,13 +809,20 @@ const ProjetsScreen = () => {
         </button>
       </div>
 
-      {/* Contenu selon l'onglet actif */}
       {renderContent()}
 
       {showCreateModal && (
         <CreateProjectModal
           isOpen={showCreateModal}
           onClose={() => setShowCreateModal(false)}
+        />
+      )}
+
+      {showMessageModal && (
+        <MessageModal
+          message={messageModal.message}
+          type={messageModal.type}
+          onClose={() => setShowMessageModal(false)}
         />
       )}
     </div>
