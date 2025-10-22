@@ -1,7 +1,7 @@
 /* Variables de couleurs modernisées */
 :root {
   --primary-dark: #181835;
-  --secondary-dark: #1a1a2e;
+  --secondary-dark: #212144;
   --card-dark: #181835;
   --accent-color: #514f84;
   --accent-light: #ccc;
@@ -123,11 +123,10 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 0.9rem;
+  font-size: 1rem;
   font-weight: 700;
   color: var(--text-primary);
   margin: 0;
-  text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
@@ -224,10 +223,9 @@
 }
 
 .project-name {
-  font-size: 0.7rem;
-  color: var(--text-muted);
+  font-size: 0.8rem;
+  color: #ccc;
   font-weight: 600;
-  text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-bottom: 2px;
 }
