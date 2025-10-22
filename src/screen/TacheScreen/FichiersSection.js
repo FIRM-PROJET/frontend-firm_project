@@ -183,7 +183,7 @@ const FichiersSection = ({ allFiles, filesLoading, filesError, loadAllFiles, han
                 
                 return (
                   <div key={projectKey} className="project-files-section">
-                    <div className="project-header">
+                    <div className="project-header2">
                       <div className="project-info2">
                         <i className="bi bi-folder-fill"></i>
                         <h2>{project.name}</h2>

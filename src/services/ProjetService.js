@@ -17,10 +17,16 @@ export const ProjetService = {
     return await response.json();
   },
 
-  
   // ==================== PHASES ====================
   getAllPhases: async () => {
     const response = await fetch(`${API_URL}/phases`);
+    return await response.json();
+  },
+
+  getPhaseProgress: async (ref_projet, id_phase) => {
+    const response = await fetch(
+      `${API_URL}/phase-progress?ref_projet=${ref_projet}&id_phase=${id_phase}`
+    );
     return await response.json();
   },
 
@@ -56,7 +62,7 @@ export const ProjetService = {
     });
     return await response.json();
   },
-  
+
   getUsersByPhase: async (userPhaseData) => {
     const response = await fetch(`${API_URL}/user_phase`, {
       method: "POST",
@@ -90,6 +96,4 @@ export const ProjetService = {
     });
     return await response.json();
   },
-  
-
 };
